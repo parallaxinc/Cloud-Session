@@ -4,11 +4,16 @@
 package com.parallax.server.common.cloudsession.db.generated;
 
 
+import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtokens;
+import com.parallax.server.common.cloudsession.db.generated.tables.Resettokens;
 import com.parallax.server.common.cloudsession.db.generated.tables.User;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokensRecord;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokensRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 
 import javax.annotation.Generated;
 
+import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.UniqueKey;
 import org.jooq.impl.AbstractKeys;
@@ -32,28 +37,43 @@ public class Keys {
 	// IDENTITY definitions
 	// -------------------------------------------------------------------------
 
+	public static final Identity<ConfirmtokensRecord, Long> IDENTITY_CONFIRMTOKENS = Identities0.IDENTITY_CONFIRMTOKENS;
+	public static final Identity<ResettokensRecord, Long> IDENTITY_RESETTOKENS = Identities0.IDENTITY_RESETTOKENS;
 	public static final Identity<UserRecord, Long> IDENTITY_USER = Identities0.IDENTITY_USER;
 
 	// -------------------------------------------------------------------------
 	// UNIQUE and PRIMARY KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final UniqueKey<ConfirmtokensRecord> KEY_CONFIRMTOKENS_PRIMARY = UniqueKeys0.KEY_CONFIRMTOKENS_PRIMARY;
+	public static final UniqueKey<ResettokensRecord> KEY_RESETTOKENS_PRIMARY = UniqueKeys0.KEY_RESETTOKENS_PRIMARY;
 	public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = UniqueKeys0.KEY_USER_PRIMARY;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final ForeignKey<ConfirmtokensRecord, UserRecord> RESETTOKENS_USER = ForeignKeys0.RESETTOKENS_USER;
+	public static final ForeignKey<ResettokensRecord, UserRecord> CONFIRMTOKENS_USER = ForeignKeys0.CONFIRMTOKENS_USER;
 
 	// -------------------------------------------------------------------------
 	// [#1459] distribute members to avoid static initialisers > 64kb
 	// -------------------------------------------------------------------------
 
 	private static class Identities0 extends AbstractKeys {
+		public static Identity<ConfirmtokensRecord, Long> IDENTITY_CONFIRMTOKENS = createIdentity(Confirmtokens.CONFIRMTOKENS, Confirmtokens.CONFIRMTOKENS.ID);
+		public static Identity<ResettokensRecord, Long> IDENTITY_RESETTOKENS = createIdentity(Resettokens.RESETTOKENS, Resettokens.RESETTOKENS.ID);
 		public static Identity<UserRecord, Long> IDENTITY_USER = createIdentity(User.USER, User.USER.ID);
 	}
 
 	private static class UniqueKeys0 extends AbstractKeys {
+		public static final UniqueKey<ConfirmtokensRecord> KEY_CONFIRMTOKENS_PRIMARY = createUniqueKey(Confirmtokens.CONFIRMTOKENS, Confirmtokens.CONFIRMTOKENS.ID);
+		public static final UniqueKey<ResettokensRecord> KEY_RESETTOKENS_PRIMARY = createUniqueKey(Resettokens.RESETTOKENS, Resettokens.RESETTOKENS.ID);
 		public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = createUniqueKey(User.USER, User.USER.ID);
+	}
+
+	private static class ForeignKeys0 extends AbstractKeys {
+		public static final ForeignKey<ConfirmtokensRecord, UserRecord> RESETTOKENS_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Confirmtokens.CONFIRMTOKENS, Confirmtokens.CONFIRMTOKENS.ID_USER);
+		public static final ForeignKey<ResettokensRecord, UserRecord> CONFIRMTOKENS_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Resettokens.RESETTOKENS, Resettokens.RESETTOKENS.ID_USER);
 	}
 }
