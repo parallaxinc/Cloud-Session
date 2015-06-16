@@ -6,8 +6,8 @@
 package com.parallax.server.common.cloudsession.config;
 
 import com.google.inject.AbstractModule;
-import com.parallax.server.common.cloudsession.service.UserService;
-import com.parallax.server.common.cloudsession.service.impl.UserServiceImpl;
+import com.parallax.server.common.cloudsession.service.ResetTokenService;
+import com.parallax.server.common.cloudsession.service.impl.ResetTokenServiceImpl;
 
 /**
  *
@@ -17,7 +17,10 @@ public class ServiceModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(UserService.class).to(UserServiceImpl.class);
+
+        bind(ResetTokenService.class).to(ResetTokenServiceImpl.class);
+        //bind(UserService.class).to(UserServiceImpl.class);
+
     }
 
 }

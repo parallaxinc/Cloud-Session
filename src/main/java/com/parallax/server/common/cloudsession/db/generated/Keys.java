@@ -4,11 +4,11 @@
 package com.parallax.server.common.cloudsession.db.generated;
 
 
-import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtokens;
-import com.parallax.server.common.cloudsession.db.generated.tables.Resettokens;
+import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtoken;
+import com.parallax.server.common.cloudsession.db.generated.tables.Resettoken;
 import com.parallax.server.common.cloudsession.db.generated.tables.User;
-import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokensRecord;
-import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokensRecord;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 
 import javax.annotation.Generated;
@@ -37,43 +37,47 @@ public class Keys {
 	// IDENTITY definitions
 	// -------------------------------------------------------------------------
 
-	public static final Identity<ConfirmtokensRecord, Long> IDENTITY_CONFIRMTOKENS = Identities0.IDENTITY_CONFIRMTOKENS;
-	public static final Identity<ResettokensRecord, Long> IDENTITY_RESETTOKENS = Identities0.IDENTITY_RESETTOKENS;
+	public static final Identity<ConfirmtokenRecord, Long> IDENTITY_CONFIRMTOKEN = Identities0.IDENTITY_CONFIRMTOKEN;
+	public static final Identity<ResettokenRecord, Long> IDENTITY_RESETTOKEN = Identities0.IDENTITY_RESETTOKEN;
 	public static final Identity<UserRecord, Long> IDENTITY_USER = Identities0.IDENTITY_USER;
 
 	// -------------------------------------------------------------------------
 	// UNIQUE and PRIMARY KEY definitions
 	// -------------------------------------------------------------------------
 
-	public static final UniqueKey<ConfirmtokensRecord> KEY_CONFIRMTOKENS_PRIMARY = UniqueKeys0.KEY_CONFIRMTOKENS_PRIMARY;
-	public static final UniqueKey<ResettokensRecord> KEY_RESETTOKENS_PRIMARY = UniqueKeys0.KEY_RESETTOKENS_PRIMARY;
+	public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_PRIMARY = UniqueKeys0.KEY_CONFIRMTOKEN_PRIMARY;
+	public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_ID_USER_UNIQUE = UniqueKeys0.KEY_CONFIRMTOKEN_ID_USER_UNIQUE;
+	public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_PRIMARY = UniqueKeys0.KEY_RESETTOKEN_PRIMARY;
+	public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_ID_USER_UNIQUE = UniqueKeys0.KEY_RESETTOKEN_ID_USER_UNIQUE;
 	public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = UniqueKeys0.KEY_USER_PRIMARY;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
 	// -------------------------------------------------------------------------
 
-	public static final ForeignKey<ConfirmtokensRecord, UserRecord> RESETTOKENS_USER = ForeignKeys0.RESETTOKENS_USER;
-	public static final ForeignKey<ResettokensRecord, UserRecord> CONFIRMTOKENS_USER = ForeignKeys0.CONFIRMTOKENS_USER;
+	public static final ForeignKey<ConfirmtokenRecord, UserRecord> RESETTOKEN_USER = ForeignKeys0.RESETTOKEN_USER;
+	public static final ForeignKey<ResettokenRecord, UserRecord> CONFIRMTOKEN_USER = ForeignKeys0.CONFIRMTOKEN_USER;
 
 	// -------------------------------------------------------------------------
 	// [#1459] distribute members to avoid static initialisers > 64kb
 	// -------------------------------------------------------------------------
 
 	private static class Identities0 extends AbstractKeys {
-		public static Identity<ConfirmtokensRecord, Long> IDENTITY_CONFIRMTOKENS = createIdentity(Confirmtokens.CONFIRMTOKENS, Confirmtokens.CONFIRMTOKENS.ID);
-		public static Identity<ResettokensRecord, Long> IDENTITY_RESETTOKENS = createIdentity(Resettokens.RESETTOKENS, Resettokens.RESETTOKENS.ID);
+		public static Identity<ConfirmtokenRecord, Long> IDENTITY_CONFIRMTOKEN = createIdentity(Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID);
+		public static Identity<ResettokenRecord, Long> IDENTITY_RESETTOKEN = createIdentity(Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID);
 		public static Identity<UserRecord, Long> IDENTITY_USER = createIdentity(User.USER, User.USER.ID);
 	}
 
 	private static class UniqueKeys0 extends AbstractKeys {
-		public static final UniqueKey<ConfirmtokensRecord> KEY_CONFIRMTOKENS_PRIMARY = createUniqueKey(Confirmtokens.CONFIRMTOKENS, Confirmtokens.CONFIRMTOKENS.ID);
-		public static final UniqueKey<ResettokensRecord> KEY_RESETTOKENS_PRIMARY = createUniqueKey(Resettokens.RESETTOKENS, Resettokens.RESETTOKENS.ID);
+		public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_PRIMARY = createUniqueKey(Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID);
+		public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_ID_USER_UNIQUE = createUniqueKey(Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID_USER);
+		public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_PRIMARY = createUniqueKey(Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID);
+		public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_ID_USER_UNIQUE = createUniqueKey(Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID_USER);
 		public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = createUniqueKey(User.USER, User.USER.ID);
 	}
 
 	private static class ForeignKeys0 extends AbstractKeys {
-		public static final ForeignKey<ConfirmtokensRecord, UserRecord> RESETTOKENS_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Confirmtokens.CONFIRMTOKENS, Confirmtokens.CONFIRMTOKENS.ID_USER);
-		public static final ForeignKey<ResettokensRecord, UserRecord> CONFIRMTOKENS_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Resettokens.RESETTOKENS, Resettokens.RESETTOKENS.ID_USER);
+		public static final ForeignKey<ConfirmtokenRecord, UserRecord> RESETTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID_USER);
+		public static final ForeignKey<ResettokenRecord, UserRecord> CONFIRMTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID_USER);
 	}
 }

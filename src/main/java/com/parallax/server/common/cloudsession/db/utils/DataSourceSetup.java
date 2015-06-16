@@ -25,7 +25,7 @@ public class DataSourceSetup {
 
     private static DataSource dataSource;
 
-    private static List<NeedsDataSource> dataSourceUsers = new ArrayList<NeedsDataSource>();
+    private static final List<NeedsDataSource> dataSourceUsers = new ArrayList<>();
 
     public static DataSource getDataSource() {
         return dataSource;

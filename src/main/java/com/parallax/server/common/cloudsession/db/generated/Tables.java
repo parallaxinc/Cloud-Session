@@ -4,8 +4,8 @@
 package com.parallax.server.common.cloudsession.db.generated;
 
 
-import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtokens;
-import com.parallax.server.common.cloudsession.db.generated.tables.Resettokens;
+import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtoken;
+import com.parallax.server.common.cloudsession.db.generated.tables.Resettoken;
 import com.parallax.server.common.cloudsession.db.generated.tables.User;
 
 import javax.annotation.Generated;
@@ -25,14 +25,14 @@ import javax.annotation.Generated;
 public class Tables {
 
 	/**
-	 * The table cloudsession.confirmtokens
+	 * The table cloudsession.confirmtoken
 	 */
-	public static final Confirmtokens CONFIRMTOKENS = com.parallax.server.common.cloudsession.db.generated.tables.Confirmtokens.CONFIRMTOKENS;
+	public static final Confirmtoken CONFIRMTOKEN = com.parallax.server.common.cloudsession.db.generated.tables.Confirmtoken.CONFIRMTOKEN;
 
 	/**
-	 * The table cloudsession.resettokens
+	 * The table cloudsession.resettoken
 	 */
-	public static final Resettokens RESETTOKENS = com.parallax.server.common.cloudsession.db.generated.tables.Resettokens.RESETTOKENS;
+	public static final Resettoken RESETTOKEN = com.parallax.server.common.cloudsession.db.generated.tables.Resettoken.RESETTOKEN;
 
 	/**
 	 * The table cloudsession.user

@@ -4,8 +4,8 @@
 package com.parallax.server.common.cloudsession.db.generated;
 
 
-import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtokens;
-import com.parallax.server.common.cloudsession.db.generated.tables.Resettokens;
+import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtoken;
+import com.parallax.server.common.cloudsession.db.generated.tables.Resettoken;
 import com.parallax.server.common.cloudsession.db.generated.tables.User;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Cloudsession extends SchemaImpl {
 
-	private static final long serialVersionUID = -377092834;
+	private static final long serialVersionUID = -563888000;
 
 	/**
 	 * The reference instance of <code>cloudsession</code>
@@ -54,8 +54,8 @@ public class Cloudsession extends SchemaImpl {
 
 	private final List<Table<?>> getTables0() {
 		return Arrays.<Table<?>>asList(
-			Confirmtokens.CONFIRMTOKENS,
-			Resettokens.RESETTOKENS,
+			Confirmtoken.CONFIRMTOKEN,
+			Resettoken.RESETTOKEN,
 			User.USER);
 	}
 }
