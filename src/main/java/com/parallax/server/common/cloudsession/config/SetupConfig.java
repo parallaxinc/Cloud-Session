@@ -5,10 +5,12 @@
  */
 package com.parallax.server.common.cloudsession.config;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
+import com.palominolabs.metrics.guice.MetricsInstrumentationModule;
 import com.parallax.server.common.cloudsession.service.TokenGeneratorService;
 import com.parallax.server.common.cloudsession.service.impl.UUIDTokenGeneratorServiceImpl;
 import java.sql.Driver;
@@ -27,23 +29,28 @@ import org.apache.commons.configuration.DefaultConfigurationBuilder;
 public class SetupConfig extends GuiceServletContextListener {
 
     private Configuration configuration;
+    private MetricRegistry metrics;
 
     @Override
     protected Injector getInjector() {
         readConfiguration();
 
+        metrics = new MetricRegistry();
+        MetricsConfigurator.configure(metrics, configuration);
+
         return Guice.createInjector(new AbstractModule() {
 
             @Override
             protected void configure() {
+                install(new MetricsInstrumentationModule(metrics));
+
                 bind(Configuration.class).toInstance(configuration);
                 bind(TokenGeneratorService.class).to(UUIDTokenGeneratorServiceImpl.class);
 
                 install(new PersistenceModule(configuration));
                 install(new DaoModule());
                 install(new ServiceModule());
-                //      install(new RestModule());
-                //    install(new TimerModule());
+                install(new RestModule());
             }
 
         }
