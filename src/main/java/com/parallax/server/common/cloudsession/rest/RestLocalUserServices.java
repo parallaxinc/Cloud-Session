@@ -123,4 +123,28 @@ public class RestLocalUserServices {
         }
     }
 
+    @POST
+    @Path("/confirm/{email}")
+    @Detail("Requests to send a request email to the specified user with a password reset token")
+    @Name("Reset")
+    @Produces("text/json")
+    public Response doConfirm(@PathParam("email") String email, @FormParam("token") String token) {
+        try {
+            boolean validResetToken = resetTokenService.isValidResetToken(token);
+            JsonObject json = new JsonObject();
+            if (validResetToken) {
+                UserRecord userRecord = userService.confirmPassword(email, token);
+                if (userRecord != null) {
+                    json.addProperty("success", true);
+                } else {
+                    json.addProperty("success", false);
+                }
+            }
+            json.addProperty("success", true);
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserException uue) {
+            return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        }
+    }
+
 }

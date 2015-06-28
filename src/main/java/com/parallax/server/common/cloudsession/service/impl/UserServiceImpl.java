@@ -10,6 +10,7 @@ import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.annotation.PostConstruct;
@@ -27,6 +28,8 @@ public class UserServiceImpl implements UserService {
 
     private ResetTokenService resetTokenService;
 
+    private ConfirmTokenService confirmTokenService;
+
     private UserDao userDao;
 
     @Inject
@@ -35,8 +38,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Inject
-    public void setResetTokenService(ResetTokenService resetTokenService) {
-        this.resetTokenService = resetTokenService;
+    public void setConfirmTokenService(ConfirmTokenService confirmTokenService) {
+        this.confirmTokenService = confirmTokenService;
     }
 
     @PostConstruct
@@ -78,6 +81,17 @@ public class UserServiceImpl implements UserService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public UserRecord confirmPassword(String email, String token) throws UnknownUserException {
+        if (confirmTokenService.isValidConfirmToken(token)) {
+            UserRecord userRecord = userDao.getUserByEmail(email);
+            userRecord.setConfirmed(true);
+            userRecord.store();
+            return userRecord;
+        }
+        return null;
     }
 
 }

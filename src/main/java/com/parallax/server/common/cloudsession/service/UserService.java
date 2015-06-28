@@ -19,4 +19,6 @@ public interface UserService {
 
     UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) throws UnknownUserIdException;
 
+    UserRecord confirmPassword(String email, String token) throws UnknownUserException;
+
 }
