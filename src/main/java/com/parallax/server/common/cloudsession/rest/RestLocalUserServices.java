@@ -12,6 +12,11 @@ import com.cuubez.visualizer.annotation.Name;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.db.utils.JsonResult;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.ws.rs.FormParam;
@@ -33,6 +38,8 @@ public class RestLocalUserServices {
 
     private ResetTokenService resetTokenService;
 
+    private ConfirmTokenService confirmTokenService;
+
     private UserService userService;
 
     @Inject
@@ -41,39 +48,79 @@ public class RestLocalUserServices {
     }
 
     @Inject
+    public void setConfirmTokenService(ConfirmTokenService confirmTokenService) {
+        this.confirmTokenService = confirmTokenService;
+    }
+
+    @Inject
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
     @GET
-    @Path("/reset/{id}")
+    @Path("/resetById/{id}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Reset")
     @Produces("text/json")
     public Response requestReset(@PathParam("id") Long idUser) {
-        ResettokenRecord resetToken = resetTokenService.createResetToken(idUser);
-        JsonObject json = new JsonObject();
-        if (resetToken != null) {
-            json.addProperty("success", true);
-            json.addProperty("token", resetToken.getToken());
-        } else {
-            json.addProperty("success", false);
+        try {
+            ResettokenRecord resetToken = resetTokenService.createResetToken(idUser);
+            JsonObject json = new JsonObject();
+            if (resetToken != null) {
+                json.addProperty("success", true);
+                json.addProperty("token", resetToken.getToken());
+            } else {
+                json.addProperty("success", false);
+            }
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserIdException uuie) {
+            return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
         }
-        return Response.ok(json.toString()).build();
     }
 
-    @POST
-    @Path("/reset/{id}")
+    @GET
+    @Path("/reset/{email}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Reset")
     @Produces("text/json")
-    public Response doReset(@PathParam("id") Long idUser, @FormParam("token") String token, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
-        boolean validResetToken = resetTokenService.isValidResetToken(token);
-        if (validResetToken) {
-
+    public Response requestReset(@PathParam("email") String email) {
+        try {
+            ResettokenRecord resetToken = resetTokenService.createResetToken(email);
+            JsonObject json = new JsonObject();
+            if (resetToken != null) {
+                json.addProperty("success", true);
+                json.addProperty("token", resetToken.getToken());
+            } else {
+                json.addProperty("success", false);
+            }
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserException uue) {
+            return Response.serverError().entity(JsonResult.getFailure(uue)).build();
         }
-        JsonObject json = new JsonObject();
-        json.addProperty("success", true);
-        return Response.ok(json.toString()).build();
     }
+
+    @POST
+    @Path("/reset/{email}")
+    @Detail("Requests to send a request email to the specified user with a password reset token")
+    @Name("Reset")
+    @Produces("text/json")
+    public Response doReset(@PathParam("email") String email, @FormParam("token") String token, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
+        try {
+            boolean validResetToken = resetTokenService.isValidResetToken(token);
+            JsonObject json = new JsonObject();
+            if (validResetToken) {
+                UserRecord userRecord = userService.resetPassword(email, token, password, passwordConfirm);
+                if (userRecord != null) {
+                    json.addProperty("success", true);
+                } else {
+                    json.addProperty("success", false);
+                }
+            }
+            json.addProperty("success", true);
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserException uue) {
+            return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        }
+    }
+
 }

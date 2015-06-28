@@ -6,6 +6,8 @@
 package com.parallax.server.common.cloudsession.service;
 
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
 /**
  *
@@ -17,6 +19,7 @@ public interface ResetTokenService {
 
     boolean isValidResetToken(String token);
 
-    ResettokenRecord createResetToken(Long idUser);
+    ResettokenRecord createResetToken(Long idUser) throws UnknownUserIdException;
 
+    ResettokenRecord createResetToken(String email) throws UnknownUserException;
 }

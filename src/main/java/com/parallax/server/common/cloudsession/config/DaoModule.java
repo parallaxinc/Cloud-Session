@@ -6,8 +6,10 @@
 package com.parallax.server.common.cloudsession.config;
 
 import com.google.inject.AbstractModule;
+import com.parallax.server.common.cloudsession.db.dao.ConfirmTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.ResetTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
+import com.parallax.server.common.cloudsession.db.dao.impl.ConfirmTokenDaoImpl;
 import com.parallax.server.common.cloudsession.db.dao.impl.ResetTokenDaoImpl;
 import com.parallax.server.common.cloudsession.db.dao.impl.UserDaoImpl;
 
@@ -20,6 +22,7 @@ public class DaoModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(ResetTokenDao.class).to(ResetTokenDaoImpl.class);
+        bind(ConfirmTokenDao.class).to(ConfirmTokenDaoImpl.class);
         bind(UserDao.class).to(UserDaoImpl.class);
     }
 

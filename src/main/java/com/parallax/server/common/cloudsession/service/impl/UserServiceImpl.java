@@ -8,6 +8,8 @@ package com.parallax.server.common.cloudsession.service.impl;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.annotation.PostConstruct;
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord resetPassword(String email, String token, String password, String repeatPassword) {
+    public UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws UnknownUserException {
         if (resetTokenService.isValidResetToken(token)) {
             UserRecord userRecord = userDao.getUserByEmail(email);
             if (changePassword(userRecord, password, repeatPassword)) {
@@ -54,10 +56,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) {
+    public UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) throws UnknownUserIdException {
         UserRecord userRecord = userDao.getUser(id);
         Sha256Hash oldPasswordHash = new Sha256Hash(oldPassword, userRecord.getSalt(), 1000);
-        if (userRecord.equals(oldPasswordHash.toHex())) {
+        if (userRecord.getPassword().equals(oldPasswordHash.toHex())) {
             if (changePassword(userRecord, password, repeatPassword)) {
                 return userRecord;
             }

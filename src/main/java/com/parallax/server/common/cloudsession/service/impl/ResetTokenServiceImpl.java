@@ -8,7 +8,11 @@ package com.parallax.server.common.cloudsession.service.impl;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.parallax.server.common.cloudsession.db.dao.ResetTokenDao;
+import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import java.util.Date;
 
@@ -21,9 +25,16 @@ public class ResetTokenServiceImpl implements ResetTokenService {
 
     private ResetTokenDao resetTokenDao;
 
+    private UserDao userDao;
+
     @Inject
     public void setResetTokenDao(ResetTokenDao resetTokenDao) {
         this.resetTokenDao = resetTokenDao;
+    }
+
+    @Inject
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @Override
@@ -43,9 +54,23 @@ public class ResetTokenServiceImpl implements ResetTokenService {
         return true;
     }
 
+    /**
+     *
+     * @param idUser
+     * @return
+     * @throws UnknownUserIdException
+     */
     @Override
-    public ResettokenRecord createResetToken(Long idUser) {
+    public ResettokenRecord createResetToken(Long idUser) throws UnknownUserIdException {
+        // confirm user exists
+        userDao.getUser(idUser);
         return resetTokenDao.createResetToken(idUser);
+    }
+
+    @Override
+    public ResettokenRecord createResetToken(String email) throws UnknownUserException {
+        UserRecord user = userDao.getUserByEmail(email);
+        return resetTokenDao.createResetToken(user.getId());
     }
 
 }
