@@ -6,6 +6,8 @@
 package com.parallax.server.common.cloudsession.service;
 
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
+import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
@@ -15,10 +17,12 @@ import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException
  */
 public interface UserService {
 
-    UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws UnknownUserException;
+    UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserException;
 
-    UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) throws UnknownUserIdException;
+    UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserIdException;
 
-    UserRecord confirmPassword(String email, String token) throws UnknownUserException;
+    UserRecord confirmEmail(String email, String token) throws UnknownUserException;
+
+    UserRecord register(String server, String email, String password, String passwordConfirm) throws PasswordVerifyException, NonUniqueEmailException;
 
 }

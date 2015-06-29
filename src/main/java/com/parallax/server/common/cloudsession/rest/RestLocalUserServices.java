@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
+import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
@@ -120,20 +121,22 @@ public class RestLocalUserServices {
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        } catch (PasswordVerifyException pve) {
+            return Response.serverError().entity(JsonResult.getFailure(pve)).build();
         }
     }
 
     @POST
-    @Path("/confirm/{email}")
-    @Detail("Requests to send a request email to the specified user with a password reset token")
+    @Path("/confirm")
+    @Detail("Confirm the users emailadress using the token")
     @Name("Reset")
     @Produces("text/json")
-    public Response doConfirm(@PathParam("email") String email, @FormParam("token") String token) {
+    public Response doConfirm(@FormParam("email") String email, @FormParam("token") String token) {
         try {
-            boolean validResetToken = resetTokenService.isValidResetToken(token);
+            boolean validConfirmToken = confirmTokenService.isValidConfirmToken(token);
             JsonObject json = new JsonObject();
-            if (validResetToken) {
-                UserRecord userRecord = userService.confirmPassword(email, token);
+            if (validConfirmToken) {
+                UserRecord userRecord = userService.confirmEmail(email, token);
                 if (userRecord != null) {
                     json.addProperty("success", true);
                 } else {

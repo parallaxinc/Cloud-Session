@@ -25,4 +25,6 @@ public interface ConfirmTokenDao {
 
     int cleanExpiredTokens();
 
+    ConfirmtokenRecord getConfirmTokenForUser(Long idUser);
+
 }

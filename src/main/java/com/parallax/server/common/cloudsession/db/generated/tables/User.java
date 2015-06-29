@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-	private static final long serialVersionUID = -1441006270;
+	private static final long serialVersionUID = -75845175;
 
 	/**
 	 * The reference instance of <code>cloudsession.user</code>
@@ -62,7 +62,7 @@ public class User extends TableImpl<UserRecord> {
 	/**
 	 * The column <code>cloudsession.user.password</code>.
 	 */
-	public final TableField<UserRecord, String> PASSWORD = createField("password", org.jooq.impl.SQLDataType.VARCHAR.length(100).nullable(false), this, "");
+	public final TableField<UserRecord, String> PASSWORD = createField("password", org.jooq.impl.SQLDataType.VARCHAR.length(100), this, "");
 
 	/**
 	 * The column <code>cloudsession.user.salt</code>.
@@ -73,6 +73,11 @@ public class User extends TableImpl<UserRecord> {
 	 * The column <code>cloudsession.user.authsource</code>.
 	 */
 	public final TableField<UserRecord, String> AUTHSOURCE = createField("authsource", org.jooq.impl.SQLDataType.VARCHAR.length(255), this, "");
+
+	/**
+	 * The column <code>cloudsession.user.language</code>.
+	 */
+	public final TableField<UserRecord, String> LANGUAGE = createField("language", org.jooq.impl.SQLDataType.VARCHAR.length(45).defaulted(true), this, "");
 
 	/**
 	 * The column <code>cloudsession.user.blocked</code>.
@@ -132,7 +137,7 @@ public class User extends TableImpl<UserRecord> {
 	 */
 	@Override
 	public List<UniqueKey<UserRecord>> getKeys() {
-		return Arrays.<UniqueKey<UserRecord>>asList(Keys.KEY_USER_PRIMARY);
+		return Arrays.<UniqueKey<UserRecord>>asList(Keys.KEY_USER_PRIMARY, Keys.KEY_USER_EMAIL_UNIQUE);
 	}
 
 	/**

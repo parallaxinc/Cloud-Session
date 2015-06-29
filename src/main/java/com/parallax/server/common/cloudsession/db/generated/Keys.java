@@ -50,6 +50,7 @@ public class Keys {
 	public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_PRIMARY = UniqueKeys0.KEY_RESETTOKEN_PRIMARY;
 	public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_ID_USER_UNIQUE = UniqueKeys0.KEY_RESETTOKEN_ID_USER_UNIQUE;
 	public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = UniqueKeys0.KEY_USER_PRIMARY;
+	public static final UniqueKey<UserRecord> KEY_USER_EMAIL_UNIQUE = UniqueKeys0.KEY_USER_EMAIL_UNIQUE;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
@@ -74,6 +75,7 @@ public class Keys {
 		public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_PRIMARY = createUniqueKey(Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID);
 		public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_ID_USER_UNIQUE = createUniqueKey(Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID_USER);
 		public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = createUniqueKey(User.USER, User.USER.ID);
+		public static final UniqueKey<UserRecord> KEY_USER_EMAIL_UNIQUE = createUniqueKey(User.USER, User.USER.EMAIL);
 	}
 
 	private static class ForeignKeys0 extends AbstractKeys {

@@ -23,5 +23,5 @@ public interface ConfirmTokenService {
 
     boolean isValidConfirmToken(String token);
 
-    ConfirmtokenRecord createConfirmToken(Long idUser);
+    ConfirmtokenRecord createConfirmToken(String server, Long idUser);
 }

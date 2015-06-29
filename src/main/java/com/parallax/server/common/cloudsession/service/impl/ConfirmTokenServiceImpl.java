@@ -10,9 +10,11 @@ import com.google.inject.Singleton;
 import com.parallax.server.common.cloudsession.db.dao.ConfirmTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
+import com.parallax.server.common.cloudsession.service.MailService;
 import java.util.Date;
 
 /**
@@ -26,24 +28,38 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
 
     private UserDao userDao;
 
+    private MailService mailService;
+
     @Inject
     public void setConfirmTokenDao(ConfirmTokenDao confirmTokenDao) {
         this.confirmTokenDao = confirmTokenDao;
     }
 
+    @Inject
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    @Inject
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
+    }
+
     @Override
     public ConfirmtokenRecord getConfirmToken(String token) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return confirmTokenDao.getConfirmToken(token);
     }
 
     @Override
     public ConfirmtokenRecord getConfirmTokenForUser(String email) throws UnknownUserException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        UserRecord userRecord = userDao.getUserByEmail(email);
+        return confirmTokenDao.getConfirmTokenForUser(userRecord.getId());
     }
 
     @Override
     public ConfirmtokenRecord getConfirmTokenForUser(Long idUser) throws UnknownUserIdException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        userDao.getUser(idUser);
+        return confirmTokenDao.getConfirmTokenForUser(idUser);
     }
 
     @Override
@@ -59,14 +75,22 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     }
 
     @Override
-    public ConfirmtokenRecord createConfirmToken(Long idUser) {
+    public ConfirmtokenRecord createConfirmToken(String server, Long idUser) {
         try {
-            // confirm user exists
-            userDao.getUser(idUser);
+            UserRecord userRecord = userDao.getUser(idUser);
+            confirmTokenDao.deleteConfirmTokenForUser(idUser);
+
+            ConfirmtokenRecord confirmtokenRecord = confirmTokenDao.createConfirmToken(idUser);
+            sendConfirmToken(server, userRecord, confirmtokenRecord.getToken());
+            return confirmtokenRecord;
         } catch (UnknownUserIdException ex) {
-            ex.printStackTrace();;
+            return null;
         }
-        return confirmTokenDao.createConfirmToken(idUser);
+    }
+
+    private void sendConfirmToken(String server, UserRecord userRecord, String token) {
+        System.out.println(server + ": " + userRecord.getEmail() + " -> " + token);
+        mailService.sendConfirmTokenEmail(server, userRecord, token);
     }
 
 }

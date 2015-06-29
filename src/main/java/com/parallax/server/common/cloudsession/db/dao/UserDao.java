@@ -6,6 +6,7 @@
 package com.parallax.server.common.cloudsession.db.dao;
 
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
@@ -18,5 +19,7 @@ public interface UserDao {
     UserRecord getUser(Long id) throws UnknownUserIdException;
 
     UserRecord getUserByEmail(String email) throws UnknownUserException;
+
+    UserRecord createUser(String email, String password, String salt) throws NonUniqueEmailException;
 
 }

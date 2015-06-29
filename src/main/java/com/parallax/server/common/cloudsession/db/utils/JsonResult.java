@@ -6,6 +6,8 @@
 package com.parallax.server.common.cloudsession.db.utils;
 
 import com.google.gson.JsonObject;
+import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
+import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
@@ -43,6 +45,21 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", uuie.getMessage());
         result.addProperty("data", uuie.getIdUser());
+        return result.toString();
+    }
+
+    public static String getFailure(NonUniqueEmailException nuie) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.FALSE);
+        result.addProperty("message", nuie.getMessage());
+        result.addProperty("data", nuie.getEmail());
+        return result.toString();
+    }
+
+    public static String getFailure(PasswordVerifyException pve) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.FALSE);
+        result.addProperty("message", pve.getMessage());
         return result.toString();
     }
 

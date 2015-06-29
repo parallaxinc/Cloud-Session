@@ -80,4 +80,9 @@ public class ConfirmTokenDaoImpl implements ConfirmTokenDao {
         return create.deleteFrom(Tables.CONFIRMTOKEN).where(Tables.CONFIRMTOKEN.VALIDITY.le(new Timestamp(new Date().getTime()))).execute();
     }
 
+    @Override
+    public ConfirmtokenRecord getConfirmTokenForUser(Long idUser) {
+        return create.selectFrom(Tables.CONFIRMTOKEN).where(Tables.CONFIRMTOKEN.ID_USER.equal(idUser)).fetchOne();
+    }
+
 }
