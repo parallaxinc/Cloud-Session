@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response;
 @Path("/user")
 @Group(name = "/user", title = "User services")
 @HttpCode("500>Internal Server Error,200>Success Response")
-public class RestUserServices {
+public class RestUserService {
 
     private UserService userService;
 
@@ -41,8 +41,8 @@ public class RestUserServices {
 
     @PUT
     @Path("/{server}")
-    @Detail("Requests to send a request email to the specified user with a password reset token")
-    @Name("Reset")
+    @Detail("Register new local user")
+    @Name("Register")
     @Produces("text/json")
     public Response register(@PathParam("server") String server, @FormParam("email") String email, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
         try {

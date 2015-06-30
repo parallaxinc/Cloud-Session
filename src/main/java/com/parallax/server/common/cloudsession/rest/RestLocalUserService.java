@@ -11,6 +11,7 @@ import com.cuubez.visualizer.annotation.HttpCode;
 import com.cuubez.visualizer.annotation.Name;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
@@ -35,7 +36,7 @@ import javax.ws.rs.core.Response;
 @Path("/local")
 @Group(name = "/local", title = "Local user services using tokens")
 @HttpCode("500>Internal Server Error,200>Success Response")
-public class RestLocalUserServices {
+public class RestLocalUserService {
 
     private ResetTokenService resetTokenService;
 
@@ -61,7 +62,7 @@ public class RestLocalUserServices {
     @GET
     @Path("/resetById/{id}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
-    @Name("Reset")
+    @Name("Request reset")
     @Produces("text/json")
     public Response requestReset(@PathParam("id") Long idUser) {
         try {
@@ -82,7 +83,7 @@ public class RestLocalUserServices {
     @GET
     @Path("/reset/{email}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
-    @Name("Reset")
+    @Name("Request reset")
     @Produces("text/json")
     public Response requestReset(@PathParam("email") String email) {
         try {
@@ -103,7 +104,7 @@ public class RestLocalUserServices {
     @POST
     @Path("/reset/{email}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
-    @Name("Reset")
+    @Name("Do password reset")
     @Produces("text/json")
     public Response doReset(@PathParam("email") String email, @FormParam("token") String token, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
         try {
@@ -117,7 +118,6 @@ public class RestLocalUserServices {
                     json.addProperty("success", false);
                 }
             }
-            json.addProperty("success", true);
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
@@ -129,7 +129,7 @@ public class RestLocalUserServices {
     @POST
     @Path("/confirm")
     @Detail("Confirm the users emailadress using the token")
-    @Name("Reset")
+    @Name("Do email confirm")
     @Produces("text/json")
     public Response doConfirm(@FormParam("email") String email, @FormParam("token") String token) {
         try {
@@ -143,7 +143,29 @@ public class RestLocalUserServices {
                     json.addProperty("success", false);
                 }
             }
-            json.addProperty("success", true);
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserException uue) {
+            return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        }
+    }
+
+    @GET
+    @Path("/confirm/{server}/{email}")
+    @Detail("Confirm the users emailadress using the token")
+    @Name("Request new confirm token")
+    @Produces("text/json")
+    public Response requestConfirm(@PathParam("server") String server, @PathParam("email") String email) {
+        try {
+            UserRecord userRecord = userService.getLocalUser(email);
+            ConfirmtokenRecord confirmtoken = confirmTokenService.createConfirmToken(server, userRecord.getId());
+            JsonObject json = new JsonObject();
+            if (confirmtoken != null) {
+                json.addProperty("success", true);
+                json.addProperty("token", confirmtoken.getToken());
+            } else {
+                json.addProperty("success", false);
+            }
+
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();

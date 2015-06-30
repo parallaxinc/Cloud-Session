@@ -11,7 +11,6 @@ import com.parallax.server.common.cloudsession.db.dao.ConfirmTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
-import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
 import com.parallax.server.common.cloudsession.service.MailService;
@@ -48,18 +47,6 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     @Override
     public ConfirmtokenRecord getConfirmToken(String token) {
         return confirmTokenDao.getConfirmToken(token);
-    }
-
-    @Override
-    public ConfirmtokenRecord getConfirmTokenForUser(String email) throws UnknownUserException {
-        UserRecord userRecord = userDao.getUserByEmail(email);
-        return confirmTokenDao.getConfirmTokenForUser(userRecord.getId());
-    }
-
-    @Override
-    public ConfirmtokenRecord getConfirmTokenForUser(Long idUser) throws UnknownUserIdException {
-        userDao.getUser(idUser);
-        return confirmTokenDao.getConfirmTokenForUser(idUser);
     }
 
     @Override

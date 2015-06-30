@@ -25,4 +25,8 @@ public interface UserService {
 
     UserRecord register(String server, String email, String password, String passwordConfirm) throws PasswordVerifyException, NonUniqueEmailException;
 
+    UserRecord authenticateLocal(String email, String password) throws UnknownUserException;
+
+    UserRecord getLocalUser(String email) throws UnknownUserException;
+
 }

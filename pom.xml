@@ -103,7 +103,7 @@
                                 </forcedType>
                                 <forcedType>
                                     <name>BOOLEAN</name>
-                                    <expression>.*\.private|.*\.shared|.*\.blocked|.*\.confirmed|.*\.deleted</expression>
+                                    <expression>.*\.private|.*\.shared|.*\.blocked|.*\.confirmed</expression>
                                 </forcedType>
                                 <forcedType>
                                     <name>GregorianCalendar</name>

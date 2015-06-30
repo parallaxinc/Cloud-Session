@@ -6,8 +6,6 @@
 package com.parallax.server.common.cloudsession.service;
 
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
-import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
-import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
 /**
  *
@@ -16,10 +14,6 @@ import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException
 public interface ConfirmTokenService {
 
     ConfirmtokenRecord getConfirmToken(String token);
-
-    ConfirmtokenRecord getConfirmTokenForUser(String email) throws UnknownUserException;
-
-    ConfirmtokenRecord getConfirmTokenForUser(Long idUser) throws UnknownUserIdException;
 
     boolean isValidConfirmToken(String token);
 

@@ -18,8 +18,8 @@ public interface UserDao {
 
     UserRecord getUser(Long id) throws UnknownUserIdException;
 
-    UserRecord getUserByEmail(String email) throws UnknownUserException;
+    UserRecord getLocalUserByEmail(String email) throws UnknownUserException;
 
-    UserRecord createUser(String email, String password, String salt) throws NonUniqueEmailException;
+    UserRecord createLocalUser(String email, String password, String salt) throws NonUniqueEmailException;
 
 }

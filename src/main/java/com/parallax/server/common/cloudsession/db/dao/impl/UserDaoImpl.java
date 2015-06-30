@@ -11,6 +11,7 @@ import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.Tables;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 
@@ -20,6 +21,8 @@ import org.jooq.exception.DataAccessException;
  */
 @Singleton
 public class UserDaoImpl implements UserDao {
+
+    private static final String LOCAL_USER = "local";
 
     private DSLContext create;
 
@@ -34,14 +37,19 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public UserRecord getUserByEmail(String email) {
-        return create.selectFrom(Tables.USER).where(Tables.USER.EMAIL.equal(email)).fetchOne();
+    public UserRecord getLocalUserByEmail(String email) throws UnknownUserException {
+        UserRecord userRecord = create.selectFrom(Tables.USER).where(Tables.USER.EMAIL.equal(email)).and(Tables.USER.AUTHSOURCE.equal(LOCAL_USER)).fetchOne();
+        if (userRecord == null) {
+            throw new UnknownUserException(email);
+        }
+        return userRecord;
     }
 
     @Override
-    public UserRecord createUser(String email, String password, String salt) throws NonUniqueEmailException {
+    public UserRecord createLocalUser(String email, String password, String salt) throws NonUniqueEmailException {
         try {
-            return create.insertInto(Tables.USER).columns(Tables.USER.EMAIL, Tables.USER.PASSWORD, Tables.USER.SALT).values(email, password, salt).returning().fetchOne();
+            return create.insertInto(Tables.USER).columns(Tables.USER.EMAIL, Tables.USER.PASSWORD, Tables.USER.SALT, Tables.USER.AUTHSOURCE)
+                    .values(email, password, salt, LOCAL_USER).returning().fetchOne();
         } catch (DataAccessException dae) {
             throw new NonUniqueEmailException(email);
         }

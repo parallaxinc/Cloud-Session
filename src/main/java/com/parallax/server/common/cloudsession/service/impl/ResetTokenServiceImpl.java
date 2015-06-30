@@ -69,7 +69,7 @@ public class ResetTokenServiceImpl implements ResetTokenService {
 
     @Override
     public ResettokenRecord createResetToken(String email) throws UnknownUserException {
-        UserRecord user = userDao.getUserByEmail(email);
+        UserRecord user = userDao.getLocalUserByEmail(email);
         return resetTokenDao.createResetToken(user.getId());
     }
 

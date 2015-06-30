@@ -5,8 +5,9 @@
  */
 package com.parallax.server.common.cloudsession.config;
 
-import com.parallax.server.common.cloudsession.rest.RestLocalUserServices;
-import com.parallax.server.common.cloudsession.rest.RestUserServices;
+import com.parallax.server.common.cloudsession.rest.RestAuthenticationService;
+import com.parallax.server.common.cloudsession.rest.RestLocalUserService;
+import com.parallax.server.common.cloudsession.rest.RestUserService;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -21,8 +22,9 @@ public class RestModule extends JerseyServletModule {
 
     @Override
     protected void configureServlets() {
-        bind(RestLocalUserServices.class);
-        bind(RestUserServices.class);
+        bind(RestAuthenticationService.class);
+        bind(RestLocalUserService.class);
+        bind(RestUserService.class);
 
         /* bind jackson converters for JAXB/JSON serialization */
         bind(MessageBodyReader.class).to(JacksonJsonProvider.class);

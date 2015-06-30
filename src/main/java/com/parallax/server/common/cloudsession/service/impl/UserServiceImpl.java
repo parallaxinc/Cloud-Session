@@ -7,6 +7,7 @@ package com.parallax.server.common.cloudsession.service.impl;
 
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
@@ -25,7 +26,7 @@ import org.apache.shiro.crypto.hash.Sha256Hash;
  */
 public class UserServiceImpl implements UserService {
 
-    private RandomNumberGenerator rng;
+    private final RandomNumberGenerator rng;
 
     private ResetTokenService resetTokenService;
 
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserException {
         if (resetTokenService.isValidResetToken(token)) {
-            UserRecord userRecord = userDao.getUserByEmail(email);
+            UserRecord userRecord = userDao.getLocalUserByEmail(email);
             if (changePassword(userRecord, password, repeatPassword)) {
                 return userRecord;
             }
@@ -89,11 +90,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRecord confirmEmail(String email, String token) throws UnknownUserException {
-        if (confirmTokenService.isValidConfirmToken(token)) {
-            UserRecord userRecord = userDao.getUserByEmail(email);
-            userRecord.setConfirmed(true);
-            userRecord.store();
-            return userRecord;
+        UserRecord userRecord = userDao.getLocalUserByEmail(email);
+        ConfirmtokenRecord confirmtokenRecord = confirmTokenService.getConfirmToken(token);
+        if (confirmtokenRecord != null) {
+            if (confirmtokenRecord.getIdUser().equals(userRecord.getId())) {
+                userRecord.setConfirmed(true);
+                userRecord.store();
+                return userRecord;
+            }
         }
         return null;
     }
@@ -105,11 +109,26 @@ public class UserServiceImpl implements UserService {
         }
         String salt = rng.nextBytes().toHex();
         Sha256Hash passwordHash = new Sha256Hash(password, salt, 1000);
-        UserRecord userRecord = userDao.createUser(email, passwordHash.toHex(), salt);
+        UserRecord userRecord = userDao.createLocalUser(email, passwordHash.toHex(), salt);
 
         confirmTokenService.createConfirmToken(server, userRecord.getId());
 
         return userRecord;
+    }
+
+    @Override
+    public UserRecord authenticateLocal(String email, String password) throws UnknownUserException {
+        UserRecord userRecord = userDao.getLocalUserByEmail(email);
+        Sha256Hash passwordHash = new Sha256Hash(password, userRecord.getSalt(), 1000);
+        if (userRecord.getPassword().equals(passwordHash.toHex())) {
+            return userRecord;
+        }
+        return null;
+    }
+
+    @Override
+    public UserRecord getLocalUser(String email) throws UnknownUserException {
+        return userDao.getLocalUserByEmail(email);
     }
 
 }

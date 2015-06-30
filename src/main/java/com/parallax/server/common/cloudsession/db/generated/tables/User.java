@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-	private static final long serialVersionUID = -75845175;
+	private static final long serialVersionUID = -2025000082;
 
 	/**
 	 * The reference instance of <code>cloudsession.user</code>
@@ -88,11 +88,6 @@ public class User extends TableImpl<UserRecord> {
 	 * The column <code>cloudsession.user.confirmed</code>.
 	 */
 	public final TableField<UserRecord, Boolean> CONFIRMED = createField("confirmed", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
-
-	/**
-	 * The column <code>cloudsession.user.deleted</code>.
-	 */
-	public final TableField<UserRecord, Boolean> DELETED = createField("deleted", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>cloudsession.user</code> table reference
