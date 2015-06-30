@@ -63,4 +63,20 @@ public class JsonResult {
         return result.toString();
     }
 
+    public static String getValidationFailure(String requiredFields, boolean validEmailAddress) {
+        if (requiredFields == null && validEmailAddress) {
+            return null;
+        }
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.FALSE);
+        result.addProperty("message", "validation failed");
+        if (requiredFields != null) {
+            result.addProperty("required-fields", requiredFields);
+        }
+        if (!validEmailAddress) {
+            result.addProperty("email", "invalid");
+        }
+        return result.toString();
+    }
+
 }

@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.converter.UserConverter;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.db.utils.Validation;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.ws.rs.FormParam;
@@ -43,6 +44,14 @@ public class RestAuthenticationService {
     @Name("Authenticate local")
     @Produces("text/json")
     public Response authenticateLocalUser(@FormParam("email") String email, @FormParam("password") String password) {
+        Validation validation = new Validation();
+        validation.addRequiredField("email", email);
+        validation.addRequiredField("password", password);
+        validation.checkEmail("email", email);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
         try {
             UserRecord user = userService.authenticateLocal(email, password);
             JsonObject json = new JsonObject();

@@ -15,6 +15,7 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.Confi
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
+import com.parallax.server.common.cloudsession.db.utils.Validation;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
@@ -132,16 +133,21 @@ public class RestLocalUserService {
     @Name("Do email confirm")
     @Produces("text/json")
     public Response doConfirm(@FormParam("email") String email, @FormParam("token") String token) {
+        Validation validation = new Validation();
+        validation.addRequiredField("email", email);
+        validation.addRequiredField("token", token);
+        validation.checkEmail("email", email);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
         try {
-            boolean validConfirmToken = confirmTokenService.isValidConfirmToken(token);
             JsonObject json = new JsonObject();
-            if (validConfirmToken) {
-                UserRecord userRecord = userService.confirmEmail(email, token);
-                if (userRecord != null) {
-                    json.addProperty("success", true);
-                } else {
-                    json.addProperty("success", false);
-                }
+            UserRecord userRecord = userService.confirmEmail(email, token);
+            if (userRecord != null) {
+                json.addProperty("success", true);
+            } else {
+                json.addProperty("success", false);
             }
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
@@ -164,6 +170,7 @@ public class RestLocalUserService {
                 json.addProperty("token", confirmtoken.getToken());
             } else {
                 json.addProperty("success", false);
+                json.addProperty("message", "Account already verified");
             }
 
             return Response.ok(json.toString()).build();

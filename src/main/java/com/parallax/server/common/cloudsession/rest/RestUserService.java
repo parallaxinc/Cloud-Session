@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
+import com.parallax.server.common.cloudsession.db.utils.Validation;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.service.UserService;
@@ -45,6 +46,15 @@ public class RestUserService {
     @Name("Register")
     @Produces("text/json")
     public Response register(@PathParam("server") String server, @FormParam("email") String email, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
+        Validation validation = new Validation();
+        validation.addRequiredField("email", email);
+        validation.addRequiredField("password", password);
+        validation.addRequiredField("password-confirm", passwordConfirm);
+        validation.checkEmail("email", email);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
         try {
             UserRecord user = userService.register(server, email, password, passwordConfirm);
             JsonObject json = new JsonObject();

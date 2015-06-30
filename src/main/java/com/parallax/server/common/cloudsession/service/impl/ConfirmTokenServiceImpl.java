@@ -46,7 +46,11 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
 
     @Override
     public ConfirmtokenRecord getConfirmToken(String token) {
-        return confirmTokenDao.getConfirmToken(token);
+        ConfirmtokenRecord confirmtoken = confirmTokenDao.getConfirmToken(token);
+        if (confirmtoken != null) {
+            confirmtoken.delete();
+        }
+        return confirmtoken;
     }
 
     @Override
@@ -65,6 +69,9 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     public ConfirmtokenRecord createConfirmToken(String server, Long idUser) {
         try {
             UserRecord userRecord = userDao.getUser(idUser);
+            if (userRecord.getConfirmed()) {
+                return null;
+            }
             confirmTokenDao.deleteConfirmTokenForUser(idUser);
 
             ConfirmtokenRecord confirmtokenRecord = confirmTokenDao.createConfirmToken(idUser);
