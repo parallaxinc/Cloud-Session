@@ -46,7 +46,11 @@ public class MailServiceImpl implements MailService {
     public void sendResetTokenEmail(String server, UserRecord user, String token) {
         String email = UrlEscapers.urlFragmentEscaper().escape(user.getEmail());
         String resetUrl = "http://" + server + ".parallax.com/reset/" + user.getLanguage() + "/" + email + "/" + token;
-        sendEmail(user.getEmail(), "Reset your password", resetUrl);
+        StringBuilder builder = new StringBuilder();
+        builder.append("Dear,\n\n").append("Please go to ").append(resetUrl).append(" to reset your password.");
+        builder.append("\n\nIf the url does not work please go to ").append("http://" + server + ".parallax.com/reset/").append(" and enter ").append(token);
+        builder.append("\n\n\nThe Parallax team");
+        sendEmail(user.getEmail(), "Reset your password", builder.toString());
     }
 
     @Override

@@ -19,7 +19,7 @@ public interface ResetTokenService {
 
     boolean isValidResetToken(String token);
 
-    ResettokenRecord createResetToken(Long idUser) throws UnknownUserIdException;
+    ResettokenRecord createResetToken(String server, Long idUser) throws UnknownUserIdException;
 
-    ResettokenRecord createResetToken(String email) throws UnknownUserException;
+    ResettokenRecord createResetToken(String server, String email) throws UnknownUserException;
 }

@@ -61,11 +61,11 @@ public class RestLocalUserService {
     }
 
     @GET
-    @Path("/resetById/{id}")
+    @Path("/resetById/{server}/{id}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Request reset")
     @Produces("text/json")
-    public Response requestReset(@PathParam("id") Long idUser) {
+    public Response requestReset(@PathParam("server") String server, @PathParam("id") Long idUser) {
         Validation validation = new Validation();
         validation.addRequiredField("id", idUser);
         if (!validation.isValid()) {
@@ -73,7 +73,7 @@ public class RestLocalUserService {
         }
 
         try {
-            ResettokenRecord resetToken = resetTokenService.createResetToken(idUser);
+            ResettokenRecord resetToken = resetTokenService.createResetToken(server, idUser);
             JsonObject json = new JsonObject();
             if (resetToken != null) {
                 json.addProperty("success", true);
@@ -88,11 +88,11 @@ public class RestLocalUserService {
     }
 
     @GET
-    @Path("/reset/{email}")
+    @Path("/reset/{server}/{email}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Request reset")
     @Produces("text/json")
-    public Response requestReset(@PathParam("email") String email) {
+    public Response requestReset(@PathParam("server") String server, @PathParam("email") String email) {
         Validation validation = new Validation();
         validation.addRequiredField("email", email);
         validation.checkEmail("email", email);
@@ -101,7 +101,7 @@ public class RestLocalUserService {
         }
 
         try {
-            ResettokenRecord resetToken = resetTokenService.createResetToken(email);
+            ResettokenRecord resetToken = resetTokenService.createResetToken(server, email);
             JsonObject json = new JsonObject();
             if (resetToken != null) {
                 json.addProperty("success", true);

@@ -13,6 +13,7 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.Reset
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.service.MailService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import java.util.Date;
 
@@ -23,9 +24,16 @@ import java.util.Date;
 @Singleton
 public class ResetTokenServiceImpl implements ResetTokenService {
 
+    private MailService mailService;
+
     private ResetTokenDao resetTokenDao;
 
     private UserDao userDao;
+
+    @Inject
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
+    }
 
     @Inject
     public void setResetTokenDao(ResetTokenDao resetTokenDao) {
@@ -54,23 +62,25 @@ public class ResetTokenServiceImpl implements ResetTokenService {
         return true;
     }
 
-    /**
-     *
-     * @param idUser
-     * @return
-     * @throws UnknownUserIdException
-     */
     @Override
-    public ResettokenRecord createResetToken(Long idUser) throws UnknownUserIdException {
-        // confirm user exists
-        userDao.getUser(idUser);
-        return resetTokenDao.createResetToken(idUser);
+    public ResettokenRecord createResetToken(String server, Long idUser) throws UnknownUserIdException {
+        UserRecord user = userDao.getUser(idUser);
+        ResettokenRecord resettokenRecord = resetTokenDao.createResetToken(idUser);
+        sendResetToken(server, user, resettokenRecord.getToken());
+        return resettokenRecord;
     }
 
     @Override
-    public ResettokenRecord createResetToken(String email) throws UnknownUserException {
+    public ResettokenRecord createResetToken(String server, String email) throws UnknownUserException {
         UserRecord user = userDao.getLocalUserByEmail(email);
-        return resetTokenDao.createResetToken(user.getId());
+        ResettokenRecord resettokenRecord = resetTokenDao.createResetToken(user.getId());
+        sendResetToken(server, user, resettokenRecord.getToken());
+        return resettokenRecord;
+    }
+
+    private void sendResetToken(String server, UserRecord userRecord, String token) {
+        System.out.println(server + ": " + userRecord.getEmail() + " -> " + token);
+        mailService.sendResetTokenEmail(server, userRecord, token);
     }
 
 }

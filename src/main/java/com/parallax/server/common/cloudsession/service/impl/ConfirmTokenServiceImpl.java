@@ -23,11 +23,16 @@ import java.util.Date;
 @Singleton
 public class ConfirmTokenServiceImpl implements ConfirmTokenService {
 
+    private MailService mailService;
+
     private ConfirmTokenDao confirmTokenDao;
 
     private UserDao userDao;
 
-    private MailService mailService;
+    @Inject
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
+    }
 
     @Inject
     public void setConfirmTokenDao(ConfirmTokenDao confirmTokenDao) {
@@ -37,11 +42,6 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     @Inject
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
-    }
-
-    @Inject
-    public void setMailService(MailService mailService) {
-        this.mailService = mailService;
     }
 
     @Override
