@@ -64,7 +64,7 @@ public class RestLocalUserService {
     @GET
     @Path("/resetById/{id}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
-    @Name("Request reset")
+    @Name("Request password reset")
     @Produces("text/json")
     public Response requestReset(@HeaderParam("server") String server, @PathParam("id") Long idUser) {
         Validation validation = new Validation();
@@ -92,7 +92,7 @@ public class RestLocalUserService {
     @GET
     @Path("/reset/{email}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
-    @Name("Request reset")
+    @Name("Request password reset")
     @Produces("text/json")
     public Response requestReset(@PathParam("server") String server, @PathParam("email") String email) {
         Validation validation = new Validation();
@@ -119,7 +119,7 @@ public class RestLocalUserService {
 
     @POST
     @Path("/reset/{email}")
-    @Detail("Requests to send a request email to the specified user with a password reset token")
+    @Detail("Reset the users password with use of a password reset token")
     @Name("Do password reset")
     @Produces("text/json")
     public Response doReset(@PathParam("email") String email, @FormParam("token") String token, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
@@ -182,7 +182,7 @@ public class RestLocalUserService {
 
     @GET
     @Path("/confirm/{email}")
-    @Detail("Confirm the users emailadress using the token")
+    @Detail("Request to email a new email confirmation token to the specified user")
     @Name("Request new confirm token")
     @Produces("text/json")
     public Response requestConfirm(@PathParam("server") String server, @PathParam("email") String email) {

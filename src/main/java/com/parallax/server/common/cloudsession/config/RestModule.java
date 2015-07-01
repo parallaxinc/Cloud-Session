@@ -6,6 +6,7 @@
 package com.parallax.server.common.cloudsession.config;
 
 import com.parallax.server.common.cloudsession.rest.RestAuthenticationService;
+import com.parallax.server.common.cloudsession.rest.RestBucketService;
 import com.parallax.server.common.cloudsession.rest.RestLocalUserService;
 import com.parallax.server.common.cloudsession.rest.RestUserService;
 import com.sun.jersey.guice.JerseyServletModule;
@@ -25,6 +26,7 @@ public class RestModule extends JerseyServletModule {
         bind(RestAuthenticationService.class);
         bind(RestLocalUserService.class);
         bind(RestUserService.class);
+        bind(RestBucketService.class);
 
         /* bind jackson converters for JAXB/JSON serialization */
         bind(MessageBodyReader.class).to(JacksonJsonProvider.class);
