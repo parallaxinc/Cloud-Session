@@ -77,7 +77,7 @@ public class RestLocalUserService {
             JsonObject json = new JsonObject();
             if (resetToken != null) {
                 json.addProperty("success", true);
-                json.addProperty("token", resetToken.getToken());
+                //     json.addProperty("token", resetToken.getToken());
             } else {
                 json.addProperty("success", false);
             }
@@ -105,7 +105,7 @@ public class RestLocalUserService {
             JsonObject json = new JsonObject();
             if (resetToken != null) {
                 json.addProperty("success", true);
-                json.addProperty("token", resetToken.getToken());
+                //      json.addProperty("token", resetToken.getToken());
             } else {
                 json.addProperty("success", false);
             }
@@ -198,7 +198,7 @@ public class RestLocalUserService {
             JsonObject json = new JsonObject();
             if (confirmtoken != null) {
                 json.addProperty("success", true);
-                json.addProperty("token", confirmtoken.getToken());
+                //           json.addProperty("token", confirmtoken.getToken());
             } else {
                 json.addProperty("success", false);
                 json.addProperty("message", "Account already verified");
