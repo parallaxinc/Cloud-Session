@@ -47,6 +47,7 @@ public class RestUserService {
     @Produces("text/json")
     public Response register(@PathParam("server") String server, @FormParam("email") String email, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
         Validation validation = new Validation();
+        validation.addRequiredField("server", server);
         validation.addRequiredField("email", email);
         validation.addRequiredField("password", password);
         validation.addRequiredField("password-confirm", passwordConfirm);

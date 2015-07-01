@@ -66,6 +66,12 @@ public class RestLocalUserService {
     @Name("Request reset")
     @Produces("text/json")
     public Response requestReset(@PathParam("id") Long idUser) {
+        Validation validation = new Validation();
+        validation.addRequiredField("id", idUser);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
         try {
             ResettokenRecord resetToken = resetTokenService.createResetToken(idUser);
             JsonObject json = new JsonObject();
@@ -87,6 +93,13 @@ public class RestLocalUserService {
     @Name("Request reset")
     @Produces("text/json")
     public Response requestReset(@PathParam("email") String email) {
+        Validation validation = new Validation();
+        validation.addRequiredField("email", email);
+        validation.checkEmail("email", email);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
         try {
             ResettokenRecord resetToken = resetTokenService.createResetToken(email);
             JsonObject json = new JsonObject();
@@ -108,6 +121,16 @@ public class RestLocalUserService {
     @Name("Do password reset")
     @Produces("text/json")
     public Response doReset(@PathParam("email") String email, @FormParam("token") String token, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
+        Validation validation = new Validation();
+        validation.addRequiredField("email", email);
+        validation.addRequiredField("token", token);
+        validation.addRequiredField("password", password);
+        validation.addRequiredField("password-confirm", passwordConfirm);
+        validation.checkEmail("email", email);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
         try {
             boolean validResetToken = resetTokenService.isValidResetToken(token);
             JsonObject json = new JsonObject();
@@ -161,6 +184,14 @@ public class RestLocalUserService {
     @Name("Request new confirm token")
     @Produces("text/json")
     public Response requestConfirm(@PathParam("server") String server, @PathParam("email") String email) {
+        Validation validation = new Validation();
+        validation.addRequiredField("server", server);
+        validation.addRequiredField("email", email);
+        validation.checkEmail("email", email);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
         try {
             UserRecord userRecord = userService.getLocalUser(email);
             ConfirmtokenRecord confirmtoken = confirmTokenService.createConfirmToken(server, userRecord.getId());
