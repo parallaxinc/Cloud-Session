@@ -24,6 +24,7 @@ import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -61,12 +62,13 @@ public class RestLocalUserService {
     }
 
     @GET
-    @Path("/resetById/{server}/{id}")
+    @Path("/resetById/{id}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Request reset")
     @Produces("text/json")
-    public Response requestReset(@PathParam("server") String server, @PathParam("id") Long idUser) {
+    public Response requestReset(@HeaderParam("server") String server, @PathParam("id") Long idUser) {
         Validation validation = new Validation();
+        validation.addRequiredField("server", server);
         validation.addRequiredField("id", idUser);
         if (!validation.isValid()) {
             return validation.getValidationResponse();
@@ -88,7 +90,7 @@ public class RestLocalUserService {
     }
 
     @GET
-    @Path("/reset/{server}/{email}")
+    @Path("/reset/{email}")
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Request reset")
     @Produces("text/json")
@@ -179,7 +181,7 @@ public class RestLocalUserService {
     }
 
     @GET
-    @Path("/confirm/{server}/{email}")
+    @Path("/confirm/{email}")
     @Detail("Confirm the users emailadress using the token")
     @Name("Request new confirm token")
     @Produces("text/json")
