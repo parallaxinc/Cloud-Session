@@ -82,7 +82,8 @@ public class RestBucketService {
 
         try {
             JsonObject json = new JsonObject();
-            if (bucketService.consumeTokens(id, type, count)) {
+            // Absolute value: negative values would always return true
+            if (bucketService.consumeTokens(id, type, Math.abs(count))) {
                 json.addProperty("success", true);
             } else {
                 json.addProperty("success", false);
