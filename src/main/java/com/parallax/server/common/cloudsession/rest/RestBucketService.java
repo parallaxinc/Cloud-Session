@@ -11,8 +11,11 @@ import com.cuubez.visualizer.annotation.HttpCode;
 import com.cuubez.visualizer.annotation.Name;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
-import com.parallax.server.common.cloudsession.service.UserService;
+import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.service.BucketService;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,11 +31,11 @@ import javax.ws.rs.core.Response;
 @HttpCode("500>Internal Server Error,200>Success Response")
 public class RestBucketService {
 
-    private UserService userService;
+    private BucketService bucketService;
 
     @Inject
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setBucketService(BucketService bucketService) {
+        this.bucketService = bucketService;
     }
 
     @GET
@@ -48,17 +51,19 @@ public class RestBucketService {
             return validation.getValidationResponse();
         }
 
-//        try {
-        JsonObject json = new JsonObject();
-//            if (user != null) {
-//                json.addProperty("success", true);
-//            } else {
-//                json.addProperty("success", false);
-//            }
-        return Response.ok(json.toString()).build();
-//        } catch (UnknownUserIdException uuie) {
-//            return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
-//        }
+        try {
+            JsonObject json = new JsonObject();
+            if (bucketService.consumeTokens(id, type, 1)) {
+                json.addProperty("success", true);
+            } else {
+                json.addProperty("success", false);
+            }
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserIdException uuie) {
+            return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
+        } catch (UnknownBucketTypeException ubte) {
+            return Response.serverError().entity(JsonResult.getFailure(ubte)).build();
+        }
     }
 
     @GET
@@ -75,16 +80,18 @@ public class RestBucketService {
             return validation.getValidationResponse();
         }
 
-//        try {
-        JsonObject json = new JsonObject();
-//            if (user != null) {
-//                json.addProperty("success", true);
-//            } else {
-//                json.addProperty("success", false);
-//            }
-        return Response.ok(json.toString()).build();
-//        } catch (UnknownUserIdException uuie) {
-//            return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
-//        }
+        try {
+            JsonObject json = new JsonObject();
+            if (bucketService.consumeTokens(id, type, count)) {
+                json.addProperty("success", true);
+            } else {
+                json.addProperty("success", false);
+            }
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserIdException uuie) {
+            return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
+        } catch (UnknownBucketTypeException ubte) {
+            return Response.serverError().entity(JsonResult.getFailure(ubte)).build();
+        }
     }
 }

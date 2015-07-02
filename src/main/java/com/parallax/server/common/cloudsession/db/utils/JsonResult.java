@@ -8,6 +8,7 @@ package com.parallax.server.common.cloudsession.db.utils;
 import com.google.gson.JsonObject;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
@@ -60,6 +61,14 @@ public class JsonResult {
         JsonObject result = new JsonObject();
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", pve.getMessage());
+        return result.toString();
+    }
+
+    public static String getFailure(UnknownBucketTypeException ubte) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.FALSE);
+        result.addProperty("message", ubte.getMessage());
+        result.addProperty("data", ubte.getType());
         return result.toString();
     }
 

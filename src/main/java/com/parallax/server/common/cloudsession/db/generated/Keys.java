@@ -49,6 +49,7 @@ public class Keys {
 	// -------------------------------------------------------------------------
 
 	public static final UniqueKey<BucketRecord> KEY_BUCKET_PRIMARY = UniqueKeys0.KEY_BUCKET_PRIMARY;
+	public static final UniqueKey<BucketRecord> KEY_BUCKET_USER_TYPE_UNIQUE = UniqueKeys0.KEY_BUCKET_USER_TYPE_UNIQUE;
 	public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_PRIMARY = UniqueKeys0.KEY_CONFIRMTOKEN_PRIMARY;
 	public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_ID_USER_UNIQUE = UniqueKeys0.KEY_CONFIRMTOKEN_ID_USER_UNIQUE;
 	public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_PRIMARY = UniqueKeys0.KEY_RESETTOKEN_PRIMARY;
@@ -77,6 +78,7 @@ public class Keys {
 
 	private static class UniqueKeys0 extends AbstractKeys {
 		public static final UniqueKey<BucketRecord> KEY_BUCKET_PRIMARY = createUniqueKey(Bucket.BUCKET, Bucket.BUCKET.ID);
+		public static final UniqueKey<BucketRecord> KEY_BUCKET_USER_TYPE_UNIQUE = createUniqueKey(Bucket.BUCKET, Bucket.BUCKET.ID_USER, Bucket.BUCKET.TYPE);
 		public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_PRIMARY = createUniqueKey(Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID);
 		public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_ID_USER_UNIQUE = createUniqueKey(Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID_USER);
 		public static final UniqueKey<ResettokenRecord> KEY_RESETTOKEN_PRIMARY = createUniqueKey(Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID);

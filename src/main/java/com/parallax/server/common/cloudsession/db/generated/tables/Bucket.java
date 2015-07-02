@@ -36,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Bucket extends TableImpl<BucketRecord> {
 
-	private static final long serialVersionUID = -859590191;
+	private static final long serialVersionUID = 1088684251;
 
 	/**
 	 * The reference instance of <code>cloudsession.bucket</code>
@@ -69,7 +69,7 @@ public class Bucket extends TableImpl<BucketRecord> {
 	/**
 	 * The column <code>cloudsession.bucket.content</code>.
 	 */
-	public final TableField<BucketRecord, Integer> CONTENT = createField("content", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+	public final TableField<BucketRecord, Integer> CONTENT = createField("content", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaulted(true), this, "");
 
 	/**
 	 * The column <code>cloudsession.bucket.timestamp</code>.
@@ -119,7 +119,7 @@ public class Bucket extends TableImpl<BucketRecord> {
 	 */
 	@Override
 	public List<UniqueKey<BucketRecord>> getKeys() {
-		return Arrays.<UniqueKey<BucketRecord>>asList(Keys.KEY_BUCKET_PRIMARY);
+		return Arrays.<UniqueKey<BucketRecord>>asList(Keys.KEY_BUCKET_PRIMARY, Keys.KEY_BUCKET_USER_TYPE_UNIQUE);
 	}
 
 	/**
