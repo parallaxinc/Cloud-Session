@@ -36,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Confirmtoken extends TableImpl<ConfirmtokenRecord> {
 
-	private static final long serialVersionUID = -1033243900;
+	private static final long serialVersionUID = 1979175509;
 
 	/**
 	 * The reference instance of <code>cloudsession.confirmtoken</code>
@@ -122,7 +122,7 @@ public class Confirmtoken extends TableImpl<ConfirmtokenRecord> {
 	 */
 	@Override
 	public List<ForeignKey<ConfirmtokenRecord, ?>> getReferences() {
-		return Arrays.<ForeignKey<ConfirmtokenRecord, ?>>asList(Keys.CONFIRMTOKEN_USER);
+		return Arrays.<ForeignKey<ConfirmtokenRecord, ?>>asList(Keys.RESETTOKEN_USER);
 	}
 
 	/**

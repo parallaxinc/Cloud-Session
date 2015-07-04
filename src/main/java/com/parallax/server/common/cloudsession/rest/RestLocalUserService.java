@@ -16,7 +16,7 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.Reset
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
@@ -87,7 +87,7 @@ public class RestLocalUserService {
             return Response.ok(json.toString()).build();
         } catch (UnknownUserIdException uuie) {
             return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
-        } catch (InsufficientBucketTokensExceptions ibte) {
+        } catch (InsufficientBucketTokensException ibte) {
             return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }
@@ -117,7 +117,7 @@ public class RestLocalUserService {
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
-        } catch (InsufficientBucketTokensExceptions ibte) {
+        } catch (InsufficientBucketTokensException ibte) {
             return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }
@@ -214,7 +214,7 @@ public class RestLocalUserService {
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
-        } catch (InsufficientBucketTokensExceptions ibte) {
+        } catch (InsufficientBucketTokensException ibte) {
             return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }

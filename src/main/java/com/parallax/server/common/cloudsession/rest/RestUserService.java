@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.service.UserService;
@@ -71,7 +71,7 @@ public class RestUserService {
             return Response.serverError().entity(JsonResult.getFailure(nuie)).build();
         } catch (PasswordVerifyException pve) {
             return Response.serverError().entity(JsonResult.getFailure(pve)).build();
-        } catch (InsufficientBucketTokensExceptions ibte) {
+        } catch (InsufficientBucketTokensException ibte) {
             return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }

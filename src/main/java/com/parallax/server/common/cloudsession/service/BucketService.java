@@ -5,7 +5,7 @@
  */
 package com.parallax.server.common.cloudsession.service;
 
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
@@ -15,5 +15,9 @@ import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException
  */
 public interface BucketService {
 
-    void consumeTokens(Long idUser, String type, int tokenCount) throws UnknownBucketTypeException, UnknownUserIdException, InsufficientBucketTokensExceptions;
+    void consumeTokens(Long idUser, String type, int tokenCount) throws UnknownBucketTypeException, UnknownUserIdException, InsufficientBucketTokensException;
+
+    void consumeTokensInternal(Long idUser, String type, int tokenCount) throws InsufficientBucketTokensException;
+
+    void hasSufficientTokensInternal(Long idUser, String type, int tokenCount) throws InsufficientBucketTokensException;
 }

@@ -13,7 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.BucketService;
@@ -71,7 +71,7 @@ public class RestBucketService {
             return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
         } catch (UnknownBucketTypeException ubte) {
             return Response.serverError().entity(JsonResult.getFailure(ubte)).build();
-        } catch (InsufficientBucketTokensExceptions ibte) {
+        } catch (InsufficientBucketTokensException ibte) {
             return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }

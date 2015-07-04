@@ -13,7 +13,9 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.converter.UserConverter;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.ws.rs.FormParam;
@@ -80,6 +82,8 @@ public class RestAuthenticationService {
             json.addProperty("success", false);
             json.addProperty("message", "Unknown user");
             return Response.status(Response.Status.UNAUTHORIZED).entity(json.toString()).build();
+        } catch (InsufficientBucketTokensException ibte) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ibte, "Password tries exceeded")).build();
         }
     }
 }

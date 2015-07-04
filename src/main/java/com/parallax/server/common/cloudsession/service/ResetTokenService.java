@@ -6,7 +6,7 @@
 package com.parallax.server.common.cloudsession.service;
 
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
@@ -20,7 +20,7 @@ public interface ResetTokenService {
 
     boolean isValidResetToken(String token);
 
-    ResettokenRecord createResetToken(String server, Long idUser) throws UnknownUserIdException, InsufficientBucketTokensExceptions;
+    ResettokenRecord createResetToken(String server, Long idUser) throws UnknownUserIdException, InsufficientBucketTokensException;
 
-    ResettokenRecord createResetToken(String server, String email) throws UnknownUserException, InsufficientBucketTokensExceptions;
+    ResettokenRecord createResetToken(String server, String email) throws UnknownUserException, InsufficientBucketTokensException;
 }

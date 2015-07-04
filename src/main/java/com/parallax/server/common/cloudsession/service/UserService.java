@@ -6,7 +6,7 @@
 package com.parallax.server.common.cloudsession.service;
 
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
@@ -24,9 +24,9 @@ public interface UserService {
 
     UserRecord confirmEmail(String email, String token) throws UnknownUserException;
 
-    UserRecord register(String server, String email, String password, String passwordConfirm, String language) throws PasswordVerifyException, NonUniqueEmailException, InsufficientBucketTokensExceptions;
+    UserRecord register(String server, String email, String password, String passwordConfirm, String language) throws PasswordVerifyException, NonUniqueEmailException, InsufficientBucketTokensException;
 
-    UserRecord authenticateLocal(String email, String password) throws UnknownUserException;
+    UserRecord authenticateLocal(String email, String password) throws UnknownUserException, InsufficientBucketTokensException;
 
     UserRecord getLocalUser(String email) throws UnknownUserException;
 

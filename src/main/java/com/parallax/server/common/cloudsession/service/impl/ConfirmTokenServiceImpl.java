@@ -11,8 +11,7 @@ import com.parallax.server.common.cloudsession.db.dao.ConfirmTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
-import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
@@ -27,7 +26,7 @@ import java.util.Date;
 public class ConfirmTokenServiceImpl implements ConfirmTokenService {
 
     private MailService mailService;
-    
+
     private BucketService bucketService;
 
     private ConfirmTokenDao confirmTokenDao;
@@ -76,10 +75,10 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     }
 
     @Override
-    public ConfirmtokenRecord createConfirmToken(String server, Long idUser) throws InsufficientBucketTokensExceptions {
+    public ConfirmtokenRecord createConfirmToken(String server, Long idUser) throws InsufficientBucketTokensException {
         try {
-            bucketService.consumeTokens(idUser, "email-confirm", 1);
-            
+            bucketService.consumeTokensInternal(idUser, "email-confirm", 1);
+
             UserRecord userRecord = userDao.getUser(idUser);
             if (userRecord.getConfirmed()) {
                 return null;
@@ -89,7 +88,7 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
             ConfirmtokenRecord confirmtokenRecord = confirmTokenDao.createConfirmToken(idUser);
             sendConfirmToken(server, userRecord, confirmtokenRecord.getToken());
             return confirmtokenRecord;
-        } catch (UnknownUserIdException | UnknownBucketTypeException ex) {
+        } catch (UnknownUserIdException ex) {
             return null;
         }
     }

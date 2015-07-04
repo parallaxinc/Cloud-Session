@@ -11,16 +11,13 @@ import com.parallax.server.common.cloudsession.db.dao.ResetTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
-import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.MailService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -30,7 +27,7 @@ import java.util.logging.Logger;
 public class ResetTokenServiceImpl implements ResetTokenService {
 
     private MailService mailService;
-    
+
     private BucketService bucketService;
 
     private ResetTokenDao resetTokenDao;
@@ -75,31 +72,21 @@ public class ResetTokenServiceImpl implements ResetTokenService {
     }
 
     @Override
-    public ResettokenRecord createResetToken(String server, Long idUser) throws UnknownUserIdException, InsufficientBucketTokensExceptions {
+    public ResettokenRecord createResetToken(String server, Long idUser) throws UnknownUserIdException, InsufficientBucketTokensException {
         UserRecord user = userDao.getUser(idUser);
-        
-        try {
-            bucketService.consumeTokens(idUser, "password-reset", 1);
-        } catch (UnknownBucketTypeException ex) {
-            Logger.getLogger(ResetTokenServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+
+        bucketService.consumeTokensInternal(idUser, "password-reset", 1);
+
         ResettokenRecord resettokenRecord = resetTokenDao.createResetToken(idUser);
         sendResetToken(server, user, resettokenRecord.getToken());
         return resettokenRecord;
     }
 
     @Override
-    public ResettokenRecord createResetToken(String server, String email) throws UnknownUserException, InsufficientBucketTokensExceptions {
+    public ResettokenRecord createResetToken(String server, String email) throws UnknownUserException, InsufficientBucketTokensException {
         UserRecord user = userDao.getLocalUserByEmail(email);
-        try {
-            bucketService.consumeTokens(user.getId(), "password-reset", 1);
-        } catch (UnknownBucketTypeException ex) {
-            Logger.getLogger(ResetTokenServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnknownUserIdException ex) {
-            Logger.getLogger(ResetTokenServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        bucketService.consumeTokensInternal(user.getId(), "password-reset", 1);
+
         ResettokenRecord resettokenRecord = resetTokenDao.createResetToken(user.getId());
         sendResetToken(server, user, resettokenRecord.getToken());
         return resettokenRecord;

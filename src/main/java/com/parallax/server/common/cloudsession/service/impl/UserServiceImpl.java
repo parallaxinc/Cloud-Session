@@ -9,11 +9,12 @@ import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
@@ -32,6 +33,8 @@ public class UserServiceImpl implements UserService {
     private ResetTokenService resetTokenService;
 
     private ConfirmTokenService confirmTokenService;
+
+    private BucketService bucketService;
 
     private UserDao userDao;
 
@@ -104,7 +107,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord register(String server, String email, String password, String passwordConfirm, String language) throws PasswordVerifyException, NonUniqueEmailException, InsufficientBucketTokensExceptions {
+    public UserRecord register(String server, String email, String password, String passwordConfirm, String language) throws PasswordVerifyException, NonUniqueEmailException, InsufficientBucketTokensException {
         if (!password.equals(passwordConfirm)) {
             throw new PasswordVerifyException();
         }
@@ -118,12 +121,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord authenticateLocal(String email, String password) throws UnknownUserException {
+    public UserRecord authenticateLocal(String email, String password) throws UnknownUserException, InsufficientBucketTokensException {
         UserRecord userRecord = userDao.getLocalUserByEmail(email);
+
+        // check if failed attemps are exceeded, but do not take a token (as much successfull attempts as wanted are allowed)
+        bucketService.hasSufficientTokensInternal(userRecord.getId(), "", 1);
+
         Sha256Hash passwordHash = new Sha256Hash(password, userRecord.getSalt(), 1000);
         if (userRecord.getPassword().equals(passwordHash.toHex())) {
             return userRecord;
         }
+
+        // Consume token on password failure
+        bucketService.consumeTokensInternal(userRecord.getId(), "", 1);
+
         return null;
     }
 
