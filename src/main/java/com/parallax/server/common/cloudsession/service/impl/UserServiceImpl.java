@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
@@ -103,13 +104,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord register(String server, String email, String password, String passwordConfirm) throws PasswordVerifyException, NonUniqueEmailException {
+    public UserRecord register(String server, String email, String password, String passwordConfirm, String language) throws PasswordVerifyException, NonUniqueEmailException, InsufficientBucketTokensExceptions {
         if (!password.equals(passwordConfirm)) {
             throw new PasswordVerifyException();
         }
         String salt = rng.nextBytes().toHex();
         Sha256Hash passwordHash = new Sha256Hash(password, salt, 1000);
-        UserRecord userRecord = userDao.createLocalUser(email, passwordHash.toHex(), salt);
+        UserRecord userRecord = userDao.createLocalUser(email, passwordHash.toHex(), salt, language);
 
         confirmTokenService.createConfirmToken(server, userRecord.getId());
 

@@ -36,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Resettoken extends TableImpl<ResettokenRecord> {
 
-	private static final long serialVersionUID = -2048414773;
+	private static final long serialVersionUID = 1254034012;
 
 	/**
 	 * The reference instance of <code>cloudsession.resettoken</code>
@@ -122,7 +122,7 @@ public class Resettoken extends TableImpl<ResettokenRecord> {
 	 */
 	@Override
 	public List<ForeignKey<ResettokenRecord, ?>> getReferences() {
-		return Arrays.<ForeignKey<ResettokenRecord, ?>>asList(Keys.CONFIRMTOKEN_USER);
+		return Arrays.<ForeignKey<ResettokenRecord, ?>>asList(Keys.RESETTOKEN_USER);
 	}
 
 	/**

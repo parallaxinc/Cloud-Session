@@ -46,10 +46,10 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public UserRecord createLocalUser(String email, String password, String salt) throws NonUniqueEmailException {
+    public UserRecord createLocalUser(String email, String password, String salt, String language) throws NonUniqueEmailException {
         try {
-            return create.insertInto(Tables.USER).columns(Tables.USER.EMAIL, Tables.USER.PASSWORD, Tables.USER.SALT, Tables.USER.AUTHSOURCE)
-                    .values(email, password, salt, LOCAL_USER).returning().fetchOne();
+            return create.insertInto(Tables.USER).columns(Tables.USER.EMAIL, Tables.USER.PASSWORD, Tables.USER.SALT, Tables.USER.AUTHSOURCE, Tables.USER.LANGUAGE)
+                    .values(email, password, salt, LOCAL_USER, language).returning().fetchOne();
         } catch (DataAccessException dae) {
             throw new NonUniqueEmailException(email);
         }

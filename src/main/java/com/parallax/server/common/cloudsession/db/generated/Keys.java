@@ -62,8 +62,8 @@ public class Keys {
 	// -------------------------------------------------------------------------
 
 	public static final ForeignKey<BucketRecord, UserRecord> BUCKET_USER = ForeignKeys0.BUCKET_USER;
-	public static final ForeignKey<ConfirmtokenRecord, UserRecord> RESETTOKEN_USER = ForeignKeys0.RESETTOKEN_USER;
-	public static final ForeignKey<ResettokenRecord, UserRecord> CONFIRMTOKEN_USER = ForeignKeys0.CONFIRMTOKEN_USER;
+	public static final ForeignKey<ConfirmtokenRecord, UserRecord> CONFIRMTOKEN_USER = ForeignKeys0.CONFIRMTOKEN_USER;
+	public static final ForeignKey<ResettokenRecord, UserRecord> RESETTOKEN_USER = ForeignKeys0.RESETTOKEN_USER;
 
 	// -------------------------------------------------------------------------
 	// [#1459] distribute members to avoid static initialisers > 64kb
@@ -89,7 +89,7 @@ public class Keys {
 
 	private static class ForeignKeys0 extends AbstractKeys {
 		public static final ForeignKey<BucketRecord, UserRecord> BUCKET_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Bucket.BUCKET, Bucket.BUCKET.ID_USER);
-		public static final ForeignKey<ConfirmtokenRecord, UserRecord> RESETTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID_USER);
-		public static final ForeignKey<ResettokenRecord, UserRecord> CONFIRMTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID_USER);
+		public static final ForeignKey<ConfirmtokenRecord, UserRecord> CONFIRMTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID_USER);
+		public static final ForeignKey<ResettokenRecord, UserRecord> RESETTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID_USER);
 	}
 }

@@ -11,7 +11,10 @@ import com.parallax.server.common.cloudsession.db.dao.ConfirmTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
+import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
 import com.parallax.server.common.cloudsession.service.MailService;
 import java.util.Date;
@@ -24,6 +27,8 @@ import java.util.Date;
 public class ConfirmTokenServiceImpl implements ConfirmTokenService {
 
     private MailService mailService;
+    
+    private BucketService bucketService;
 
     private ConfirmTokenDao confirmTokenDao;
 
@@ -32,6 +37,11 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     @Inject
     public void setMailService(MailService mailService) {
         this.mailService = mailService;
+    }
+
+    @Inject
+    public void setBucketService(BucketService bucketService) {
+        this.bucketService = bucketService;
     }
 
     @Inject
@@ -66,8 +76,10 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     }
 
     @Override
-    public ConfirmtokenRecord createConfirmToken(String server, Long idUser) {
+    public ConfirmtokenRecord createConfirmToken(String server, Long idUser) throws InsufficientBucketTokensExceptions {
         try {
+            bucketService.consumeTokens(idUser, "email-confirm", 1);
+            
             UserRecord userRecord = userDao.getUser(idUser);
             if (userRecord.getConfirmed()) {
                 return null;
@@ -77,7 +89,7 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
             ConfirmtokenRecord confirmtokenRecord = confirmTokenDao.createConfirmToken(idUser);
             sendConfirmToken(server, userRecord, confirmtokenRecord.getToken());
             return confirmtokenRecord;
-        } catch (UnknownUserIdException ex) {
+        } catch (UnknownUserIdException | UnknownBucketTypeException ex) {
             return null;
         }
     }

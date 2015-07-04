@@ -16,6 +16,7 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.Reset
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
@@ -86,6 +87,8 @@ public class RestLocalUserService {
             return Response.ok(json.toString()).build();
         } catch (UnknownUserIdException uuie) {
             return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
+        } catch (InsufficientBucketTokensExceptions ibte) {
+            return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }
 
@@ -94,7 +97,7 @@ public class RestLocalUserService {
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Request password reset")
     @Produces("text/json")
-    public Response requestReset(@PathParam("server") String server, @PathParam("email") String email) {
+    public Response requestReset(@HeaderParam("server") String server, @PathParam("email") String email) {
         Validation validation = new Validation();
         validation.addRequiredField("email", email);
         validation.checkEmail("email", email);
@@ -114,6 +117,8 @@ public class RestLocalUserService {
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        } catch (InsufficientBucketTokensExceptions ibte) {
+            return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }
 
@@ -185,7 +190,7 @@ public class RestLocalUserService {
     @Detail("Request to email a new email confirmation token to the specified user")
     @Name("Request new confirm token")
     @Produces("text/json")
-    public Response requestConfirm(@PathParam("server") String server, @PathParam("email") String email) {
+    public Response requestConfirm(@HeaderParam("server") String server, @PathParam("email") String email) {
         Validation validation = new Validation();
         validation.addRequiredField("server", server);
         validation.addRequiredField("email", email);
@@ -209,6 +214,8 @@ public class RestLocalUserService {
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        } catch (InsufficientBucketTokensExceptions ibte) {
+            return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }
 

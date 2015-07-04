@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.BucketService;
@@ -44,26 +45,7 @@ public class RestBucketService {
     @Name("Consume one token")
     @Produces("text/json")
     public Response consumeOne(@PathParam("type") String type, @PathParam("id") Long id) {
-        Validation validation = new Validation();
-        validation.addRequiredField("type", type);
-        validation.addRequiredField("id", id);
-        if (!validation.isValid()) {
-            return validation.getValidationResponse();
-        }
-
-        try {
-            JsonObject json = new JsonObject();
-            if (bucketService.consumeTokens(id, type, 1)) {
-                json.addProperty("success", true);
-            } else {
-                json.addProperty("success", false);
-            }
-            return Response.ok(json.toString()).build();
-        } catch (UnknownUserIdException uuie) {
-            return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
-        } catch (UnknownBucketTypeException ubte) {
-            return Response.serverError().entity(JsonResult.getFailure(ubte)).build();
-        }
+        return consume(type, id, 1);
     }
 
     @GET
@@ -83,16 +65,14 @@ public class RestBucketService {
         try {
             JsonObject json = new JsonObject();
             // Absolute value: negative values would always return true
-            if (bucketService.consumeTokens(id, type, Math.abs(count))) {
-                json.addProperty("success", true);
-            } else {
-                json.addProperty("success", false);
-            }
-            return Response.ok(json.toString()).build();
+            bucketService.consumeTokens(id, type, Math.abs(count));
+            return Response.ok(JsonResult.getSuccess()).build();
         } catch (UnknownUserIdException uuie) {
             return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
         } catch (UnknownBucketTypeException ubte) {
             return Response.serverError().entity(JsonResult.getFailure(ubte)).build();
+        } catch (InsufficientBucketTokensExceptions ibte) {
+            return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }
 }

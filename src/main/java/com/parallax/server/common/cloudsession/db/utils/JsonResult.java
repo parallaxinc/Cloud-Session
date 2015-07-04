@@ -6,17 +6,27 @@
 package com.parallax.server.common.cloudsession.db.utils;
 
 import com.google.gson.JsonObject;
+import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensExceptions;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import java.text.SimpleDateFormat;
 
 /**
  *
  * @author Michel
  */
 public class JsonResult {
+    
+    private static SimpleDateFormat DATE_TIME_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    
+    public static String getSuccess() {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.TRUE);
+        return result.toString();
+    }
 
     public static String getFailure(String message) {
         JsonObject result = new JsonObject();
@@ -69,6 +79,14 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", ubte.getMessage());
         result.addProperty("data", ubte.getType());
+        return result.toString();
+    }
+    
+      public static String getFailure(InsufficientBucketTokensExceptions ibte) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.FALSE);
+        result.addProperty("message", ibte.getMessage());
+        result.addProperty("data", DATE_TIME_FORMATTER.format(ibte.getNextTime()));
         return result.toString();
     }
 
