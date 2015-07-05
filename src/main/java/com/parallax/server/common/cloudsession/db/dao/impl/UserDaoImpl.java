@@ -5,6 +5,7 @@
  */
 package com.parallax.server.common.cloudsession.db.dao.impl;
 
+import com.codahale.metrics.annotation.Counted;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
@@ -31,11 +32,13 @@ public class UserDaoImpl implements UserDao {
         this.create = dsl;
     }
 
+    @Counted(monotonic = true, name = "getUser")
     @Override
     public UserRecord getUser(Long id) {
         return create.selectFrom(Tables.USER).where(Tables.USER.ID.equal(id)).fetchOne();
     }
 
+    @Counted(monotonic = true, name = "getLocalUserByEmail")
     @Override
     public UserRecord getLocalUserByEmail(String email) throws UnknownUserException {
         UserRecord userRecord = create.selectFrom(Tables.USER).where(Tables.USER.EMAIL.equal(email)).and(Tables.USER.AUTHSOURCE.equal(LOCAL_USER)).fetchOne();
@@ -45,6 +48,7 @@ public class UserDaoImpl implements UserDao {
         return userRecord;
     }
 
+    @Counted(monotonic = true, name = "createLocalUser")
     @Override
     public UserRecord createLocalUser(String email, String password, String salt, String language) throws NonUniqueEmailException {
         try {

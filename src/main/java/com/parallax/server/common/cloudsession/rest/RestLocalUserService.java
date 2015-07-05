@@ -5,6 +5,7 @@
  */
 package com.parallax.server.common.cloudsession.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import com.cuubez.visualizer.annotation.Detail;
 import com.cuubez.visualizer.annotation.Group;
 import com.cuubez.visualizer.annotation.HttpCode;
@@ -67,6 +68,7 @@ public class RestLocalUserService {
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Request password reset")
     @Produces("text/json")
+    @Timed(name = "requestResetById")
     public Response requestReset(@HeaderParam("server") String server, @PathParam("id") Long idUser) {
         Validation validation = new Validation();
         validation.addRequiredField("server", server);
@@ -97,6 +99,7 @@ public class RestLocalUserService {
     @Detail("Requests to send a request email to the specified user with a password reset token")
     @Name("Request password reset")
     @Produces("text/json")
+    @Timed(name = "requestResetByEmail")
     public Response requestReset(@HeaderParam("server") String server, @PathParam("email") String email) {
         Validation validation = new Validation();
         validation.addRequiredField("email", email);
@@ -127,6 +130,7 @@ public class RestLocalUserService {
     @Detail("Reset the users password with use of a password reset token")
     @Name("Do password reset")
     @Produces("text/json")
+    @Timed(name = "doReset")
     public Response doReset(@PathParam("email") String email, @FormParam("token") String token, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
         Validation validation = new Validation();
         validation.addRequiredField("email", email);
@@ -162,6 +166,7 @@ public class RestLocalUserService {
     @Detail("Confirm the users emailadress using the token")
     @Name("Do email confirm")
     @Produces("text/json")
+    @Timed(name = "doConfirm")
     public Response doConfirm(@FormParam("email") String email, @FormParam("token") String token) {
         Validation validation = new Validation();
         validation.addRequiredField("email", email);
@@ -190,6 +195,7 @@ public class RestLocalUserService {
     @Detail("Request to email a new email confirmation token to the specified user")
     @Name("Request new confirm token")
     @Produces("text/json")
+    @Timed(name = "requestConfirm")
     public Response requestConfirm(@HeaderParam("server") String server, @PathParam("email") String email) {
         Validation validation = new Validation();
         validation.addRequiredField("server", server);

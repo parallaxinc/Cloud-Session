@@ -9,11 +9,13 @@ import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
@@ -129,7 +131,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord authenticateLocal(String email, String password) throws UnknownUserException, InsufficientBucketTokensException {
+    public UserRecord authenticateLocal(String email, String password) throws UnknownUserException, InsufficientBucketTokensException, EmailNotConfirmedException, UserBlockedException {
         UserRecord userRecord = userDao.getLocalUserByEmail(email);
 
         // check if failed attemps are exceeded, but do not take a token (as much successfull attempts as wanted are allowed)
@@ -138,6 +140,12 @@ public class UserServiceImpl implements UserService {
         Sha256Hash passwordHash = new Sha256Hash(password, userRecord.getSalt(), 1000);
         if (userRecord.getPassword().equals(passwordHash.toHex())) {
             LOG.info("Authentication failed due to wrong password: {}", email);
+            if (userRecord.getBlocked()) {
+                throw new UserBlockedException();
+            }
+            if (!userRecord.getConfirmed()) {
+                throw new EmailNotConfirmedException();
+            }
             return userRecord;
         }
 

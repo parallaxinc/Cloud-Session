@@ -11,9 +11,12 @@ import com.google.inject.persist.Transactional;
 import com.parallax.server.common.cloudsession.db.dao.BucketDao;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.BucketRecord;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
+import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 import com.parallax.server.common.cloudsession.service.BucketService;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -53,14 +56,20 @@ public class BucketServiceImpl implements BucketService {
     }
 
     @Override
-    public void consumeTokens(Long idUser, String type, int tokenCount) throws UnknownBucketTypeException, UnknownUserIdException, InsufficientBucketTokensException {
+    public void consumeTokens(Long idUser, String type, int tokenCount) throws UnknownBucketTypeException, UnknownUserIdException, InsufficientBucketTokensException, EmailNotConfirmedException, UserBlockedException {
         // check type is supported (throws exception)
         if (!(configuration.getList("bucket.types").contains(type))) {
             LOG.warn("Unknown bucket type: {}", type);
             throw new UnknownBucketTypeException(type);
         }
         // check user exists (throws exception)
-        userDao.getUser(idUser);
+        UserRecord user = userDao.getUser(idUser);
+        if (user.getBlocked()) {
+            throw new UserBlockedException();
+        }
+        if (!user.getConfirmed()) {
+            throw new EmailNotConfirmedException();
+        }
         consumeTokensInternal(idUser, type, tokenCount);
     }
 

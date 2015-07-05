@@ -5,6 +5,7 @@
  */
 package com.parallax.server.common.cloudsession.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import com.cuubez.visualizer.annotation.Detail;
 import com.cuubez.visualizer.annotation.Group;
 import com.cuubez.visualizer.annotation.HttpCode;
@@ -13,9 +14,11 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
+import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 import com.parallax.server.common.cloudsession.service.BucketService;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -44,6 +47,7 @@ public class RestBucketService {
     @Detail("Consume one token of a given type for a given user")
     @Name("Consume one token")
     @Produces("text/json")
+    @Timed(name = "consumeOne")
     public Response consumeOne(@PathParam("type") String type, @PathParam("id") Long id) {
         return consume(type, id, 1);
     }
@@ -53,6 +57,7 @@ public class RestBucketService {
     @Detail("Consume a given amount of tokens of a given type for a given user")
     @Name("Consume x tokens")
     @Produces("text/json")
+    @Timed(name = "consume")
     public Response consume(@PathParam("type") String type, @PathParam("id") Long id, @PathParam("count") Integer count) {
         Validation validation = new Validation();
         validation.addRequiredField("type", type);
@@ -73,6 +78,10 @@ public class RestBucketService {
             return Response.serverError().entity(JsonResult.getFailure(ubte)).build();
         } catch (InsufficientBucketTokensException ibte) {
             return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
+        } catch (EmailNotConfirmedException ence) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ence)).build();
+        } catch (UserBlockedException ube) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ube)).build();
         }
     }
 }

@@ -5,9 +5,11 @@
  */
 package com.parallax.server.common.cloudsession.service;
 
+import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 
 /**
  *
@@ -15,7 +17,7 @@ import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException
  */
 public interface BucketService {
 
-    void consumeTokens(Long idUser, String type, int tokenCount) throws UnknownBucketTypeException, UnknownUserIdException, InsufficientBucketTokensException;
+    void consumeTokens(Long idUser, String type, int tokenCount) throws UnknownBucketTypeException, UnknownUserIdException, InsufficientBucketTokensException, EmailNotConfirmedException, UserBlockedException;
 
     void consumeTokensInternal(Long idUser, String type, int tokenCount) throws InsufficientBucketTokensException;
 

@@ -5,6 +5,7 @@
  */
 package com.parallax.server.common.cloudsession.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import com.cuubez.visualizer.annotation.Detail;
 import com.cuubez.visualizer.annotation.Group;
 import com.cuubez.visualizer.annotation.HttpCode;
@@ -46,6 +47,7 @@ public class RestUserService {
     @Detail("Register new local user")
     @Name("Register")
     @Produces("text/json")
+    @Timed(name = "register")
     public Response register(@HeaderParam("server") String server, @FormParam("email") String email, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm, @FormParam("language") String language) {
         Validation validation = new Validation();
         validation.addRequiredField("server", server);

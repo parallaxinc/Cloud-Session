@@ -10,6 +10,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
+import com.palominolabs.metrics.guice.MetricsInstrumentationModule;
 import com.parallax.server.common.cloudsession.service.TokenGeneratorService;
 import com.parallax.server.common.cloudsession.service.impl.UUIDTokenGeneratorServiceImpl;
 import java.sql.Driver;
@@ -41,7 +42,7 @@ public class SetupConfig extends GuiceServletContextListener {
 
             @Override
             protected void configure() {
-                // install(new MetricsInstrumentationModule(metrics));
+                install(new MetricsInstrumentationModule(metrics));
 
                 bind(MetricRegistry.class).toInstance(metrics);
 

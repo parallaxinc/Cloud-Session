@@ -5,6 +5,7 @@
  */
 package com.parallax.server.common.cloudsession.db.dao.impl;
 
+import com.codahale.metrics.annotation.Counted;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.parallax.server.common.cloudsession.db.dao.ConfirmTokenDao;
@@ -45,11 +46,13 @@ public class ConfirmTokenDaoImpl implements ConfirmTokenDao {
         this.configuration = configuration;
     }
 
+    @Counted(monotonic = true, name = "getConfirmToken")
     @Override
     public ConfirmtokenRecord getConfirmToken(String token) {
         return create.selectFrom(Tables.CONFIRMTOKEN).where(Tables.CONFIRMTOKEN.TOKEN.equal(token)).fetchOne();
     }
 
+    @Counted(monotonic = true, name = "createConfirmToken")
     @Override
     public ConfirmtokenRecord createConfirmToken(Long idUser) {
         String token = tokenGeneratorService.generateToken();
@@ -60,26 +63,31 @@ public class ConfirmTokenDaoImpl implements ConfirmTokenDao {
         return confirmToken;
     }
 
+    @Counted(monotonic = true, name = "deleteConfirmTokenForToken")
     @Override
     public int deleteConfirmToken(String token) {
         return create.deleteFrom(Tables.CONFIRMTOKEN).where(Tables.CONFIRMTOKEN.TOKEN.equal(token)).execute();
     }
 
+    @Counted(monotonic = true, name = "deleteConfirmTokenForId")
     @Override
     public int deleteConfirmToken(Long id) {
         return create.deleteFrom(Tables.CONFIRMTOKEN).where(Tables.CONFIRMTOKEN.ID.equal(id)).execute();
     }
 
+    @Counted(monotonic = true, name = "deleteConfirmTokenForUser")
     @Override
     public int deleteConfirmTokenForUser(Long idUser) {
         return create.deleteFrom(Tables.CONFIRMTOKEN).where(Tables.CONFIRMTOKEN.ID_USER.equal(idUser)).execute();
     }
 
+    @Counted(monotonic = true, name = "cleanExpiredTokens")
     @Override
     public int cleanExpiredTokens() {
         return create.deleteFrom(Tables.CONFIRMTOKEN).where(Tables.CONFIRMTOKEN.VALIDITY.le(new Timestamp(new Date().getTime()))).execute();
     }
 
+    @Counted(monotonic = true, name = "getConfirmTokenForUser")
     @Override
     public ConfirmtokenRecord getConfirmTokenForUser(Long idUser) {
         return create.selectFrom(Tables.CONFIRMTOKEN).where(Tables.CONFIRMTOKEN.ID_USER.equal(idUser)).fetchOne();

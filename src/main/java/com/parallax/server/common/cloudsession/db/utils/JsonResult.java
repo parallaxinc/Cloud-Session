@@ -6,12 +6,14 @@
 package com.parallax.server.common.cloudsession.db.utils;
 
 import com.google.gson.JsonObject;
+import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
+import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 import java.text.SimpleDateFormat;
 
 /**
@@ -95,6 +97,20 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", message);
         result.addProperty("data", DATE_TIME_FORMATTER.format(ibte.getNextTime()));
+        return result.toString();
+    }
+
+    public static String getFailure(EmailNotConfirmedException ence) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.FALSE);
+        result.addProperty("message", ence.getMessage());
+        return result.toString();
+    }
+
+    public static String getFailure(UserBlockedException ube) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.FALSE);
+        result.addProperty("message", ube.getMessage());
         return result.toString();
     }
 

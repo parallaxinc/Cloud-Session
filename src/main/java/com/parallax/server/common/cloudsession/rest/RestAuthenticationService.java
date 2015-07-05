@@ -5,6 +5,7 @@
  */
 package com.parallax.server.common.cloudsession.rest;
 
+import com.codahale.metrics.annotation.Timed;
 import com.cuubez.visualizer.annotation.Detail;
 import com.cuubez.visualizer.annotation.Group;
 import com.cuubez.visualizer.annotation.HttpCode;
@@ -15,8 +16,10 @@ import com.parallax.server.common.cloudsession.converter.UserConverter;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
+import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
+import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -45,6 +48,7 @@ public class RestAuthenticationService {
     @Detail("Authenticate local user")
     @Name("Authenticate local")
     @Produces("text/json")
+    @Timed(name = "authenticateLocalUser")
     public Response authenticateLocalUser(@FormParam("email") String email, @FormParam("password") String password) {
         Validation validation = new Validation();
         validation.addRequiredField("email", email);
@@ -84,6 +88,10 @@ public class RestAuthenticationService {
             return Response.status(Response.Status.UNAUTHORIZED).entity(json.toString()).build();
         } catch (InsufficientBucketTokensException ibte) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ibte, "Password tries exceeded")).build();
+        } catch (EmailNotConfirmedException ence) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ence)).build();
+        } catch (UserBlockedException ube) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ube)).build();
         }
     }
 }

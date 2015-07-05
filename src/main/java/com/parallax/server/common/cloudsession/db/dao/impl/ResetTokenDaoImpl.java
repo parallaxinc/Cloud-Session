@@ -5,6 +5,7 @@
  */
 package com.parallax.server.common.cloudsession.db.dao.impl;
 
+import com.codahale.metrics.annotation.Counted;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.parallax.server.common.cloudsession.db.dao.ResetTokenDao;
@@ -50,6 +51,7 @@ public class ResetTokenDaoImpl implements ResetTokenDao {
         return create.selectFrom(Tables.RESETTOKEN).where(Tables.RESETTOKEN.TOKEN.equal(token)).fetchOne();
     }
 
+    @Counted(monotonic = true, name = "createResetToken")
     @Override
     public ResettokenRecord createResetToken(Long idUser) {
         String token = tokenGeneratorService.generateToken();
@@ -60,21 +62,25 @@ public class ResetTokenDaoImpl implements ResetTokenDao {
         return resetToken;
     }
 
+    @Counted(monotonic = true, name = "deleteConfirmTokenForToken")
     @Override
     public int deleteResetToken(String token) {
         return create.deleteFrom(Tables.RESETTOKEN).where(Tables.RESETTOKEN.TOKEN.equal(token)).execute();
     }
 
+    @Counted(monotonic = true, name = "deleteConfirmTokenForId")
     @Override
     public int deleteResetToken(Long id) {
         return create.deleteFrom(Tables.RESETTOKEN).where(Tables.RESETTOKEN.ID.equal(id)).execute();
     }
 
+    @Counted(monotonic = true, name = "deleteConfirmTokenForUser")
     @Override
     public int deleteResetTokenForUser(Long idUser) {
         return create.deleteFrom(Tables.RESETTOKEN).where(Tables.RESETTOKEN.ID_USER.equal(idUser)).execute();
     }
 
+    @Counted(monotonic = true, name = "cleanExpiredTokens")
     @Override
     public int cleanExpiredTokens() {
         return create.deleteFrom(Tables.RESETTOKEN).where(Tables.RESETTOKEN.VALIDITY.le(new Timestamp(new Date().getTime()))).execute();
