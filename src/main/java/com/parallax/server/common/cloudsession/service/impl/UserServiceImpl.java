@@ -21,12 +21,16 @@ import com.parallax.server.common.cloudsession.service.UserService;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Michel
  */
 public class UserServiceImpl implements UserService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final RandomNumberGenerator rng;
 
@@ -74,9 +78,11 @@ public class UserServiceImpl implements UserService {
         Sha256Hash oldPasswordHash = new Sha256Hash(oldPassword, userRecord.getSalt(), 1000);
         if (userRecord.getPassword().equals(oldPasswordHash.toHex())) {
             if (changePassword(userRecord, password, repeatPassword)) {
+                LOG.info("Password successfully changed: {}", userRecord.getEmail());
                 return userRecord;
             }
         }
+        LOG.info("Password change failed: {}", userRecord.getEmail());
         return null;
     }
 
@@ -100,9 +106,11 @@ public class UserServiceImpl implements UserService {
             if (confirmtokenRecord.getIdUser().equals(userRecord.getId())) {
                 userRecord.setConfirmed(true);
                 userRecord.store();
+                LOG.info("Email confirm successfull: {}", email);
                 return userRecord;
             }
         }
+        LOG.info("Email confirm failed: {}", email);
         return null;
     }
 
@@ -116,7 +124,7 @@ public class UserServiceImpl implements UserService {
         UserRecord userRecord = userDao.createLocalUser(email, passwordHash.toHex(), salt, language);
 
         confirmTokenService.createConfirmToken(server, userRecord.getId());
-
+        LOG.info("User registered: {}", email);
         return userRecord;
     }
 
@@ -129,12 +137,13 @@ public class UserServiceImpl implements UserService {
 
         Sha256Hash passwordHash = new Sha256Hash(password, userRecord.getSalt(), 1000);
         if (userRecord.getPassword().equals(passwordHash.toHex())) {
+            LOG.info("Authentication failed due to wrong password: {}", email);
             return userRecord;
         }
 
         // Consume token on password failure
         bucketService.consumeTokensInternal(userRecord.getId(), "", 1);
-
+        LOG.info("Email confirm failed");
         return null;
     }
 

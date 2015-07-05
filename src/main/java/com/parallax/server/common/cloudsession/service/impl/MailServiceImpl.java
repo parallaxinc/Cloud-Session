@@ -17,12 +17,16 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Michel
  */
 public class MailServiceImpl implements MailService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MailServiceImpl.class);
 
     private Configuration configuration;
 
@@ -33,6 +37,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendConfirmTokenEmail(String server, UserRecord user, String token) {
+        LOG.info("send confirm-token email to {}", user.getEmail());
         String email = UrlEscapers.urlFragmentEscaper().escape(user.getEmail());
         String confirmUrl = "http://" + server + ".parallax.com/confirm/" + user.getLanguage() + "/" + email + "/" + token;
         StringBuilder builder = new StringBuilder();
@@ -44,6 +49,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendResetTokenEmail(String server, UserRecord user, String token) {
+        LOG.info("send reset-token email to {}", user.getEmail());
         String email = UrlEscapers.urlFragmentEscaper().escape(user.getEmail());
         String resetUrl = "http://" + server + ".parallax.com/reset/" + user.getLanguage() + "/" + email + "/" + token;
         StringBuilder builder = new StringBuilder();
@@ -99,7 +105,7 @@ public class MailServiceImpl implements MailService {
                 mimeMessage.setText(message);
 
                 Transport.send(mimeMessage);
-                System.out.println("Mail sent");
+                LOG.info("Mail sent");
             } catch (MessagingException me) {
                 me.printStackTrace();
             }

@@ -18,6 +18,8 @@ import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.MailService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,6 +27,8 @@ import java.util.Date;
  */
 @Singleton
 public class ResetTokenServiceImpl implements ResetTokenService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ResetTokenServiceImpl.class);
 
     private MailService mailService;
 
@@ -63,9 +67,11 @@ public class ResetTokenServiceImpl implements ResetTokenService {
     public boolean isValidResetToken(String token) {
         ResettokenRecord resetToken = getResetToken(token);
         if (resetToken == null) {
+            LOG.info("Unknown token: {}", token);
             return false;
         }
         if (resetToken.getValidity().after(new Date())) {
+            LOG.info("Token not valid anymore: {}", resetToken.getValidity());
             return false;
         }
         return true;
@@ -73,6 +79,7 @@ public class ResetTokenServiceImpl implements ResetTokenService {
 
     @Override
     public ResettokenRecord createResetToken(String server, Long idUser) throws UnknownUserIdException, InsufficientBucketTokensException {
+        LOG.debug("Create new reset token: {}", idUser);
         UserRecord user = userDao.getUser(idUser);
 
         bucketService.consumeTokensInternal(idUser, "password-reset", 1);
@@ -84,6 +91,7 @@ public class ResetTokenServiceImpl implements ResetTokenService {
 
     @Override
     public ResettokenRecord createResetToken(String server, String email) throws UnknownUserException, InsufficientBucketTokensException {
+        LOG.debug("Create new reset token: {}", email);
         UserRecord user = userDao.getLocalUserByEmail(email);
         bucketService.consumeTokensInternal(user.getId(), "password-reset", 1);
 
@@ -93,7 +101,6 @@ public class ResetTokenServiceImpl implements ResetTokenService {
     }
 
     private void sendResetToken(String server, UserRecord userRecord, String token) {
-        System.out.println(server + ": " + userRecord.getEmail() + " -> " + token);
         mailService.sendResetTokenEmail(server, userRecord, token);
     }
 

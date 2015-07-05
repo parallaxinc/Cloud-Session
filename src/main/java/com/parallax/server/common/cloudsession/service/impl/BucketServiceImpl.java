@@ -18,6 +18,8 @@ import com.parallax.server.common.cloudsession.service.BucketService;
 import java.sql.Timestamp;
 import java.util.Date;
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,6 +28,8 @@ import org.apache.commons.configuration.Configuration;
 @Singleton
 @Transactional
 public class BucketServiceImpl implements BucketService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(BucketServiceImpl.class);
 
     private BucketDao bucketDao;
 
@@ -52,6 +56,7 @@ public class BucketServiceImpl implements BucketService {
     public void consumeTokens(Long idUser, String type, int tokenCount) throws UnknownBucketTypeException, UnknownUserIdException, InsufficientBucketTokensException {
         // check type is supported (throws exception)
         if (!(configuration.getList("bucket.types").contains(type))) {
+            LOG.warn("Unknown bucket type: {}", type);
             throw new UnknownBucketTypeException(type);
         }
         // check user exists (throws exception)
@@ -81,7 +86,7 @@ public class BucketServiceImpl implements BucketService {
         }
 
         // check if there are enough tokens in the bucket
-        System.out.println("Content: " + bucket.getContent() + ", using " + tokenCount + ". has enough? " + (bucket.getContent() < tokenCount ? "no" : "yes"));
+        LOG.info("Consume: Content: {}, using {}. has enough? {}", bucket.getContent(), tokenCount, (bucket.getContent() < tokenCount ? "no" : "yes"));
         if (bucket.getContent() < tokenCount) {
             long millisecondsTillEnough = (tokenCount - oldBucketContent) * inputFrequency;
             Date dateWhenEnough = new Date(bucket.getTimestamp().getTime() + millisecondsTillEnough);
@@ -116,7 +121,7 @@ public class BucketServiceImpl implements BucketService {
         }
 
         // check if there are enough tokens in the bucket
-        System.out.println("Content: " + bucket.getContent() + ", using " + tokenCount + ". has enough? " + (bucket.getContent() < tokenCount ? "no" : "yes"));
+        LOG.info("Check: Content: {}, using {}. has enough? {}", bucket.getContent(), tokenCount, (bucket.getContent() < tokenCount ? "no" : "yes"));
         if (bucket.getContent() < tokenCount) {
             long millisecondsTillEnough = (tokenCount - oldBucketContent) * inputFrequency;
             Date dateWhenEnough = new Date(bucket.getTimestamp().getTime() + millisecondsTillEnough);

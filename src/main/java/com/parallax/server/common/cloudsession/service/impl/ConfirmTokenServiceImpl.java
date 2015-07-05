@@ -17,6 +17,8 @@ import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
 import com.parallax.server.common.cloudsession.service.MailService;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,6 +26,8 @@ import java.util.Date;
  */
 @Singleton
 public class ConfirmTokenServiceImpl implements ConfirmTokenService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConfirmTokenServiceImpl.class);
 
     private MailService mailService;
 
@@ -66,9 +70,11 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     public boolean isValidConfirmToken(String token) {
         ConfirmtokenRecord confirmToken = getConfirmToken(token);
         if (confirmToken == null) {
+            LOG.info("Unknown token: {}", token);
             return false;
         }
         if (confirmToken.getValidity().after(new Date())) {
+            LOG.info("Token not valid anymore: {}", confirmToken.getValidity());
             return false;
         }
         return true;
@@ -77,10 +83,12 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     @Override
     public ConfirmtokenRecord createConfirmToken(String server, Long idUser) throws InsufficientBucketTokensException {
         try {
+            LOG.debug("Create new confirm token: {}", idUser);
             bucketService.consumeTokensInternal(idUser, "email-confirm", 1);
 
             UserRecord userRecord = userDao.getUser(idUser);
             if (userRecord.getConfirmed()) {
+                LOG.info("Already confirmed: {}", idUser);
                 return null;
             }
             confirmTokenDao.deleteConfirmTokenForUser(idUser);
@@ -94,7 +102,6 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     }
 
     private void sendConfirmToken(String server, UserRecord userRecord, String token) {
-        System.out.println(server + ": " + userRecord.getEmail() + " -> " + token);
         mailService.sendConfirmTokenEmail(server, userRecord, token);
     }
 

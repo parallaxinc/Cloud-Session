@@ -8,6 +8,8 @@ package com.parallax.server.common.cloudsession.service.impl;
 import com.google.inject.Singleton;
 import com.parallax.server.common.cloudsession.service.TokenGeneratorService;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,10 +18,14 @@ import java.util.UUID;
 @Singleton
 public class UUIDTokenGeneratorServiceImpl implements TokenGeneratorService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UUIDTokenGeneratorServiceImpl.class);
+
     @Override
     public String generateToken() {
         UUID uuid = UUID.randomUUID();
-        return uuid.toString().replaceAll("-", "");
+        String token = uuid.toString().replaceAll("-", "");
+        LOG.info("Generated token: {}", token);
+        return token;
     }
 
 }

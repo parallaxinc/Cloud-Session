@@ -20,6 +20,7 @@ public class MetricsConfigurator {
 
     public static void configure(MetricRegistry metrics, Configuration configuration) {
         configureConsole(metrics, configuration);
+        configureLogger(metrics, configuration);
     }
 
     private static void configureConsole(MetricRegistry metrics, Configuration configuration) {
@@ -35,8 +36,8 @@ public class MetricsConfigurator {
     }
 
     private static void configureLogger(MetricRegistry metrics, Configuration configuration) {
-        boolean enableConsole = configuration.getBoolean("metrics.logger.enable", false);
-        if (enableConsole) {
+        boolean enableLogger = configuration.getBoolean("metrics.logger.enable", false);
+        if (enableLogger) {
             int interval = configuration.getInt("metrics.logger.interval", 5);
             Slf4jReporter reporter = Slf4jReporter.forRegistry(metrics)
                     .outputTo(LoggerFactory.getLogger("com.parallax.server.common.cloudsession.metrics"))
