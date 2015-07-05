@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-	private static final long serialVersionUID = -2025000082;
+	private static final long serialVersionUID = -626269044;
 
 	/**
 	 * The reference instance of <code>cloudsession.user</code>
@@ -72,22 +72,22 @@ public class User extends TableImpl<UserRecord> {
 	/**
 	 * The column <code>cloudsession.user.authsource</code>.
 	 */
-	public final TableField<UserRecord, String> AUTHSOURCE = createField("authsource", org.jooq.impl.SQLDataType.VARCHAR.length(255), this, "");
+	public final TableField<UserRecord, String> AUTHSOURCE = createField("authsource", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
 	/**
 	 * The column <code>cloudsession.user.language</code>.
 	 */
-	public final TableField<UserRecord, String> LANGUAGE = createField("language", org.jooq.impl.SQLDataType.VARCHAR.length(45).defaulted(true), this, "");
+	public final TableField<UserRecord, String> LANGUAGE = createField("language", org.jooq.impl.SQLDataType.VARCHAR.length(45).nullable(false).defaulted(true), this, "");
 
 	/**
 	 * The column <code>cloudsession.user.blocked</code>.
 	 */
-	public final TableField<UserRecord, Boolean> BLOCKED = createField("blocked", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
+	public final TableField<UserRecord, Boolean> BLOCKED = createField("blocked", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
 
 	/**
 	 * The column <code>cloudsession.user.confirmed</code>.
 	 */
-	public final TableField<UserRecord, Boolean> CONFIRMED = createField("confirmed", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
+	public final TableField<UserRecord, Boolean> CONFIRMED = createField("confirmed", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
 
 	/**
 	 * Create a <code>cloudsession.user</code> table reference

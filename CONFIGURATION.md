@@ -44,7 +44,7 @@ If you want another frequency then onca a second, it can be configured in **buck
 
 *Because of a limitation in the database, the timestamp of the last token change is limited to second resolution.*
 
-*Each of the bucket configurations has to be a positive number of no more then 2,000,000,000, and cannot have decimal places.*
+*Each of the bucket configurations has to be a positive number of no more then 2,000,000,000 (about 24 days), and cannot have decimal places.*
 
 ## Wrong password, email confirm and password reset policies
 Token buckets are used to configure rate limitting on logins with wrong passwords, email confirm requests and password reset requests.
