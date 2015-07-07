@@ -18,6 +18,37 @@ To use anything but mysql, the driver library will need to be added to the java 
 It's possible that for some types of databases a license is required, see [the jooq pricing page](http://www.jooq.org/download/).
 
 ## Metrics
+To monitor execution times and counts metrics are collected during at runtime. These can be viewed/queried in multiple ways.
+
+### Console
+All collected metrics can be written to the console on regular basis. This can be configured with the following properties:
+
+- Enable console reporting: **metrics.console.enable**, *true/false*. Defaults to: *false*
+- Reporting frequency in seconds: **metrics.console.interval**. Defaults to: *30*
+
+### Logger
+These metrics can be logged through the logging framework.
+
+- Enable logging based reporting: **metrics.logger.enable**, *true/false*. Defaults to: *false*
+- Reporting frequency in seconds: **metrics.logger.interval**. Defaults to: *30*
+
+### Graphite
+The metrics can be sent to a graphite server, using the pickled-graphite format on port 2004.
+
+- Enable graphite based reporting: **metrics.graphite.enable**, *true/false*. Defaults to: *false*
+- Reporting frequency in seconds: **metrics.graphite.interval**. Defaults to: *30*
+- Graphite server host: **metrics.graphite.host**. Defaults to *localhost*
+
+### InfluxDb
+The metrics can be sent to a InfluxDb server, using http transport.
+
+- Enable influxdb based reporting: **metrics.influxdb.enable**, *true/false*. Defaults to: *false*
+- Reporting frequency in seconds: **metrics.influxdb.interval**. Defaults to: *30*
+- InfluxDb server host: **metrics.influxdb.host**. Defaults to *localhost*
+- InfluxDb server port: **metrics.influxdb.port**. Defaults to *8086*
+- InfluxDb server database: **metrics.influxdb.database**. Defaults to *mydb*
+- InfluxDb server user: **metrics.influxdb.user**. Required to be set
+- InfluxDb server password: **metrics.influxdb.password**. Required to be set
 
 ## Mail server
 By default mails will be sent from *noreply@example.com* using a smtp server on localhost with a non encrypted connection on port 25. For any changes use the following configurations.

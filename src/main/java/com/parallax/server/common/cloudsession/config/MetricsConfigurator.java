@@ -74,8 +74,8 @@ public class MetricsConfigurator {
     }
 
     private static void configureInfluxDb(MetricRegistry metrics, Configuration configuration) {
-        boolean enableGraphite = configuration.getBoolean("metrics.influxdb.enable", false);
-        if (enableGraphite) {
+        boolean enableInfluxDb = configuration.getBoolean("metrics.influxdb.enable", false);
+        if (enableInfluxDb) {
             try {
                 int interval = configuration.getInt("metrics.influxdb.interval", 30);
                 String host = configuration.getString("metrics.influxdb.host", "localhost");
