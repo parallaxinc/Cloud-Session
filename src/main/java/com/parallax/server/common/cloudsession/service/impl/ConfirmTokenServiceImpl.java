@@ -73,7 +73,7 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
             LOG.info("Unknown token: {}", token);
             return false;
         }
-        if (confirmToken.getValidity().after(new Date())) {
+        if (confirmToken.getValidity().before(new Date())) {
             LOG.info("Token not valid anymore: {}", confirmToken.getValidity());
             return false;
         }

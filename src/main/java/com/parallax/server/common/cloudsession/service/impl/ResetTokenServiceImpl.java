@@ -70,7 +70,7 @@ public class ResetTokenServiceImpl implements ResetTokenService {
             LOG.info("Unknown token: {}", token);
             return false;
         }
-        if (resetToken.getValidity().after(new Date())) {
+        if (resetToken.getValidity().before(new Date())) {
             LOG.info("Token not valid anymore: {}", resetToken.getValidity());
             return false;
         }
