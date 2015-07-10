@@ -8,10 +8,13 @@ package com.parallax.server.common.cloudsession.config;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.ScheduledReporter;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.graphite.PickledGraphite;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +28,8 @@ import org.slf4j.LoggerFactory;
  * @author Michel
  */
 public class MetricsConfigurator {
+
+    private static List<ScheduledReporter> reporters = new ArrayList<ScheduledReporter>();
 
     public static void configure(MetricRegistry metrics, Configuration configuration) {
         configureConsole(metrics, configuration);
@@ -42,6 +47,8 @@ public class MetricsConfigurator {
                     .convertDurationsTo(TimeUnit.MILLISECONDS)
                     .build();
             reporter.start(interval, TimeUnit.SECONDS);
+
+            reporters.add(reporter);
         }
     }
 
@@ -55,6 +62,7 @@ public class MetricsConfigurator {
                     .convertDurationsTo(TimeUnit.MILLISECONDS)
                     .build();
             reporter.start(interval, TimeUnit.SECONDS);
+            reporters.add(reporter);
         }
     }
 
@@ -70,6 +78,7 @@ public class MetricsConfigurator {
                     .filter(MetricFilter.ALL)
                     .build(pickledGraphite);
             reporter.start(interval, TimeUnit.SECONDS);
+            reporters.add(reporter);
         }
     }
 
@@ -96,9 +105,16 @@ public class MetricsConfigurator {
                         .skipIdleMetrics(true) // Only report metrics that have changed.
                         .build(influxdb);
                 reporter.start(interval, TimeUnit.SECONDS);
+                reporters.add(reporter);
             } catch (Exception ex) {
                 Logger.getLogger(MetricsConfigurator.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    public static void stopReporters() {
+        for (ScheduledReporter reporter : reporters) {
+            reporter.stop();
         }
     }
 

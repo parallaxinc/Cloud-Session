@@ -76,6 +76,10 @@ public class SetupConfig extends GuiceServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         super.contextDestroyed(servletContextEvent);
+
+        // Stop reporters
+        MetricsConfigurator.stopReporters();
+
         // This manually deregisters JDBC driver, which prevents Tomcat 7 from complaining about memory leaks wrto this class
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         while (drivers.hasMoreElements()) {

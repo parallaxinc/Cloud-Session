@@ -13,6 +13,7 @@ import com.parallax.server.common.cloudsession.db.generated.Tables;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 
@@ -34,8 +35,12 @@ public class UserDaoImpl implements UserDao {
 
     @Counted(monotonic = true, name = "getUser")
     @Override
-    public UserRecord getUser(Long id) {
-        return create.selectFrom(Tables.USER).where(Tables.USER.ID.equal(id)).fetchOne();
+    public UserRecord getUser(Long id) throws UnknownUserIdException {
+        UserRecord userRecord = create.selectFrom(Tables.USER).where(Tables.USER.ID.equal(id)).fetchOne();
+        if (userRecord == null) {
+            throw new UnknownUserIdException(id);
+        }
+        return userRecord;
     }
 
     @Counted(monotonic = true, name = "getLocalUserByEmail")
