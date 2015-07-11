@@ -55,12 +55,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Inject
+    public void setBucketService(BucketService bucketService) {
+        this.bucketService = bucketService;
+    }
+
+    @Inject
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
 
     public UserServiceImpl() {
         rng = new SecureRandomNumberGenerator();
+    }
+
+    public UserServiceImpl(RandomNumberGenerator rng) {
+        this.rng = rng;
     }
 
     @Override
@@ -125,7 +134,10 @@ public class UserServiceImpl implements UserService {
         Sha256Hash passwordHash = new Sha256Hash(password, salt, 1000);
         UserRecord userRecord = userDao.createLocalUser(email, passwordHash.toHex(), salt, language);
 
-        confirmTokenService.createConfirmToken(server, userRecord.getId());
+        try {
+            confirmTokenService.createConfirmToken(server, userRecord.getId());
+        } catch (UnknownUserIdException uuie) {
+        }
         LOG.info("User registered: {}", email);
         return userRecord;
     }

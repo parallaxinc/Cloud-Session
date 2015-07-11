@@ -7,6 +7,7 @@ package com.parallax.server.common.cloudsession.service;
 
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 
 /**
  *
@@ -18,5 +19,5 @@ public interface ConfirmTokenService {
 
     boolean isValidConfirmToken(String token);
 
-    ConfirmtokenRecord createConfirmToken(String server, Long idUser) throws InsufficientBucketTokensException;
+    ConfirmtokenRecord createConfirmToken(String server, Long idUser) throws InsufficientBucketTokensException, UnknownUserIdException;
 }

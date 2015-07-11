@@ -81,24 +81,20 @@ public class ConfirmTokenServiceImpl implements ConfirmTokenService {
     }
 
     @Override
-    public ConfirmtokenRecord createConfirmToken(String server, Long idUser) throws InsufficientBucketTokensException {
-        try {
-            LOG.debug("Create new confirm token: {}", idUser);
-            bucketService.consumeTokensInternal(idUser, "email-confirm", 1);
+    public ConfirmtokenRecord createConfirmToken(String server, Long idUser) throws InsufficientBucketTokensException, UnknownUserIdException {
+        LOG.debug("Create new confirm token: {}", idUser);
+        bucketService.consumeTokensInternal(idUser, "email-confirm", 1);
 
-            UserRecord userRecord = userDao.getUser(idUser);
-            if (userRecord.getConfirmed()) {
-                LOG.info("Already confirmed: {}", idUser);
-                return null;
-            }
-            confirmTokenDao.deleteConfirmTokenForUser(idUser);
-
-            ConfirmtokenRecord confirmtokenRecord = confirmTokenDao.createConfirmToken(idUser);
-            sendConfirmToken(server, userRecord, confirmtokenRecord.getToken());
-            return confirmtokenRecord;
-        } catch (UnknownUserIdException ex) {
+        UserRecord userRecord = userDao.getUser(idUser);
+        if (userRecord.getConfirmed()) {
+            LOG.info("Already confirmed: {}", idUser);
             return null;
         }
+        confirmTokenDao.deleteConfirmTokenForUser(idUser);
+
+        ConfirmtokenRecord confirmtokenRecord = confirmTokenDao.createConfirmToken(idUser);
+        sendConfirmToken(server, userRecord, confirmtokenRecord.getToken());
+        return confirmtokenRecord;
     }
 
     private void sendConfirmToken(String server, UserRecord userRecord, String token) {

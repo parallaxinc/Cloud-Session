@@ -106,7 +106,7 @@ public class ResetTokenServiceImplTest {
 
         try {
             ResettokenRecord returnedToken = resetTokenService.createResetToken("SERVER", 2L);
-            Assert.assertEquals(resettokenRecord, returnedToken);
+            Assert.assertSame(resettokenRecord, returnedToken);
         } catch (UnknownUserIdException ex) {
             Assert.fail("User id should be known");
         } catch (InsufficientBucketTokensException ex) {
@@ -185,7 +185,7 @@ public class ResetTokenServiceImplTest {
 
         try {
             ResettokenRecord returnedToken = resetTokenService.createResetToken("SERVER", "test@test.com");
-            Assert.assertEquals(resettokenRecord, returnedToken);
+            Assert.assertSame(resettokenRecord, returnedToken);
         } catch (UnknownUserException ex) {
             Assert.fail("User email should be known");
         } catch (InsufficientBucketTokensException ex) {

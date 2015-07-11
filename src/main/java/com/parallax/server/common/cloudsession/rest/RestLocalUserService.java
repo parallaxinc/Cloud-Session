@@ -222,6 +222,8 @@ public class RestLocalUserService {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
         } catch (InsufficientBucketTokensException ibte) {
             return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
+        } catch (UnknownUserIdException uuie) {
+            return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
         }
     }
 
