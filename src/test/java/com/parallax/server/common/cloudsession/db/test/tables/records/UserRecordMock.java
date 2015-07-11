@@ -18,7 +18,7 @@ public class UserRecordMock extends UserRecord {
 
     @Override
     public int update(Field<?>... storeFields) throws DataAccessException, DataChangedException {
-        return 1;
+        return 0;
     }
 
 }
