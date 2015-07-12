@@ -147,11 +147,10 @@ public class UserServiceImpl implements UserService {
         UserRecord userRecord = userDao.getLocalUserByEmail(email);
 
         // check if failed attemps are exceeded, but do not take a token (as much successfull attempts as wanted are allowed)
-        bucketService.hasSufficientTokensInternal(userRecord.getId(), "", 1);
+        bucketService.hasSufficientTokensInternal(userRecord.getId(), "failed-password", 1);
 
         Sha256Hash passwordHash = new Sha256Hash(password, userRecord.getSalt(), 1000);
         if (userRecord.getPassword().equals(passwordHash.toHex())) {
-            LOG.info("Authentication failed due to wrong password: {}", email);
             if (userRecord.getBlocked()) {
                 throw new UserBlockedException();
             }
@@ -161,9 +160,10 @@ public class UserServiceImpl implements UserService {
             return userRecord;
         }
 
+        LOG.info("Authentication failed due to wrong password: {}", email);
+
         // Consume token on password failure
-        bucketService.consumeTokensInternal(userRecord.getId(), "", 1);
-        LOG.info("Email confirm failed");
+        bucketService.consumeTokensInternal(userRecord.getId(), "failed-password", 1);
         return null;
     }
 
