@@ -50,6 +50,7 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", uue.getMessage());
         result.addProperty("data", uue.getEmail());
+        result.addProperty("code", 400);
         return result.toString();
     }
 
@@ -104,6 +105,7 @@ public class JsonResult {
         JsonObject result = new JsonObject();
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", ence.getMessage());
+        result.addProperty("code", 430);
         return result.toString();
     }
 
@@ -111,6 +113,7 @@ public class JsonResult {
         JsonObject result = new JsonObject();
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", ube.getMessage());
+        result.addProperty("code", 420);
         return result.toString();
     }
 

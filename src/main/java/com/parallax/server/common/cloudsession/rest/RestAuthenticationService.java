@@ -65,10 +65,12 @@ public class RestAuthenticationService {
                 if (user.getBlocked()) {
                     json.addProperty("success", false);
                     json.addProperty("message", "Account is blocked");
+                    json.addProperty("code", 420);
                     return Response.status(Response.Status.UNAUTHORIZED).entity(json.toString()).build();
                 } else if (!user.getConfirmed()) {
                     json.addProperty("success", false);
                     json.addProperty("message", "Email not confirmed");
+                    json.addProperty("code", 430);
                     return Response.ok(json.toString()).build();
                 } else {
                     json.addProperty("success", true);
@@ -77,15 +79,16 @@ public class RestAuthenticationService {
                 }
             } else {
                 json.addProperty("success", false);
-                json.addProperty("message", "Unknown user");
+                json.addProperty("message", "Wrong password");
+                json.addProperty("code", 410);
                 return Response.status(Response.Status.UNAUTHORIZED).entity(json.toString()).build();
 
             }
         } catch (UnknownUserException uue) {
-            JsonObject json = new JsonObject();
-            json.addProperty("success", false);
-            json.addProperty("message", "Unknown user");
-            return Response.status(Response.Status.UNAUTHORIZED).entity(json.toString()).build();
+//            JsonObject json = new JsonObject();
+//            json.addProperty("success", false);
+//            json.addProperty("message", "Unknown user");
+            return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(uue)).build();
         } catch (InsufficientBucketTokensException ibte) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ibte, "Password tries exceeded")).build();
         } catch (EmailNotConfirmedException ence) {
