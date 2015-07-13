@@ -15,7 +15,6 @@ import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
-import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.service.UserService;
@@ -43,7 +42,7 @@ public class RestUserService {
     }
 
     @PUT
-    @Path("/")
+    @Path("/register")
     @Detail("Register new local user")
     @Name("Register")
     @Produces("text/json")
@@ -60,11 +59,14 @@ public class RestUserService {
             return validation.getValidationResponse();
         }
 
+        System.out.println("VALIDATED OK");
+
         try {
             UserRecord user = userService.register(server, email, password, passwordConfirm, language);
             JsonObject json = new JsonObject();
             if (user != null) {
                 json.addProperty("success", true);
+                json.addProperty("user", user.getId());
             } else {
                 json.addProperty("success", false);
             }
@@ -73,8 +75,6 @@ public class RestUserService {
             return Response.serverError().entity(JsonResult.getFailure(nuie)).build();
         } catch (PasswordVerifyException pve) {
             return Response.serverError().entity(JsonResult.getFailure(pve)).build();
-        } catch (InsufficientBucketTokensException ibte) {
-            return Response.serverError().entity(JsonResult.getFailure(ibte)).build();
         }
     }
 }

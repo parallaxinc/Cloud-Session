@@ -67,6 +67,7 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", nuie.getMessage());
         result.addProperty("data", nuie.getEmail());
+        result.addProperty("code", 450);
         return result.toString();
     }
 
@@ -74,6 +75,7 @@ public class JsonResult {
         JsonObject result = new JsonObject();
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", pve.getMessage());
+        result.addProperty("code", 460);
         return result.toString();
     }
 

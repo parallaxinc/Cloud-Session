@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord register(String server, String email, String password, String passwordConfirm, String language) throws PasswordVerifyException, NonUniqueEmailException, InsufficientBucketTokensException {
+    public UserRecord register(String server, String email, String password, String passwordConfirm, String language) throws PasswordVerifyException, NonUniqueEmailException {
         if (!password.equals(passwordConfirm)) {
             throw new PasswordVerifyException();
         }
@@ -137,6 +137,9 @@ public class UserServiceImpl implements UserService {
         try {
             confirmTokenService.createConfirmToken(server, userRecord.getId());
         } catch (UnknownUserIdException uuie) {
+            return null;
+        } catch (InsufficientBucketTokensException ibte) {
+            return null;
         }
         LOG.info("User registered: {}", email);
         return userRecord;
