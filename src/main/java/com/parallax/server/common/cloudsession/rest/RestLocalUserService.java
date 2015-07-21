@@ -183,6 +183,7 @@ public class RestLocalUserService {
                 json.addProperty("success", true);
             } else {
                 json.addProperty("success", false);
+                json.addProperty("code", 510);
             }
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
@@ -215,6 +216,7 @@ public class RestLocalUserService {
             } else {
                 json.addProperty("success", false);
                 json.addProperty("message", "Account already verified");
+                json.addProperty("code", 520);
             }
 
             return Response.ok(json.toString()).build();

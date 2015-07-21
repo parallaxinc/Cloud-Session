@@ -84,6 +84,8 @@ public class ResetTokenServiceImpl implements ResetTokenService {
 
         bucketService.consumeTokensInternal(idUser, "password-reset", 1);
 
+        resetTokenDao.deleteResetTokenForUser(idUser);
+
         ResettokenRecord resettokenRecord = resetTokenDao.createResetToken(idUser);
         sendResetToken(server, user, resettokenRecord.getToken());
         return resettokenRecord;
@@ -94,6 +96,8 @@ public class ResetTokenServiceImpl implements ResetTokenService {
         LOG.debug("Create new reset token: {}", email);
         UserRecord user = userDao.getLocalUserByEmail(email);
         bucketService.consumeTokensInternal(user.getId(), "password-reset", 1);
+
+        resetTokenDao.deleteResetTokenForUser(user.getId());
 
         ResettokenRecord resettokenRecord = resetTokenDao.createResetToken(user.getId());
         sendResetToken(server, user, resettokenRecord.getToken());

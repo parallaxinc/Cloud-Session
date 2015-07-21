@@ -84,6 +84,7 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", ubte.getMessage());
         result.addProperty("data", ubte.getType());
+        result.addProperty("code", 480);
         return result.toString();
     }
 
@@ -92,6 +93,7 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", ibte.getMessage());
         result.addProperty("data", DATE_TIME_FORMATTER.format(ibte.getNextTime()));
+        result.addProperty("code", 470);
         return result.toString();
     }
 
@@ -100,6 +102,7 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", message);
         result.addProperty("data", DATE_TIME_FORMATTER.format(ibte.getNextTime()));
+        result.addProperty("code", 470);
         return result.toString();
     }
 
