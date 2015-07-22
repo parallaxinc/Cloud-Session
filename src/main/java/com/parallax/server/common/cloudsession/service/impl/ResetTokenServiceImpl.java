@@ -64,6 +64,16 @@ public class ResetTokenServiceImpl implements ResetTokenService {
     }
 
     @Override
+    public boolean consumeResetToken(String token) {
+        ResettokenRecord resetToken = resetTokenDao.getResetToken(token);
+        if (resetToken != null) {
+            resetToken.delete();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean isValidResetToken(String token) {
         ResettokenRecord resetToken = getResetToken(token);
         if (resetToken == null) {

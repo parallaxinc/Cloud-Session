@@ -12,6 +12,8 @@ import java.util.List;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,17 +21,21 @@ import javax.ws.rs.core.Response;
  */
 public class Validation {
 
+    private static final Logger log = LoggerFactory.getLogger(Validation.class);
+
     private List<String> requiredButMissingFields = new ArrayList<String>();
     private List<String> invalidEmailFields = new ArrayList<String>();
 
     public void addRequiredField(String field, Object object) {
         if (object == null) {
+            log.warn("Missing required field: {}", field);
             requiredButMissingFields.add(field);
         }
     }
 
     public void checkEmail(String field, String email) {
         if (!isValidEmailAddress(email)) {
+            log.warn("Invalid email address: {} (field: {})", email, field);
             invalidEmailFields.add(field);
         }
     }
@@ -49,6 +55,7 @@ public class Validation {
         JsonObject result = new JsonObject();
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", "Validation error");
+        result.addProperty("code", 300);
         if (requiredButMissingFields.size() > 0) {
             result.addProperty("missing-fields", fieldList(requiredButMissingFields));
         }

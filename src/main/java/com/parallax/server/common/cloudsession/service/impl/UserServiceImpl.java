@@ -8,6 +8,7 @@ package com.parallax.server.common.cloudsession.service.impl;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
@@ -74,10 +75,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserException {
-        if (resetTokenService.isValidResetToken(token)) {
+        ResettokenRecord resettokenRecord = resetTokenService.getResetToken(token);
+        if (resettokenRecord != null) {
             UserRecord userRecord = userDao.getLocalUserByEmail(email);
-            if (changePassword(userRecord, password, repeatPassword)) {
-                return userRecord;
+            if (resettokenRecord.getIdUser().equals(userRecord.getId())) {
+                resetTokenService.consumeResetToken(token);
+                if (changePassword(userRecord, password, repeatPassword)) {
+                    return userRecord;
+                }
             }
         }
         return null;

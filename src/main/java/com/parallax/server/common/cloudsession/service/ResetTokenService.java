@@ -18,6 +18,8 @@ public interface ResetTokenService {
 
     ResettokenRecord getResetToken(String token);
 
+    boolean consumeResetToken(String token);
+
     boolean isValidResetToken(String token);
 
     ResettokenRecord createResetToken(String server, Long idUser) throws UnknownUserIdException, InsufficientBucketTokensException;

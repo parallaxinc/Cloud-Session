@@ -59,6 +59,7 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", uuie.getMessage());
         result.addProperty("data", uuie.getIdUser());
+        result.addProperty("code", 400);
         return result.toString();
     }
 

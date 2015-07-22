@@ -143,16 +143,15 @@ public class RestLocalUserService {
         }
 
         try {
-            boolean validResetToken = resetTokenService.isValidResetToken(token);
             JsonObject json = new JsonObject();
-            if (validResetToken) {
-                UserRecord userRecord = userService.resetPassword(email, token, password, passwordConfirm);
-                if (userRecord != null) {
-                    json.addProperty("success", true);
-                } else {
-                    json.addProperty("success", false);
-                }
+            UserRecord userRecord = userService.resetPassword(email, token, password, passwordConfirm);
+            if (userRecord != null) {
+                json.addProperty("success", true);
+            } else {
+                json.addProperty("success", false);
+                json.addProperty("code", 530);
             }
+
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
