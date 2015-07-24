@@ -86,7 +86,7 @@ CREATE TABLE `user` (
   `password` varchar(100) DEFAULT NULL,
   `salt` varchar(45) DEFAULT NULL,
   `authsource` varchar(255) NOT NULL,
-  `language` varchar(45) NOT NULL DEFAULT 'en',
+  `locale` varchar(45) NOT NULL DEFAULT 'en-US',
   `blocked` tinyint(4) NOT NULL DEFAULT '0',
   `confirmed` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),

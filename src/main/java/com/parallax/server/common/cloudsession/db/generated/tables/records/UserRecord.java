@@ -29,7 +29,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Record8<Long, String, String, String, String, String, Boolean, Boolean> {
 
-	private static final long serialVersionUID = -1584007828;
+	private static final long serialVersionUID = 1580305002;
 
 	/**
 	 * Setter for <code>cloudsession.user.id</code>.
@@ -102,16 +102,16 @@ public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Recor
 	}
 
 	/**
-	 * Setter for <code>cloudsession.user.language</code>.
+	 * Setter for <code>cloudsession.user.locale</code>.
 	 */
-	public void setLanguage(String value) {
+	public void setLocale(String value) {
 		setValue(5, value);
 	}
 
 	/**
-	 * Getter for <code>cloudsession.user.language</code>.
+	 * Getter for <code>cloudsession.user.locale</code>.
 	 */
-	public String getLanguage() {
+	public String getLocale() {
 		return (String) getValue(5);
 	}
 
@@ -220,7 +220,7 @@ public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Recor
 	 */
 	@Override
 	public Field<String> field6() {
-		return User.USER.LANGUAGE;
+		return User.USER.LOCALE;
 	}
 
 	/**
@@ -284,7 +284,7 @@ public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Recor
 	 */
 	@Override
 	public String value6() {
-		return getLanguage();
+		return getLocale();
 	}
 
 	/**
@@ -353,7 +353,7 @@ public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Recor
 	 */
 	@Override
 	public UserRecord value6(String value) {
-		setLanguage(value);
+		setLocale(value);
 		return this;
 	}
 
@@ -405,7 +405,7 @@ public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Recor
 	/**
 	 * Create a detached, initialised UserRecord
 	 */
-	public UserRecord(Long id, String email, String password, String salt, String authsource, String language, Boolean blocked, Boolean confirmed) {
+	public UserRecord(Long id, String email, String password, String salt, String authsource, String locale, Boolean blocked, Boolean confirmed) {
 		super(User.USER);
 
 		setValue(0, id);
@@ -413,7 +413,7 @@ public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Recor
 		setValue(2, password);
 		setValue(3, salt);
 		setValue(4, authsource);
-		setValue(5, language);
+		setValue(5, locale);
 		setValue(6, blocked);
 		setValue(7, confirmed);
 	}

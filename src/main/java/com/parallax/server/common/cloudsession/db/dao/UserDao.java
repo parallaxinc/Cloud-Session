@@ -20,6 +20,6 @@ public interface UserDao {
 
     UserRecord getLocalUserByEmail(String email) throws UnknownUserException;
 
-    UserRecord createLocalUser(String email, String password, String salt, String language) throws NonUniqueEmailException;
+    UserRecord createLocalUser(String email, String password, String salt, String locale) throws NonUniqueEmailException;
 
 }

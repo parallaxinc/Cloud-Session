@@ -17,7 +17,7 @@ public class UserConverter {
     public static JsonObject toJson(UserRecord user) {
         JsonObject json = new JsonObject();
         json.addProperty("email", user.getEmail());
-        json.addProperty("language", user.getLanguage());
+        json.addProperty("locale", user.getLocale());
         return json;
     }
 

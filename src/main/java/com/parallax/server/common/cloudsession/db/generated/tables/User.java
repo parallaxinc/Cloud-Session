@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-	private static final long serialVersionUID = -626269044;
+	private static final long serialVersionUID = -1989327478;
 
 	/**
 	 * The reference instance of <code>cloudsession.user</code>
@@ -75,9 +75,9 @@ public class User extends TableImpl<UserRecord> {
 	public final TableField<UserRecord, String> AUTHSOURCE = createField("authsource", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false), this, "");
 
 	/**
-	 * The column <code>cloudsession.user.language</code>.
+	 * The column <code>cloudsession.user.locale</code>.
 	 */
-	public final TableField<UserRecord, String> LANGUAGE = createField("language", org.jooq.impl.SQLDataType.VARCHAR.length(45).nullable(false).defaulted(true), this, "");
+	public final TableField<UserRecord, String> LOCALE = createField("locale", org.jooq.impl.SQLDataType.VARCHAR.length(45).nullable(false).defaulted(true), this, "");
 
 	/**
 	 * The column <code>cloudsession.user.blocked</code>.

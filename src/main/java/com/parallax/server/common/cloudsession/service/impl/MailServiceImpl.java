@@ -39,7 +39,7 @@ public class MailServiceImpl implements MailService {
     public void sendConfirmTokenEmail(String server, UserRecord user, String token) {
         LOG.info("send confirm-token email to {}", user.getEmail());
         String email = UrlEscapers.urlFragmentEscaper().escape(user.getEmail());
-        String confirmUrl = "http://localhost:8080/" + server + "/confirm?lang=" + user.getLanguage() + "&email=" + email + "&token=" + token;
+        String confirmUrl = "http://localhost:8080/" + server + "/confirm?lang=" + user.getLocale() + "&email=" + email + "&token=" + token;
         StringBuilder builder = new StringBuilder();
         builder.append("Dear,\n\n").append("Please go to ").append(confirmUrl).append(" to confirm your email address.");
         builder.append("\n\nIf the url does not work please go to ").append("http://localhost:8080/" + server + "/confirm/").append(" and enter ").append(token);
@@ -51,7 +51,7 @@ public class MailServiceImpl implements MailService {
     public void sendResetTokenEmail(String server, UserRecord user, String token) {
         LOG.info("send reset-token email to {}", user.getEmail());
         String email = UrlEscapers.urlFragmentEscaper().escape(user.getEmail());
-        String resetUrl = "http://localhost:8080/" + server + "/reset?lang=" + user.getLanguage() + "&email=" + email + "&token=" + token;
+        String resetUrl = "http://localhost:8080/" + server + "/reset?lang=" + user.getLocale() + "&email=" + email + "&token=" + token;
         StringBuilder builder = new StringBuilder();
         builder.append("Dear,\n\n").append("Please go to ").append(resetUrl).append(" to reset your password.");
         builder.append("\n\nIf the url does not work please go to ").append("http://localhost:8080/" + server + "/reset/").append(" and enter ").append(token);
