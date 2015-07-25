@@ -34,7 +34,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-	private static final long serialVersionUID = -1989327478;
+	private static final long serialVersionUID = -958734687;
 
 	/**
 	 * The reference instance of <code>cloudsession.user</code>
@@ -88,6 +88,11 @@ public class User extends TableImpl<UserRecord> {
 	 * The column <code>cloudsession.user.confirmed</code>.
 	 */
 	public final TableField<UserRecord, Boolean> CONFIRMED = createField("confirmed", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
+
+	/**
+	 * The column <code>cloudsession.user.screenname</code>.
+	 */
+	public final TableField<UserRecord, String> SCREENNAME = createField("screenname", org.jooq.impl.SQLDataType.VARCHAR.length(255), this, "");
 
 	/**
 	 * Create a <code>cloudsession.user</code> table reference

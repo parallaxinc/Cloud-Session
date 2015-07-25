@@ -26,7 +26,7 @@ public interface UserService {
 
     UserRecord confirmEmail(String email, String token) throws UnknownUserException;
 
-    UserRecord register(String server, String email, String password, String passwordConfirm, String locale) throws PasswordVerifyException, NonUniqueEmailException;
+    UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException;
 
     UserRecord authenticateLocal(String email, String password) throws UnknownUserException, InsufficientBucketTokensException, EmailNotConfirmedException, UserBlockedException;
 

@@ -16,8 +16,10 @@ public class UserConverter {
 
     public static JsonObject toJson(UserRecord user) {
         JsonObject json = new JsonObject();
+        json.addProperty("id", user.getId());
         json.addProperty("email", user.getEmail());
         json.addProperty("locale", user.getLocale());
+        json.addProperty("screenname", user.getScreenname());
         return json;
     }
 

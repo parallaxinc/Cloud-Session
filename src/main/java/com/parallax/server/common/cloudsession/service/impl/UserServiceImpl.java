@@ -131,13 +131,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord register(String server, String email, String password, String passwordConfirm, String locale) throws PasswordVerifyException, NonUniqueEmailException {
+    public UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException {
         if (!password.equals(passwordConfirm)) {
             throw new PasswordVerifyException();
         }
         String salt = rng.nextBytes().toHex();
         Sha256Hash passwordHash = new Sha256Hash(password, salt, 1000);
-        UserRecord userRecord = userDao.createLocalUser(email, passwordHash.toHex(), salt, locale);
+        UserRecord userRecord = userDao.createLocalUser(email, passwordHash.toHex(), salt, locale, screenname);
 
         try {
             confirmTokenService.createConfirmToken(server, userRecord.getId());

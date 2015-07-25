@@ -47,13 +47,14 @@ public class RestUserService {
     @Name("Register")
     @Produces("text/json")
     @Timed(name = "register")
-    public Response register(@HeaderParam("server") String server, @FormParam("email") String email, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm, @FormParam("locale") String locale) {
+    public Response register(@HeaderParam("server") String server, @FormParam("email") String email, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm, @FormParam("locale") String locale, @FormParam("screenname") String screenname) {
         Validation validation = new Validation();
         validation.addRequiredField("server", server);
         validation.addRequiredField("email", email);
         validation.addRequiredField("password", password);
         validation.addRequiredField("password-confirm", passwordConfirm);
         validation.addRequiredField("locale", locale);
+        validation.addRequiredField("screenname", screenname);
         validation.checkEmail("email", email);
         if (!validation.isValid()) {
             return validation.getValidationResponse();
@@ -62,7 +63,7 @@ public class RestUserService {
         System.out.println("VALIDATED OK");
 
         try {
-            UserRecord user = userService.register(server, email, password, passwordConfirm, locale);
+            UserRecord user = userService.register(server, email, password, passwordConfirm, locale, screenname);
             JsonObject json = new JsonObject();
             if (user != null) {
                 json.addProperty("success", true);
