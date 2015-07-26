@@ -380,7 +380,11 @@
             <version>1.5.4</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.google.code.simplelrucache</groupId>
+            <artifactId>simplelrucache</artifactId>
+            <version>1.0</version>
+        </dependency>
 
     </dependencies>
 

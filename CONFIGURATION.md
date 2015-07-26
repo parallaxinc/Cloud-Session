@@ -85,3 +85,42 @@ To change the default values for these limits use the configuration as described
 - Wrong password (use type: **failed-password**): 1 token every 120000ms (2 minutes) with a bucket size of 3.
 - Email confirm requests (use type: **email-confirm**): 1 token every 1800000ms (30 minutes) with a bucket size of 2.
 - Password reset requests (use type: **password-reset**): 1 token every 1800000ms (30 minutes) with a bucket size of 2.
+
+## Email template configuration
+The email templates, created in [freemarker](http://freemarker.org/), have to be put in a specific directory sturcture, either on the hard-disk or available over the web.
+The base path is configured as: **email.template.path**
+
+This can be an absolute or relative path, or even an url. Please use forward slashes, even on a Windows computer.
+
+Inside this base directory, following directory structure is required for the system to find the templates:
+
+locale - type - server
+
+Example (where *blocklyprop* is the server identifier for demonstration purposes):
+
+- en
+    - confirm
+        - blocklyprop
+    - reset
+        - blocklyprop
+- es
+    - confirm
+        - blocklyprop
+    - reset
+        - blocklyprop
+
+In these directories a **header.ftl** and **plain.ftl** file are required. They will respectively contain the template for the email header and the plaintext html body.
+
+The available placeholders are:
+
+- **${email}** This will be replaced with the email address of the user
+- **${locale}** This will be replaced with the locale of the user (will be the same as the name of the directory)
+- **${screenname}** This will be replaced with the screenname of the user
+- **${token}** This will be replaced with the token the user has to use for the specific operation
+
+For more information about writing templates: see [the freemarker template Author's guide](http://freemarker.org/docs/dgui.html).
+
+Email templates are cached, the settings for the cache are:
+
+- Cache size (max amount of templates in the cache): **email.template.cache.size**. Defaults to: *500*
+- Time to live (Time a template is cached, in seconds): **email.template.cache.ttl**. Defaults to: *300*
