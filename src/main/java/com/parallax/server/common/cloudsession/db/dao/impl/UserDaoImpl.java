@@ -64,4 +64,14 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Counted(monotonic = true, name = "getUserByEmail")
+    @Override
+    public UserRecord getUserByEmail(String email) throws UnknownUserException {
+        UserRecord userRecord = create.selectFrom(Tables.USER).where(Tables.USER.EMAIL.equal(email)).fetchOne();
+        if (userRecord == null) {
+            throw new UnknownUserException(email);
+        }
+        return userRecord;
+    }
+
 }

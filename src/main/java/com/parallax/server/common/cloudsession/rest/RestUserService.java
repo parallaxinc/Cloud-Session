@@ -12,16 +12,20 @@ import com.cuubez.visualizer.annotation.HttpCode;
 import com.cuubez.visualizer.annotation.Name;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import com.parallax.server.common.cloudsession.converter.UserConverter;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -39,6 +43,31 @@ public class RestUserService {
     @Inject
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @GET
+    @Path("/email/{email}")
+    @Detail("Get user data")
+    @Name("Get user data")
+    @Produces("text/json")
+    @Timed(name = "getUserData")
+    public Response getUserData(@PathParam("email") String email) {
+        Validation validation = new Validation();
+        validation.addRequiredField("email", email);
+        validation.checkEmail("email", email);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
+        try {
+            UserRecord user = userService.getUser(email);
+            JsonObject json = new JsonObject();
+            json.addProperty("success", true);
+            json.add("user", UserConverter.toJson(user));
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserException uue) {
+            return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        }
     }
 
     @PUT
@@ -78,4 +107,5 @@ public class RestUserService {
             return Response.serverError().entity(JsonResult.getFailure(pve)).build();
         }
     }
+
 }

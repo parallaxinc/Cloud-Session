@@ -180,4 +180,9 @@ public class UserServiceImpl implements UserService {
         return userDao.getLocalUserByEmail(email);
     }
 
+    @Override
+    public UserRecord getUser(String email) throws UnknownUserException {
+        return userDao.getUserByEmail(email);
+    }
+
 }

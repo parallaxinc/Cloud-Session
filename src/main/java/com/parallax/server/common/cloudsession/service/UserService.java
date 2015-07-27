@@ -32,4 +32,6 @@ public interface UserService {
 
     UserRecord getLocalUser(String email) throws UnknownUserException;
 
+    UserRecord getUser(String email) throws UnknownUserException;
+
 }
