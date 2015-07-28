@@ -64,6 +64,7 @@ public class SetupConfig extends GuiceServletContextListener {
 
     private void readConfiguration() {
         try {
+            System.out.println("Looking for cloudsession.properties in: " + System.getProperty("user.home"));
             DefaultConfigurationBuilder configurationBuilder = new DefaultConfigurationBuilder(getClass().getResource("/config.xml"));
             configuration = configurationBuilder.getConfiguration();
         } catch (ConfigurationException ce) {
