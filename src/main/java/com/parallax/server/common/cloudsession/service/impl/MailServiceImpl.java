@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -202,13 +203,26 @@ public class MailServiceImpl implements MailService {
                 }
                 properties.put("mail.smtp.socketFactory.fallback", "false");
             }
-            if (configuration.getBoolean("mail.authenticated", false)) {
-                properties.setProperty("mail.smtp.auth", "true");
-                properties.setProperty("mail.user", configuration.getString("mail.user"));
-                properties.setProperty("mail.password", configuration.getString("mail.password"));
+
+            if (configuration.getBoolean("mail.debug", false)) {
+                properties.put("mail.debug", "true");
             }
 
-            Session session = Session.getDefaultInstance(properties);
+            Session session = null;
+            if (configuration.getBoolean("mail.authenticated", false)) {
+                properties.setProperty("mail.smtp.auth", "true");
+                session = Session.getDefaultInstance(properties, new javax.mail.Authenticator() {
+
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(configuration.getString("mail.user"), configuration.getString("mail.password"));
+                    }
+
+                });
+            } else {
+                session = Session.getDefaultInstance(properties);
+            }
+
             try {
                 MimeMessage mimeMessage = new MimeMessage(session);
                 mimeMessage.setFrom(new InternetAddress(configuration.getString("mail.from", "noreply@example.com")));
