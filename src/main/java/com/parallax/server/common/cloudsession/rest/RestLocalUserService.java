@@ -228,4 +228,38 @@ public class RestLocalUserService {
         }
     }
 
+    @POST
+    @Path("/password/{id}")
+    @Detail("Change the users password")
+    @Name("Do password change")
+    @Produces("text/json")
+    @Timed(name = "doReset")
+    public Response doPasswordChange(@PathParam("id") Long idUser, @FormParam("old-password") String oldPassword, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
+        Validation validation = new Validation();
+        validation.addRequiredField("id", idUser);
+        validation.addRequiredField("old-password", oldPassword);
+        validation.addRequiredField("password", password);
+        validation.addRequiredField("password-confirm", passwordConfirm);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
+        try {
+            JsonObject json = new JsonObject();
+            UserRecord userRecord = userService.changePassword(idUser, oldPassword, password, passwordConfirm);
+            if (userRecord != null) {
+                json.addProperty("success", true);
+            } else {
+                json.addProperty("success", false);
+                json.addProperty("code", 530);
+            }
+
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserIdException uue) {
+            return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        } catch (PasswordVerifyException pve) {
+            return Response.serverError().entity(JsonResult.getFailure(pve)).build();
+        }
+    }
+
 }
