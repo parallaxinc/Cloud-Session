@@ -233,7 +233,7 @@ public class RestLocalUserService {
     @Detail("Change the users password")
     @Name("Do password change")
     @Produces("text/json")
-    @Timed(name = "doReset")
+    @Timed(name = "doPasswordChange")
     public Response doPasswordChange(@PathParam("id") Long idUser, @FormParam("old-password") String oldPassword, @FormParam("password") String password, @FormParam("password-confirm") String passwordConfirm) {
         Validation validation = new Validation();
         validation.addRequiredField("id", idUser);

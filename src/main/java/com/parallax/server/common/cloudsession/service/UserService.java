@@ -34,4 +34,6 @@ public interface UserService {
 
     UserRecord getUser(String email) throws UnknownUserException;
 
+    UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException;
+
 }

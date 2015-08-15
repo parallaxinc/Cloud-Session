@@ -185,4 +185,12 @@ public class UserServiceImpl implements UserService {
         return userDao.getUserByEmail(email);
     }
 
+    @Override
+    public UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException {
+        UserRecord userRecord = userDao.getUser(idUser);
+        userRecord.setScreenname(screenname);
+        userRecord.update();
+        return userRecord;
+    }
+
 }

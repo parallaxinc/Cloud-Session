@@ -19,10 +19,12 @@ import com.parallax.server.common.cloudsession.db.utils.Validation;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
+import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -105,6 +107,37 @@ public class RestUserService {
             return Response.serverError().entity(JsonResult.getFailure(nuie)).build();
         } catch (PasswordVerifyException pve) {
             return Response.serverError().entity(JsonResult.getFailure(pve)).build();
+        }
+    }
+
+    @POST
+    @Path("/info/{id}")
+    @Detail("Change the users info")
+    @Name("Do user info change")
+    @Produces("text/json")
+    @Timed(name = "doInfoChange")
+    public Response doInfoChange(@PathParam("id") Long idUser, @FormParam("screenname") String screenname) {
+        Validation validation = new Validation();
+        validation.addRequiredField("id", idUser);
+        validation.addRequiredField("screenname", screenname);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
+        try {
+            JsonObject json = new JsonObject();
+            UserRecord userRecord = userService.changeInfo(idUser, screenname);
+            if (userRecord != null) {
+                json.addProperty("success", true);
+                json.add("user", UserConverter.toJson(userRecord));
+            } else {
+                json.addProperty("success", false);
+                json.addProperty("code", 530);
+            }
+
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserIdException uue) {
+            return Response.serverError().entity(JsonResult.getFailure(uue)).build();
         }
     }
 
