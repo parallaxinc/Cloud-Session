@@ -1,3 +1,10 @@
+build.properties
+
+#################
+## NetBeans
+#################
+
+
 /target/
 nbactions.xml
 /.project
