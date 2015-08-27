@@ -7,3 +7,9 @@ build.properties
 /target/
 nbactions.xml
 /.project
+
+#################
+## IntelliJ
+#################
+
+.idea
