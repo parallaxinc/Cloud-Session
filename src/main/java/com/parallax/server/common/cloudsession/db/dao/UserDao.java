@@ -24,4 +24,6 @@ public interface UserDao {
 
     UserRecord getUserByEmail(String email) throws UnknownUserException;
 
+    int count();
+
 }

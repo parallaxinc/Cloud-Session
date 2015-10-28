@@ -74,4 +74,9 @@ public class UserDaoImpl implements UserDao {
         return userRecord;
     }
 
+    @Override
+    public int count() {
+        return create.selectCount().from(Tables.USER).fetchOne(0, int.class);
+    }
+
 }
