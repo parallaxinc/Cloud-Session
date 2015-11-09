@@ -12,12 +12,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Michel
  */
 public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceService, Runnable {
+
+    private Logger log = LoggerFactory.getLogger(DatabaseMaintenanceServiceImpl.class);
 
     private ScheduledExecutorService service;
 
@@ -42,7 +46,7 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
 
     @Override
     public void run() {
-        userDao.count();
+        log.info("Keep db active: {}", userDao.count());
     }
 
 }
