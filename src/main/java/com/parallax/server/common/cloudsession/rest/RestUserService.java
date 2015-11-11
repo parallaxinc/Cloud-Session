@@ -91,8 +91,6 @@ public class RestUserService {
             return validation.getValidationResponse();
         }
 
-        System.out.println("VALIDATED OK");
-
         try {
             UserRecord user = userService.register(server, email, password, passwordConfirm, locale, screenname);
             JsonObject json = new JsonObject();
