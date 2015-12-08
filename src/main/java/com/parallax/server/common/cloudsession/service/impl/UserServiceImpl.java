@@ -193,4 +193,12 @@ public class UserServiceImpl implements UserService {
         return userRecord;
     }
 
+    @Override
+    public UserRecord changeLocale(Long idUser, String locale) throws UnknownUserIdException {
+        UserRecord userRecord = userDao.getUser(idUser);
+        userRecord.setLocale(locale);
+        userRecord.update();
+        return userRecord;
+    }
+
 }

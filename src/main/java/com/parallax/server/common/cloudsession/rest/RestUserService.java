@@ -139,4 +139,35 @@ public class RestUserService {
         }
     }
 
+    @POST
+    @Path("/locale/{id}")
+    @Detail("Change the users locale")
+    @Name("Do user locale change")
+    @Produces("text/json")
+    @Timed(name = "doLocaleChange")
+    public Response doLocaleChange(@PathParam("id") Long idUser, @FormParam("locale") String locale) {
+        Validation validation = new Validation();
+        validation.addRequiredField("id", idUser);
+        validation.addRequiredField("locale", locale);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
+        try {
+            JsonObject json = new JsonObject();
+            UserRecord userRecord = userService.changeLocale(idUser, locale);
+            if (userRecord != null) {
+                json.addProperty("success", true);
+                json.add("user", UserConverter.toJson(userRecord));
+            } else {
+                json.addProperty("success", false);
+                json.addProperty("code", 530);
+            }
+
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserIdException uue) {
+            return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        }
+    }
+
 }

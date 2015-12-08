@@ -36,4 +36,6 @@ public interface UserService {
 
     UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException;
 
+    UserRecord changeLocale(Long idUser, String locale) throws UnknownUserIdException;
+
 }
