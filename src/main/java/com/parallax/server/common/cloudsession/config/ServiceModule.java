@@ -6,12 +6,14 @@
 package com.parallax.server.common.cloudsession.config;
 
 import com.google.inject.AbstractModule;
+import com.parallax.server.common.cloudsession.service.AuthenticationTokenService;
 import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
 import com.parallax.server.common.cloudsession.service.DatabaseMaintenanceService;
 import com.parallax.server.common.cloudsession.service.MailService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
+import com.parallax.server.common.cloudsession.service.impl.AuthenticationTokenServiceImpl;
 import com.parallax.server.common.cloudsession.service.impl.BucketServiceImpl;
 import com.parallax.server.common.cloudsession.service.impl.ConfirmTokenServiceImpl;
 import com.parallax.server.common.cloudsession.service.impl.DatabaseMaintenanceServiceImpl;
@@ -33,6 +35,7 @@ public class ServiceModule extends AbstractModule {
         bind(ConfirmTokenService.class).to(ConfirmTokenServiceImpl.class);
         bind(UserService.class).to(UserServiceImpl.class);
         bind(BucketService.class).to(BucketServiceImpl.class);
+        bind(AuthenticationTokenService.class).to(AuthenticationTokenServiceImpl.class);
     }
 
 }

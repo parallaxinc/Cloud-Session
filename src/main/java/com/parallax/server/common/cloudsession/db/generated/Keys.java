@@ -4,10 +4,12 @@
 package com.parallax.server.common.cloudsession.db.generated;
 
 
+import com.parallax.server.common.cloudsession.db.generated.tables.Authenticationtoken;
 import com.parallax.server.common.cloudsession.db.generated.tables.Bucket;
 import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtoken;
 import com.parallax.server.common.cloudsession.db.generated.tables.Resettoken;
 import com.parallax.server.common.cloudsession.db.generated.tables.User;
+import com.parallax.server.common.cloudsession.db.generated.tables.records.AuthenticationtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.BucketRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ConfirmtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.ResettokenRecord;
@@ -39,6 +41,7 @@ public class Keys {
 	// IDENTITY definitions
 	// -------------------------------------------------------------------------
 
+	public static final Identity<AuthenticationtokenRecord, Long> IDENTITY_AUTHENTICATIONTOKEN = Identities0.IDENTITY_AUTHENTICATIONTOKEN;
 	public static final Identity<BucketRecord, Long> IDENTITY_BUCKET = Identities0.IDENTITY_BUCKET;
 	public static final Identity<ConfirmtokenRecord, Long> IDENTITY_CONFIRMTOKEN = Identities0.IDENTITY_CONFIRMTOKEN;
 	public static final Identity<ResettokenRecord, Long> IDENTITY_RESETTOKEN = Identities0.IDENTITY_RESETTOKEN;
@@ -48,6 +51,8 @@ public class Keys {
 	// UNIQUE and PRIMARY KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final UniqueKey<AuthenticationtokenRecord> KEY_AUTHENTICATIONTOKEN_PRIMARY = UniqueKeys0.KEY_AUTHENTICATIONTOKEN_PRIMARY;
+	public static final UniqueKey<AuthenticationtokenRecord> KEY_AUTHENTICATIONTOKEN_TOKEN_UNIQUE = UniqueKeys0.KEY_AUTHENTICATIONTOKEN_TOKEN_UNIQUE;
 	public static final UniqueKey<BucketRecord> KEY_BUCKET_PRIMARY = UniqueKeys0.KEY_BUCKET_PRIMARY;
 	public static final UniqueKey<BucketRecord> KEY_BUCKET_USER_TYPE_UNIQUE = UniqueKeys0.KEY_BUCKET_USER_TYPE_UNIQUE;
 	public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_PRIMARY = UniqueKeys0.KEY_CONFIRMTOKEN_PRIMARY;
@@ -61,6 +66,7 @@ public class Keys {
 	// FOREIGN KEY definitions
 	// -------------------------------------------------------------------------
 
+	public static final ForeignKey<AuthenticationtokenRecord, UserRecord> AUTHENTICATIONTOKEN_USER = ForeignKeys0.AUTHENTICATIONTOKEN_USER;
 	public static final ForeignKey<BucketRecord, UserRecord> BUCKET_USER = ForeignKeys0.BUCKET_USER;
 	public static final ForeignKey<ConfirmtokenRecord, UserRecord> CONFIRMTOKEN_USER = ForeignKeys0.CONFIRMTOKEN_USER;
 	public static final ForeignKey<ResettokenRecord, UserRecord> RESETTOKEN_USER = ForeignKeys0.RESETTOKEN_USER;
@@ -70,6 +76,7 @@ public class Keys {
 	// -------------------------------------------------------------------------
 
 	private static class Identities0 extends AbstractKeys {
+		public static Identity<AuthenticationtokenRecord, Long> IDENTITY_AUTHENTICATIONTOKEN = createIdentity(Authenticationtoken.AUTHENTICATIONTOKEN, Authenticationtoken.AUTHENTICATIONTOKEN.ID);
 		public static Identity<BucketRecord, Long> IDENTITY_BUCKET = createIdentity(Bucket.BUCKET, Bucket.BUCKET.ID);
 		public static Identity<ConfirmtokenRecord, Long> IDENTITY_CONFIRMTOKEN = createIdentity(Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID);
 		public static Identity<ResettokenRecord, Long> IDENTITY_RESETTOKEN = createIdentity(Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID);
@@ -77,6 +84,8 @@ public class Keys {
 	}
 
 	private static class UniqueKeys0 extends AbstractKeys {
+		public static final UniqueKey<AuthenticationtokenRecord> KEY_AUTHENTICATIONTOKEN_PRIMARY = createUniqueKey(Authenticationtoken.AUTHENTICATIONTOKEN, Authenticationtoken.AUTHENTICATIONTOKEN.ID);
+		public static final UniqueKey<AuthenticationtokenRecord> KEY_AUTHENTICATIONTOKEN_TOKEN_UNIQUE = createUniqueKey(Authenticationtoken.AUTHENTICATIONTOKEN, Authenticationtoken.AUTHENTICATIONTOKEN.TOKEN);
 		public static final UniqueKey<BucketRecord> KEY_BUCKET_PRIMARY = createUniqueKey(Bucket.BUCKET, Bucket.BUCKET.ID);
 		public static final UniqueKey<BucketRecord> KEY_BUCKET_USER_TYPE_UNIQUE = createUniqueKey(Bucket.BUCKET, Bucket.BUCKET.ID_USER, Bucket.BUCKET.TYPE);
 		public static final UniqueKey<ConfirmtokenRecord> KEY_CONFIRMTOKEN_PRIMARY = createUniqueKey(Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID);
@@ -88,6 +97,7 @@ public class Keys {
 	}
 
 	private static class ForeignKeys0 extends AbstractKeys {
+		public static final ForeignKey<AuthenticationtokenRecord, UserRecord> AUTHENTICATIONTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Authenticationtoken.AUTHENTICATIONTOKEN, Authenticationtoken.AUTHENTICATIONTOKEN.ID_USER);
 		public static final ForeignKey<BucketRecord, UserRecord> BUCKET_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Bucket.BUCKET, Bucket.BUCKET.ID_USER);
 		public static final ForeignKey<ConfirmtokenRecord, UserRecord> CONFIRMTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Confirmtoken.CONFIRMTOKEN, Confirmtoken.CONFIRMTOKEN.ID_USER);
 		public static final ForeignKey<ResettokenRecord, UserRecord> RESETTOKEN_USER = createForeignKey(com.parallax.server.common.cloudsession.db.generated.Keys.KEY_USER_PRIMARY, Resettoken.RESETTOKEN, Resettoken.RESETTOKEN.ID_USER);
