@@ -6,13 +6,11 @@
 package com.parallax.server.common.cloudsession.config;
 
 import com.google.inject.AbstractModule;
-import com.parallax.server.common.cloudsession.db.dao.AuthenticationTokenChallengeDao;
 import com.parallax.server.common.cloudsession.db.dao.AuthenticationTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.BucketDao;
 import com.parallax.server.common.cloudsession.db.dao.ConfirmTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.ResetTokenDao;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
-import com.parallax.server.common.cloudsession.db.dao.impl.AuthenticationTokenChallengeDaoImpl;
 import com.parallax.server.common.cloudsession.db.dao.impl.AuthenticationTokenDaoImpl;
 import com.parallax.server.common.cloudsession.db.dao.impl.BucketDaoImpl;
 import com.parallax.server.common.cloudsession.db.dao.impl.ConfirmTokenDaoImpl;
@@ -28,7 +26,6 @@ public class DaoModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(AuthenticationTokenDao.class).to(AuthenticationTokenDaoImpl.class);
-        bind(AuthenticationTokenChallengeDao.class).to(AuthenticationTokenChallengeDaoImpl.class);
         bind(ResetTokenDao.class).to(ResetTokenDaoImpl.class);
         bind(ConfirmTokenDao.class).to(ConfirmTokenDaoImpl.class);
         bind(UserDao.class).to(UserDaoImpl.class);
