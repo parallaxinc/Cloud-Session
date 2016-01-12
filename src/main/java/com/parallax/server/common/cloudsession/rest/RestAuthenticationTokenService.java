@@ -68,7 +68,7 @@ public class RestAuthenticationTokenService {
     @Name("Request password reset")
     @Produces("text/json")
     @Timed(name = "requestResetById")
-    public Response requestReset(@HeaderParam("server") String server, @FormParam("idUser") Long idUser, @FormParam("browser") String browser, @FormParam("ipAddress") String ipAddress) {
+    public Response requestToken(@HeaderParam("server") String server, @FormParam("idUser") Long idUser, @FormParam("browser") String browser, @FormParam("ipAddress") String ipAddress) {
         Validation validation = new Validation();
         validation.addRequiredField("server", server);
         validation.addRequiredField("idUser", idUser);
