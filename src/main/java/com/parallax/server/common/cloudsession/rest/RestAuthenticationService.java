@@ -13,14 +13,12 @@ import com.cuubez.visualizer.annotation.Name;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.converter.UserConverter;
-import com.parallax.server.common.cloudsession.db.generated.tables.records.AuthenticationtokenRecord;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
 import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
-import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 import com.parallax.server.common.cloudsession.service.AuthenticationTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
@@ -91,8 +89,6 @@ public class RestAuthenticationService {
                 } else {
                     json.addProperty("success", true);
                     json.add("user", UserConverter.toJson(user));
-
-                    String token = createAuthenticationToken(server, user.getId(), browser, ipAddress);
                     return Response.ok(json.toString()).build();
                 }
             } else {
@@ -113,16 +109,6 @@ public class RestAuthenticationService {
             return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ence)).build();
         } catch (UserBlockedException ube) {
             return Response.status(Response.Status.UNAUTHORIZED).entity(JsonResult.getFailure(ube)).build();
-        }
-    }
-
-    private String createAuthenticationToken(String server, Long idUser, String browser, String ipAddress) throws UserBlockedException, EmailNotConfirmedException {
-        try {
-            AuthenticationtokenRecord authenticationtoken = authenticationTokenService.createAuthenticationToken(server, idUser, browser, ipAddress);
-            return authenticationtoken.getToken();
-        } catch (UnknownUserIdException uuie) {
-            log.error("Unknown id but should be called from place where user already has been checked: {}", idUser);
-            return null;
         }
     }
 }

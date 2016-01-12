@@ -6,6 +6,7 @@
 package com.parallax.server.common.cloudsession.config;
 
 import com.parallax.server.common.cloudsession.rest.RestAuthenticationService;
+import com.parallax.server.common.cloudsession.rest.RestAuthenticationTokenService;
 import com.parallax.server.common.cloudsession.rest.RestBucketService;
 import com.parallax.server.common.cloudsession.rest.RestLocalUserService;
 import com.parallax.server.common.cloudsession.rest.RestUserService;
@@ -24,6 +25,7 @@ public class RestModule extends JerseyServletModule {
     @Override
     protected void configureServlets() {
         bind(RestAuthenticationService.class);
+        bind(RestAuthenticationTokenService.class);
         bind(RestLocalUserService.class);
         bind(RestUserService.class);
         bind(RestBucketService.class);

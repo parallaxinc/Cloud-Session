@@ -9,6 +9,7 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.Authe
 import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
+import java.util.List;
 
 /**
  *
@@ -18,7 +19,9 @@ public interface AuthenticationTokenService {
 
     AuthenticationtokenRecord getAuthenticationToken(String token);
 
-    boolean isValidConfirmToken(String token, String server, String browser, String ipAddress);
+    boolean isValidAuthenticationToken(String token, String server, Long idUser, String browser, String ipAddress);
 
     AuthenticationtokenRecord createAuthenticationToken(String server, Long idUser, String browser, String ipAddress) throws UnknownUserIdException, UserBlockedException, EmailNotConfirmedException;
+
+    public List<AuthenticationtokenRecord> getValidAuthenticationTokens(String server, Long idUser, String browser, String ipAddress);
 }

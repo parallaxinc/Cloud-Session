@@ -86,7 +86,20 @@ public class AuthenticationTokenDaoImpl implements AuthenticationTokenDao {
     @Counted(monotonic = true, name = "getAuthenticationTokenForUser")
     @Override
     public List<AuthenticationtokenRecord> getAuthenticationTokenForUser(Long idUser) {
+        cleanExpiredTokens();
         return (List<AuthenticationtokenRecord>) Arrays.asList(create.selectFrom(Tables.AUTHENTICATIONTOKEN).where(Tables.AUTHENTICATIONTOKEN.ID_USER.equal(idUser)).fetchArray());
+    }
+
+    @Counted(monotonic = true, name = "getValidAuthenticationTokens")
+    @Override
+    public List<AuthenticationtokenRecord> getValidAuthenticationTokens(String server, Long idUser, String browser, String ipAddress) {
+        cleanExpiredTokens();
+        return (List<AuthenticationtokenRecord>) Arrays.asList(create.selectFrom(Tables.AUTHENTICATIONTOKEN).
+                where(Tables.AUTHENTICATIONTOKEN.SERVER.eq(server)
+                        .and(Tables.AUTHENTICATIONTOKEN.ID_USER.eq(idUser))
+                        .and(Tables.AUTHENTICATIONTOKEN.BROWSER.eq(browser))
+                        .and(Tables.AUTHENTICATIONTOKEN.IPADDRESS.eq(ipAddress))
+                ).fetchArray());
     }
 
 }

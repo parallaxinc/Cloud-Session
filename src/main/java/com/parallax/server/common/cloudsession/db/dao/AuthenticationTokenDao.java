@@ -27,4 +27,6 @@ public interface AuthenticationTokenDao {
 
     List<AuthenticationtokenRecord> getAuthenticationTokenForUser(Long idUser);
 
+    public List<AuthenticationtokenRecord> getValidAuthenticationTokens(String server, Long idUser, String browser, String ipAddress);
+
 }

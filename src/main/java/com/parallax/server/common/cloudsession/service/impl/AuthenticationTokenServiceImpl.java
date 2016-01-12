@@ -17,6 +17,7 @@ import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException
 import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 import com.parallax.server.common.cloudsession.service.AuthenticationTokenService;
 import java.util.Date;
+import java.util.List;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,12 +59,15 @@ public class AuthenticationTokenServiceImpl implements AuthenticationTokenServic
     }
 
     @Override
-    public boolean isValidConfirmToken(String token, String server, String browser, String ipAddress) {
+    public boolean isValidAuthenticationToken(String token, String server, Long idUser, String browser, String ipAddress) {
         AuthenticationtokenRecord authenticationToken = authenticationTokenDao.getAuthenticationToken(token);
         if (authenticationToken == null) {
             return false;
         }
         if (!authenticationToken.getServer().equals(server)) {
+            return false;
+        }
+        if (!authenticationToken.getIdUser().equals(idUser)) {
             return false;
         }
         if (!authenticationToken.getBrowser().equals(browser)) {
@@ -85,6 +89,11 @@ public class AuthenticationTokenServiceImpl implements AuthenticationTokenServic
             throw new EmailNotConfirmedException();
         }
         return authenticationTokenDao.createAuthenticationToken(idUser, server, browser, ipAddress);
+    }
+
+    @Override
+    public List<AuthenticationtokenRecord> getValidAuthenticationTokens(String server, Long idUser, String browser, String ipAddress) {
+        return authenticationTokenDao.getValidAuthenticationTokens(server, idUser, browser, ipAddress);
     }
 
 }
