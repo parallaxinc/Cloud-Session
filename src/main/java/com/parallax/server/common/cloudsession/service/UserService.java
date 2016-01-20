@@ -34,6 +34,8 @@ public interface UserService {
 
     UserRecord getUser(String email) throws UnknownUserException;
 
+    UserRecord getUser(Long id) throws UnknownUserIdException;
+
     UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException;
 
     UserRecord changeLocale(Long idUser, String locale) throws UnknownUserIdException;

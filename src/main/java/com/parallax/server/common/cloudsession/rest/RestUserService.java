@@ -49,11 +49,11 @@ public class RestUserService {
 
     @GET
     @Path("/email/{email}")
-    @Detail("Get user data")
-    @Name("Get user data")
+    @Detail("Get user data by email")
+    @Name("Get user data by email")
     @Produces("text/json")
-    @Timed(name = "getUserData")
-    public Response getUserData(@PathParam("email") String email) {
+    @Timed(name = "getUserDataByEmail")
+    public Response getUserDataByEmail(@PathParam("email") String email) {
         Validation validation = new Validation();
         validation.addRequiredField("email", email);
         validation.checkEmail("email", email);
@@ -69,6 +69,30 @@ public class RestUserService {
             return Response.ok(json.toString()).build();
         } catch (UnknownUserException uue) {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
+        }
+    }
+
+    @GET
+    @Path("/id/{id}")
+    @Detail("Get user data by id")
+    @Name("Get user data by id")
+    @Produces("text/json")
+    @Timed(name = "getUserDataById")
+    public Response getUserDataById(@PathParam("id") Long id) {
+        Validation validation = new Validation();
+        validation.addRequiredField("id", id);
+        if (!validation.isValid()) {
+            return validation.getValidationResponse();
+        }
+
+        try {
+            UserRecord user = userService.getUser(id);
+            JsonObject json = new JsonObject();
+            json.addProperty("success", true);
+            json.add("user", UserConverter.toJson(user));
+            return Response.ok(json.toString()).build();
+        } catch (UnknownUserIdException uuie) {
+            return Response.serverError().entity(JsonResult.getFailure(uuie)).build();
         }
     }
 
