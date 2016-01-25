@@ -67,8 +67,13 @@ public class MailServiceImpl implements MailService {
             // plain directory for it, but non-file-system sources are possible too:
             String basePath = configuration.getString("email.template.path", "templates");
             File baseDirectory = new File(basePath);
-            System.out.println("baseDirectory: " + baseDirectory.getAbsolutePath());
-            cfg.setDirectoryForTemplateLoading(new File(basePath));
+
+            if (baseDirectory.exists() && baseDirectory.isDirectory()) {
+                System.out.println("baseDirectory: " + baseDirectory.getAbsolutePath());
+                cfg.setDirectoryForTemplateLoading(new File(basePath));
+            } else {
+                System.out.println("baseDirectory: " + baseDirectory.getAbsolutePath() + " doesn't exist or is not a directory");
+            }
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(MailServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
