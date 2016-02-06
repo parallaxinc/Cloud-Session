@@ -15,7 +15,7 @@
         <metrics-version>3.1.2</metrics-version>
         <jersey.version>1.19</jersey.version>
 
-    
+
     </properties>
 
     <pluginRepositories>
@@ -28,6 +28,14 @@
 
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/config/${environment}</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -147,6 +155,23 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <environment>default</environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>production</id>
+            <properties>
+                <environment>production</environment>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <!-- Testing -->
