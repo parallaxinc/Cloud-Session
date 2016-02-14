@@ -186,6 +186,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserRecord getUser(Long id) throws UnknownUserIdException {
+        return userDao.getUser(id);
+    }
+
+    @Override
     public UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException {
         UserRecord userRecord = userDao.getUser(idUser);
         userRecord.setScreenname(screenname);

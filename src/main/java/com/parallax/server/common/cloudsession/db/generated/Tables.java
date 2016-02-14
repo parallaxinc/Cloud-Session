@@ -4,6 +4,7 @@
 package com.parallax.server.common.cloudsession.db.generated;
 
 
+import com.parallax.server.common.cloudsession.db.generated.tables.Authenticationtoken;
 import com.parallax.server.common.cloudsession.db.generated.tables.Bucket;
 import com.parallax.server.common.cloudsession.db.generated.tables.Confirmtoken;
 import com.parallax.server.common.cloudsession.db.generated.tables.Resettoken;
@@ -24,6 +25,11 @@ import javax.annotation.Generated;
 )
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+	/**
+	 * The table cloudsession.authenticationtoken
+	 */
+	public static final Authenticationtoken AUTHENTICATIONTOKEN = com.parallax.server.common.cloudsession.db.generated.tables.Authenticationtoken.AUTHENTICATIONTOKEN;
 
 	/**
 	 * The table cloudsession.bucket

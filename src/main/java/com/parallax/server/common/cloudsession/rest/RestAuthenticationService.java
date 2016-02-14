@@ -20,12 +20,16 @@ import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedExcep
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
+import com.parallax.server.common.cloudsession.service.AuthenticationTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -36,11 +40,20 @@ import javax.ws.rs.core.Response;
 @HttpCode("500>Internal Server Error,200>Success Response")
 public class RestAuthenticationService {
 
+    private Logger log = LoggerFactory.getLogger(RestAuthenticationService.class);
+
     private UserService userService;
+
+    private AuthenticationTokenService authenticationTokenService;
 
     @Inject
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @Inject
+    public void setAuthenticationTokenService(AuthenticationTokenService authenticationTokenService) {
+        this.authenticationTokenService = authenticationTokenService;
     }
 
     @POST
@@ -49,8 +62,9 @@ public class RestAuthenticationService {
     @Name("Authenticate local")
     @Produces("text/json")
     @Timed(name = "authenticateLocalUser")
-    public Response authenticateLocalUser(@FormParam("email") String email, @FormParam("password") String password) {
+    public Response authenticateLocalUser(@HeaderParam("server") String server, @FormParam("email") String email, @FormParam("password") String password, @FormParam("browser") String browser, @FormParam("ipaddress") String ipAddress) {
         Validation validation = new Validation();
+        validation.addRequiredField("server", server);
         validation.addRequiredField("email", email);
         validation.addRequiredField("password", password);
         validation.checkEmail("email", email);
