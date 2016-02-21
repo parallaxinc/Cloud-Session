@@ -35,6 +35,7 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
 
     public void setup() {
         this.service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
                 thread.setDaemon(true);
