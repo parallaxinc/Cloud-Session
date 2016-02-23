@@ -6,7 +6,7 @@
 package com.parallax.server.common.cloudsession.service.impl;
 
 import com.google.inject.Inject;
-import com.parallax.server.common.cloudsession.db.dao.UserDao;
+import com.parallax.server.common.cloudsession.service.AuthenticationTokenService;
 import com.parallax.server.common.cloudsession.service.DatabaseMaintenanceService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,15 +21,21 @@ import org.slf4j.LoggerFactory;
  */
 public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceService, Runnable {
 
-    private Logger log = LoggerFactory.getLogger(DatabaseMaintenanceServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(DatabaseMaintenanceServiceImpl.class);
 
     private ScheduledExecutorService service;
 
-    private UserDao userDao;
+//    private UserDao userDao;
+    private AuthenticationTokenService authenticationTokenService;
 
+//    @Inject
+//    public void setUserDao(UserDao userDao) {
+//        this.userDao = userDao;
+//        setup();
+//    }
     @Inject
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setAuthenticationTokenService(AuthenticationTokenService authenticationTokenService) {
+        this.authenticationTokenService = authenticationTokenService;
         setup();
     }
 
@@ -39,6 +45,7 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
                 thread.setDaemon(true);
+                //thread.setDaemon(false);
                 return thread;
             }
         });
@@ -47,7 +54,12 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
 
     @Override
     public void run() {
-        log.info("Keep db active: {}", userDao.count());
+        //  log.info("Keep db active: {}", userDao.count());
+        try {
+            log.info("Clean authentication tokens and keep db active: removed {}", authenticationTokenService.cleanExpiredAutheticationTokens());
+        } catch (Throwable t) {
+            log.error("ALERT: Problem cleaning authentication tokens and keeping db active", t);
+        }
     }
 
 }
