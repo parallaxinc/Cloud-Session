@@ -17,6 +17,7 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.UserR
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
+import com.parallax.server.common.cloudsession.exceptions.PasswordComplexityException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
@@ -129,6 +130,8 @@ public class RestUserService {
             return Response.serverError().entity(JsonResult.getFailure(nuie)).build();
         } catch (PasswordVerifyException pve) {
             return Response.serverError().entity(JsonResult.getFailure(pve)).build();
+        } catch (PasswordComplexityException pce) {
+            return Response.serverError().entity(JsonResult.getFailure(pce)).build();
         }
     }
 

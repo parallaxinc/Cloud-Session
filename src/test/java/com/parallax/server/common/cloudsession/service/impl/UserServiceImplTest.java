@@ -8,6 +8,7 @@ package com.parallax.server.common.cloudsession.service.impl;
 import com.parallax.server.common.cloudsession.db.dao.UserDao;
 import com.parallax.server.common.cloudsession.db.generated.tables.records.UserRecord;
 import com.parallax.server.common.cloudsession.db.test.tables.records.UserRecordMock;
+import com.parallax.server.common.cloudsession.exceptions.PasswordComplexityException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.service.BucketService;
@@ -93,6 +94,8 @@ public class UserServiceImplTest {
             Assert.fail("Password should match");
         } catch (UnknownUserException ex) {
             Assert.fail("User should be known");
+        } catch (PasswordComplexityException ex) {
+            Assert.fail("Password should comply with validation rules");
         }
     }
 }

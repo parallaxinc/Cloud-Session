@@ -9,6 +9,7 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.UserR
 import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
+import com.parallax.server.common.cloudsession.exceptions.PasswordComplexityException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
@@ -20,13 +21,13 @@ import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
  */
 public interface UserService {
 
-    UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserException;
+    UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserException, PasswordComplexityException;
 
-    UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserIdException;
+    UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserIdException, PasswordComplexityException;
 
     UserRecord confirmEmail(String email, String token) throws UnknownUserException;
 
-    UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException;
+    UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException, PasswordComplexityException;
 
     UserRecord authenticateLocal(String email, String password) throws UnknownUserException, InsufficientBucketTokensException, EmailNotConfirmedException, UserBlockedException;
 

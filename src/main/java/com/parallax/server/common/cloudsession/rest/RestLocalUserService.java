@@ -18,6 +18,7 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.UserR
 import com.parallax.server.common.cloudsession.db.utils.JsonResult;
 import com.parallax.server.common.cloudsession.db.utils.Validation;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
+import com.parallax.server.common.cloudsession.exceptions.PasswordComplexityException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
@@ -157,6 +158,8 @@ public class RestLocalUserService {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
         } catch (PasswordVerifyException pve) {
             return Response.serverError().entity(JsonResult.getFailure(pve)).build();
+        } catch (PasswordComplexityException pce) {
+            return Response.serverError().entity(JsonResult.getFailure(pce)).build();
         }
     }
 
@@ -259,6 +262,8 @@ public class RestLocalUserService {
             return Response.serverError().entity(JsonResult.getFailure(uue)).build();
         } catch (PasswordVerifyException pve) {
             return Response.serverError().entity(JsonResult.getFailure(pve)).build();
+        } catch (PasswordComplexityException pce) {
+            return Response.serverError().entity(JsonResult.getFailure(pce)).build();
         }
     }
 
