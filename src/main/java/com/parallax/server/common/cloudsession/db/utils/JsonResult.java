@@ -11,6 +11,7 @@ import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketToke
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordComplexityException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
+import com.parallax.server.common.cloudsession.exceptions.ScreennameUsedException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownBucketTypeException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
@@ -129,6 +130,15 @@ public class JsonResult {
         result.addProperty("success", Boolean.FALSE);
         result.addProperty("message", pce.getMessage());
         result.addProperty("code", 490);
+        return result.toString();
+    }
+
+    public static String getFailure(ScreennameUsedException sue) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.FALSE);
+        result.addProperty("message", sue.getMessage());
+        result.addProperty("data", sue.getScreenname());
+        result.addProperty("code", 500);
         return result.toString();
     }
 

@@ -15,6 +15,7 @@ import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketToke
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordComplexityException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
+import com.parallax.server.common.cloudsession.exceptions.ScreennameUsedException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
@@ -143,7 +144,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException, PasswordComplexityException {
+    public UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException, PasswordComplexityException, ScreennameUsedException {
+        // check screen name is unique
+        try {
+            UserRecord userWithScreenname = userDao.getUserByScreenname(screenname);
+            throw new ScreennameUsedException(screenname);
+        } catch (UnknownUserException uue) {
+
+        }
+
         if (!password.equals(passwordConfirm)) {
             throw new PasswordVerifyException();
         }
@@ -206,8 +215,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException {
+    public UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException, ScreennameUsedException {
         UserRecord userRecord = userDao.getUser(idUser);
+
+        try {
+            UserRecord userWithScreenname = userDao.getUserByScreenname(screenname);
+            if (!userWithScreenname.getId().equals(userRecord.getId())) {
+                throw new ScreennameUsedException(screenname);
+            }
+        } catch (UnknownUserException uue) {
+
+        }
+
         userRecord.setScreenname(screenname);
         userRecord.update();
         return userRecord;

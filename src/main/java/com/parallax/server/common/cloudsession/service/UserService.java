@@ -11,6 +11,7 @@ import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketToke
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordComplexityException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
+import com.parallax.server.common.cloudsession.exceptions.ScreennameUsedException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
@@ -27,7 +28,7 @@ public interface UserService {
 
     UserRecord confirmEmail(String email, String token) throws UnknownUserException;
 
-    UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException, PasswordComplexityException;
+    UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException, PasswordComplexityException, ScreennameUsedException;
 
     UserRecord authenticateLocal(String email, String password) throws UnknownUserException, InsufficientBucketTokensException, EmailNotConfirmedException, UserBlockedException;
 
@@ -37,7 +38,7 @@ public interface UserService {
 
     UserRecord getUser(Long id) throws UnknownUserIdException;
 
-    UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException;
+    UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException, ScreennameUsedException;
 
     UserRecord changeLocale(Long idUser, String locale) throws UnknownUserIdException;
 
