@@ -5,6 +5,8 @@
  */
 package com.parallax.server.common.cloudsession.service.impl;
 
+import com.github.kevinsawicki.http.HttpRequest;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.utils.DataSourceSetup;
 import com.parallax.server.common.cloudsession.db.utils.NeedsDataSource;
@@ -16,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +35,8 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
 //    private UserDao userDao;
     private AuthenticationTokenService authenticationTokenService;
 
+    private Configuration configuration;
+
     private DataSource dataSource;
 
     public DatabaseMaintenanceServiceImpl() {
@@ -47,6 +52,11 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
     public void setAuthenticationTokenService(AuthenticationTokenService authenticationTokenService) {
         this.authenticationTokenService = authenticationTokenService;
         setup();
+    }
+
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
@@ -81,6 +91,18 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
                 connection.prepareStatement("SELECT 1").executeQuery();
             } catch (Throwable t) {
                 log.error("ALERT: Problem keeping db active", t);
+            }
+        }
+
+        if (configuration != null) {
+            String keepAliveUrl = configuration.getString("keepalive.url");
+            if (!Strings.isNullOrEmpty(keepAliveUrl)) {
+                try {
+                    HttpRequest httpRequest = HttpRequest.get(keepAliveUrl);
+                    log.info(httpRequest.body());
+                } catch (Throwable t) {
+                    log.error("ALERT: Problem calling keep-alive url", t);
+                }
             }
         }
     }
