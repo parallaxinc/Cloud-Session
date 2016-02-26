@@ -19,10 +19,10 @@ import org.passay.RuleResult;
  */
 public class PasswordValidationServiceImpl implements PasswordValidationService {
 
-    private PasswordValidator validator;
+    private final PasswordValidator validator;
 
     public PasswordValidationServiceImpl() {
-        LengthRule r1 = new LengthRule(8);
+        LengthRule r1 = new LengthRule(8, 255);
 
         validator = new PasswordValidator(Arrays.asList((Rule) r1));
     }
