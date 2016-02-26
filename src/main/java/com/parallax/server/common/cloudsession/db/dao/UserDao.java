@@ -24,6 +24,8 @@ public interface UserDao {
 
     UserRecord getUserByEmail(String email) throws UnknownUserException;
 
+    UserRecord getUserByScreenname(String screenname) throws UnknownUserException;
+
     int count();
 
 }

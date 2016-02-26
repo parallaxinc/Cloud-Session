@@ -85,7 +85,7 @@ public class MailServiceImpl implements MailService {
         LOG.info("send confirm-token email to {}", user.getEmail());
 
         Map<String, Object> data = new HashMap<>();
-        data.put("email", UrlEscapers.urlFragmentEscaper().escape(user.getEmail()));
+        data.put("email", UrlEscapers.urlFragmentEscaper().escape(user.getEmail()).replace("+", "%2B"));
         data.put("locale", user.getLocale());
         data.put("screenname", user.getScreenname());
         data.put("token", token);
@@ -133,7 +133,7 @@ public class MailServiceImpl implements MailService {
         LOG.info("send reset-token email to {}", user.getEmail());
 
         Map<String, Object> data = new HashMap<>();
-        data.put("email", UrlEscapers.urlFragmentEscaper().escape(user.getEmail()));
+        data.put("email", UrlEscapers.urlFragmentEscaper().escape(user.getEmail()).replace("+", "%2B"));
         data.put("locale", user.getLocale());
         data.put("screenname", user.getScreenname());
         data.put("token", token);

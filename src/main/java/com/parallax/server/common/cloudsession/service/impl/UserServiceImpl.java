@@ -13,12 +13,15 @@ import com.parallax.server.common.cloudsession.db.generated.tables.records.UserR
 import com.parallax.server.common.cloudsession.exceptions.EmailNotConfirmedException;
 import com.parallax.server.common.cloudsession.exceptions.InsufficientBucketTokensException;
 import com.parallax.server.common.cloudsession.exceptions.NonUniqueEmailException;
+import com.parallax.server.common.cloudsession.exceptions.PasswordComplexityException;
 import com.parallax.server.common.cloudsession.exceptions.PasswordVerifyException;
+import com.parallax.server.common.cloudsession.exceptions.ScreennameUsedException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserException;
 import com.parallax.server.common.cloudsession.exceptions.UnknownUserIdException;
 import com.parallax.server.common.cloudsession.exceptions.UserBlockedException;
 import com.parallax.server.common.cloudsession.service.BucketService;
 import com.parallax.server.common.cloudsession.service.ConfirmTokenService;
+import com.parallax.server.common.cloudsession.service.PasswordValidationService;
 import com.parallax.server.common.cloudsession.service.ResetTokenService;
 import com.parallax.server.common.cloudsession.service.UserService;
 import org.apache.shiro.crypto.RandomNumberGenerator;
@@ -45,6 +48,8 @@ public class UserServiceImpl implements UserService {
 
     private UserDao userDao;
 
+    private PasswordValidationService passwordValidationService;
+
     @Inject
     public void setResetTokenSevice(ResetTokenService resetTokenService) {
         this.resetTokenService = resetTokenService;
@@ -65,6 +70,11 @@ public class UserServiceImpl implements UserService {
         this.userDao = userDao;
     }
 
+    @Inject
+    public void setPasswordValidationService(PasswordValidationService passwordValidationService) {
+        this.passwordValidationService = passwordValidationService;
+    }
+
     public UserServiceImpl() {
         rng = new SecureRandomNumberGenerator();
     }
@@ -74,7 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserException {
+    public UserRecord resetPassword(String email, String token, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserException, PasswordComplexityException {
         ResettokenRecord resettokenRecord = resetTokenService.getResetToken(token);
         if (resettokenRecord != null) {
             UserRecord userRecord = userDao.getLocalUserByEmail(email);
@@ -89,7 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserIdException {
+    public UserRecord changePassword(Long id, String oldPassword, String password, String repeatPassword) throws PasswordVerifyException, UnknownUserIdException, PasswordComplexityException {
         UserRecord userRecord = userDao.getUser(id);
         Sha256Hash oldPasswordHash = new Sha256Hash(oldPassword, userRecord.getSalt(), 1000);
         if (userRecord.getPassword().equals(oldPasswordHash.toHex())) {
@@ -102,9 +112,12 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    private boolean changePassword(UserRecord userRecord, String password, String repeatPassword) throws PasswordVerifyException {
+    private boolean changePassword(UserRecord userRecord, String password, String repeatPassword) throws PasswordVerifyException, PasswordComplexityException {
         if (!password.equals(repeatPassword)) {
             throw new PasswordVerifyException();
+        }
+        if (!passwordValidationService.validatePassword(password)) {
+            throw new PasswordComplexityException();
         }
         String salt = rng.nextBytes().toHex();
         Sha256Hash passwordHash = new Sha256Hash(password, salt, 1000);
@@ -131,9 +144,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException {
+    public UserRecord register(String server, String email, String password, String passwordConfirm, String locale, String screenname) throws PasswordVerifyException, NonUniqueEmailException, PasswordComplexityException, ScreennameUsedException {
+        // check screen name is unique
+        try {
+            UserRecord userWithScreenname = userDao.getUserByScreenname(screenname);
+            throw new ScreennameUsedException(screenname);
+        } catch (UnknownUserException uue) {
+
+        }
+
         if (!password.equals(passwordConfirm)) {
             throw new PasswordVerifyException();
+        }
+        if (!passwordValidationService.validatePassword(password)) {
+            throw new PasswordComplexityException();
         }
         String salt = rng.nextBytes().toHex();
         Sha256Hash passwordHash = new Sha256Hash(password, salt, 1000);
@@ -191,8 +215,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException {
+    public UserRecord changeInfo(Long idUser, String screenname) throws UnknownUserIdException, ScreennameUsedException {
         UserRecord userRecord = userDao.getUser(idUser);
+
+        try {
+            UserRecord userWithScreenname = userDao.getUserByScreenname(screenname);
+            if (!userWithScreenname.getId().equals(userRecord.getId())) {
+                throw new ScreennameUsedException(screenname);
+            }
+        } catch (UnknownUserException uue) {
+
+        }
+
         userRecord.setScreenname(screenname);
         userRecord.update();
         return userRecord;

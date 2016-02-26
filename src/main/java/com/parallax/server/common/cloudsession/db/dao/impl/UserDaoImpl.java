@@ -75,6 +75,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public UserRecord getUserByScreenname(String screenname) throws UnknownUserException {
+        UserRecord userRecord = create.selectFrom(Tables.USER).where(Tables.USER.SCREENNAME.equal(screenname)).fetchOne();
+        if (userRecord == null) {
+            throw new UnknownUserException(screenname);
+        }
+        return userRecord;
+    }
+
+    @Override
     public int count() {
         return create.selectCount().from(Tables.USER).fetchOne(0, int.class);
     }

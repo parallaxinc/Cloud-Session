@@ -24,4 +24,6 @@ public interface AuthenticationTokenService {
     AuthenticationtokenRecord createAuthenticationToken(String server, Long idUser, String browser, String ipAddress) throws UnknownUserIdException, UserBlockedException, EmailNotConfirmedException;
 
     public List<AuthenticationtokenRecord> getValidAuthenticationTokens(String server, Long idUser, String browser, String ipAddress);
+
+    int cleanExpiredAutheticationTokens();
 }

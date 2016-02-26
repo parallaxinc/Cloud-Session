@@ -96,4 +96,9 @@ public class AuthenticationTokenServiceImpl implements AuthenticationTokenServic
         return authenticationTokenDao.getValidAuthenticationTokens(server, idUser, browser, ipAddress);
     }
 
+    @Override
+    public int cleanExpiredAutheticationTokens() {
+        return authenticationTokenDao.cleanExpiredTokens();
+    }
+
 }
