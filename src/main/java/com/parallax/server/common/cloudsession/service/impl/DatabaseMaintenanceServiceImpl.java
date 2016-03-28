@@ -5,17 +5,19 @@
  */
 package com.parallax.server.common.cloudsession.service.impl;
 
+import com.github.kevinsawicki.http.HttpRequest;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.parallax.server.common.cloudsession.db.utils.DataSourceSetup;
 import com.parallax.server.common.cloudsession.db.utils.NeedsDataSource;
 import com.parallax.server.common.cloudsession.service.AuthenticationTokenService;
 import com.parallax.server.common.cloudsession.service.DatabaseMaintenanceService;
-import java.sql.Connection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,8 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
 //    private UserDao userDao;
     private AuthenticationTokenService authenticationTokenService;
 
+    private Configuration configuration;
+
     private DataSource dataSource;
 
     public DatabaseMaintenanceServiceImpl() {
@@ -46,6 +50,12 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
     @Inject
     public void setAuthenticationTokenService(AuthenticationTokenService authenticationTokenService) {
         this.authenticationTokenService = authenticationTokenService;
+
+    }
+
+    @Inject
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
         setup();
     }
 
@@ -70,19 +80,31 @@ public class DatabaseMaintenanceServiceImpl implements DatabaseMaintenanceServic
     @Override
     public void run() {
         //  log.info("Keep db active: {}", userDao.count());
-        try {
-            log.info("Clean authentication tokens and keep db active: removed {}", authenticationTokenService.cleanExpiredAutheticationTokens());
-        } catch (Throwable t) {
-            log.error("ALERT: Problem cleaning authentication tokens and keeping db active", t);
-        }
-        if (this.dataSource != null) {
+//        try {
+//            log.info("Clean authentication tokens and keep db active: removed {}", authenticationTokenService.cleanExpiredAutheticationTokens());
+//        } catch (Throwable t) {
+//            log.error("ALERT: Problem cleaning authentication tokens and keeping db active", t);
+//        }
+//        if (this.dataSource != null) {
+//            try {
+//                Connection connection = dataSource.getConnection();
+//                connection.prepareStatement("SELECT 1").executeQuery();
+//            } catch (Throwable t) {
+//                log.error("ALERT: Problem keeping db active", t);
+//            }
+//        }
+
+//        if (configuration != null) {
+        String keepAliveUrl = configuration.getString("keepalive.url");
+        if (!Strings.isNullOrEmpty(keepAliveUrl)) {
             try {
-                Connection connection = dataSource.getConnection();
-                connection.prepareStatement("SELECT 1").executeQuery();
+                HttpRequest httpRequest = HttpRequest.get(keepAliveUrl);
+                log.info(httpRequest.body());
             } catch (Throwable t) {
-                log.error("ALERT: Problem keeping db active", t);
+                log.error("ALERT: Problem calling keep-alive url", t);
             }
         }
+//        }
     }
 
 }

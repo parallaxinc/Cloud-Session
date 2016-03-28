@@ -32,6 +32,27 @@ public class JsonResult {
         return result.toString();
     }
 
+    public static String getSuccess(String data) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.TRUE);
+        result.addProperty("message", data);
+        return result.toString();
+    }
+
+    public static String getSuccess(Integer data) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.TRUE);
+        result.addProperty("message", data);
+        return result.toString();
+    }
+
+    public static String getSuccess(Long data) {
+        JsonObject result = new JsonObject();
+        result.addProperty("success", Boolean.TRUE);
+        result.addProperty("message", data);
+        return result.toString();
+    }
+
     public static String getFailure(String message) {
         JsonObject result = new JsonObject();
         result.addProperty("success", Boolean.FALSE);
