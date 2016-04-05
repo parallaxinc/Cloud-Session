@@ -1,4 +1,7 @@
 build.properties
+*.pyc
+*.sqlite
+*.log
 
 #################
 ## NetBeans

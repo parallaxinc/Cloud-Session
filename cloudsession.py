@@ -3,13 +3,19 @@ from ConfigParser import ConfigParser
 import json
 from flask import Flask, Response, request
 from flask_restful import Resource, Api
+from flask_sqlalchemy import SQLAlchemy
 from os.path import expanduser, isfile
+
+import AuthTokensService
 
 __author__ = 'Michel'
 
 app = Flask(__name__)
 api = Api(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+db = SQLAlchemy(app)
 
+import models
 
 # ------------------------------------- Util functions and classes -------------------------------------------
 class FakeSecHead(object):
@@ -28,10 +34,23 @@ class FakeSecHead(object):
 
 # --------------------------------------------- Application configurations --------------------------------------
 defaults = {
-    'c-compiler': '/opt/parallax/bin/propeller-elf-gcc',
-    'c-libraries': '/opt/simple-libraries',
-    'spin-compiler': '/opt/parallax/bin/openspin',
-    'spin-libraries': '/opt/parallax/spin'
+            'database.driver' : 'com.mysql.jdbc.Driver',
+            'database.url' : 'jdbc:mysql://localhost:3306/cloudsession',
+            'database.username' : 'cloudsession',
+            'database.password' : 'cloudsession',
+            'database.dialect' : 'MYSQL',
+
+            'bucket.failed-password.size' : '3',
+            'bucket.failed-password.input' : '1',
+            'bucket.failed-password.freq' : '120000',
+
+            'bucket.password-reset.size' : '2',
+            'bucket.password-reset.input' : '1',
+            'bucket.password-reset.freq' : '1800000',
+
+            'bucket.email-confirm.size' : '2',
+            'bucket.email-confirm.input' : '1',
+            'bucket.email-confirm.freq' : '1800000'
 }
 
 configfile = expanduser("~/cloudsession.properties")
@@ -42,8 +61,9 @@ if isfile(configfile):
     app_configs = {}
     for (key, value) in configs.items('section'):
         app_configs[key] = value
+    app.config['CLOUD_SESSION_PROPERTIES'] = app_configs
 else:
-    app_configs = defaults
+    app.config['CLOUD_SESSION_PROPERTIES'] = defaults
 
 
 # -------------------------------------------- Services --------------------------------------------------------
@@ -53,6 +73,7 @@ class RateLimiter(Resource):
         return {'status': 'success'}
 
 api.add_resource(RateLimiter, '/RateLimiter')
+api.add_resource(AuthTokensService.AuthTokensRequest, '/authtoken/request')
 
 # -------------------------------------------- Logging ---------------------------------------------------------
 if not app.debug:
@@ -69,6 +90,7 @@ if not app.debug:
 
 # ----------------------------------------------- Development server -------------------------------------------
 if __name__ == '__main__':
+    db.create_all()
     app.debug = True
     app.run(host='0.0.0.0')
 
