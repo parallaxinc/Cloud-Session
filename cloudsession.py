@@ -11,11 +11,6 @@ import AuthTokensService
 __author__ = 'Michel'
 
 app = Flask(__name__)
-api = Api(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
-db = SQLAlchemy(app)
-
-import models
 
 # ------------------------------------- Util functions and classes -------------------------------------------
 class FakeSecHead(object):
@@ -34,26 +29,23 @@ class FakeSecHead(object):
 
 # --------------------------------------------- Application configurations --------------------------------------
 defaults = {
-            'database.driver' : 'com.mysql.jdbc.Driver',
-            'database.url' : 'jdbc:mysql://localhost:3306/cloudsession',
-            'database.username' : 'cloudsession',
-            'database.password' : 'cloudsession',
-            'database.dialect' : 'MYSQL',
+            'database.url': 'mysql+mysqldb://cloudsession:cloudsession@localhost:3306/cloudsession',
 
-            'bucket.failed-password.size' : '3',
-            'bucket.failed-password.input' : '1',
-            'bucket.failed-password.freq' : '120000',
+            'bucket.failed-password.size': '3',
+            'bucket.failed-password.input': '1',
+            'bucket.failed-password.freq': '120000',
 
-            'bucket.password-reset.size' : '2',
-            'bucket.password-reset.input' : '1',
-            'bucket.password-reset.freq' : '1800000',
+            'bucket.password-reset.size': '2',
+            'bucket.password-reset.input': '1',
+            'bucket.password-reset.freq': '1800000',
 
-            'bucket.email-confirm.size' : '2',
-            'bucket.email-confirm.input' : '1',
-            'bucket.email-confirm.freq' : '1800000'
+            'bucket.email-confirm.size': '2',
+            'bucket.email-confirm.input': '1',
+            'bucket.email-confirm.freq': '1800000'
 }
 
 configfile = expanduser("~/cloudsession.properties")
+print('Looking for config file: %s' % configfile)
 if isfile(configfile):
     configs = ConfigParser(defaults)
     configs.readfp(FakeSecHead(open(configfile)))
@@ -65,6 +57,16 @@ if isfile(configfile):
 else:
     app.config['CLOUD_SESSION_PROPERTIES'] = defaults
 
+
+# -------------------------------------- Module initialization -------------------------------------------------
+app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+db = SQLAlchemy(app)
+
+import models
+
+api = Api(app)
 
 # -------------------------------------------- Services --------------------------------------------------------
 class RateLimiter(Resource):
@@ -90,7 +92,6 @@ if not app.debug:
 
 # ----------------------------------------------- Development server -------------------------------------------
 if __name__ == '__main__':
-    db.create_all()
     app.debug = True
     app.run(host='0.0.0.0')
 

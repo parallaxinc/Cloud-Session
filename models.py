@@ -15,3 +15,11 @@ class AuthenticationToken(db.Model):
 
     def __repr__(self):
         return '<AuthenticationToken %s:%s>' % (self.id_user, self.ipaddress)
+
+
+class Test(db.Model):
+    id = db.Column(db.BigInteger, primary_key=True)
+    name = db.Column(db.String(200))
+
+    def __init__(self, name):
+        self.name = name
