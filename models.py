@@ -4,7 +4,7 @@ from cloudsession import db
 class AuthenticationToken(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     id_user = db.Column(db.BigInteger)
-    server = db.Column(db.String(200))
+    browser = db.Column(db.String(200))
     validity = db.Column(db.DateTime)
     token = db.Column(db.String(200), unique=True)
     server = db.Column(db.String(1000))

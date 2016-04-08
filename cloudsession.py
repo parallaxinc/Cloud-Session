@@ -6,7 +6,6 @@ from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from os.path import expanduser, isfile
 
-import AuthTokensService
 
 __author__ = 'Michel'
 
@@ -65,8 +64,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 import models
+# Services use models, so need to be imported after the db has been initialized
+import AuthTokensService
 
 api = Api(app)
+
 
 # -------------------------------------------- Services --------------------------------------------------------
 class RateLimiter(Resource):
