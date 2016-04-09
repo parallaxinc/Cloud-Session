@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import request
+from flask import request, Blueprint
 
 from Validation import Validation
 #from models import AuthenticationToken
@@ -27,3 +27,4 @@ class AuthTokensRequest(Resource):
         #authenticaiton_token.validity =
 
         return {'status': 'success', 'server': server}
+

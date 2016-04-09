@@ -3,11 +3,9 @@ from validate_email import validate_email
 
 class Validation:
 
-    required_but_missing = []
-    invalid_email = []
-
     def __init__(self):
-        pass
+        self.required_but_missing = []
+        self.invalid_email = []
 
     def add_required_field(self, field, value):
         if value is None:
@@ -32,4 +30,4 @@ class Validation:
             'code': 300,
             'missing-fields': self.required_but_missing,
             'invalid-email-fields': self.invalid_email
-        }
+        }, 400

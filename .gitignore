@@ -2,6 +2,7 @@ build.properties
 *.pyc
 *.sqlite
 *.log
+venv/
 
 #################
 ## NetBeans
