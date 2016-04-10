@@ -81,3 +81,11 @@ def rate_exceeded():
                'message': 'Insufficient bucket tokens',
                'code': 470
            }, 500
+
+
+def wrong_password():
+    return {
+               'success': False,
+               'message': 'Wrong password',
+               'code': 410
+           }, 401
