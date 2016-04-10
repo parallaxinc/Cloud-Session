@@ -34,6 +34,7 @@ defaults = {
             'mail.debug': app.debug,
 
             'confirm-token-validity-hours': '12',
+            'reset-token-validity-hours': '12',
 
             'bucket.failed-password.size': '3',
             'bucket.failed-password.input': '1',

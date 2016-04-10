@@ -75,3 +75,9 @@ def screen_name_already_in_use(screen_name):
            }, 500
 
 
+def rate_exceeded():
+    return {
+               'success': False,
+               'message': 'Insufficient bucket tokens',
+               'code': 470
+           }, 500

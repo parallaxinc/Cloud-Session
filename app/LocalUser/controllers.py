@@ -8,7 +8,7 @@ from flask import request, Blueprint
 from Validation import Validation
 
 from app.User import services as user_service
-from app.User.models import ConfirmToken
+from app.User.models import ConfirmToken, ResetToken
 
 local_user_app = Blueprint('local_user', __name__, url_prefix='/local')
 api = Api(local_user_app)
@@ -76,6 +76,87 @@ class RequestConfirm(Resource):
         if success:
             return {'success': True}
         else:
+            if code == 10:
+                return Failures.rate_exceeded()
+            return {
+                'success': False,
+                'message': message,
+                'code': 520
+            }
+
+
+class PasswordReset(Resource):
+
+    def post(self, email):
+        # Get values
+        token = request.form.get('token')
+        password = request.form.get('password')
+        password_confirm = request.form.get('password-confirm')
+
+        # Validate required fields
+        validation = Validation()
+        validation.add_required_field('email', email)
+        validation.add_required_field('token', token)
+        validation.add_required_field('password', password)
+        validation.add_required_field('password_confirm', password_confirm)
+        validation.check_email('email', email)
+        if not validation.is_valid():
+            return validation.get_validation_response()
+
+        # Validate user exits
+        user = user_service.get_user_by_email(email)
+        if user is None:
+            return Failures.unknown_user_email(email)
+
+        # Validate password strength and confirm
+        if password != password_confirm:
+            return Failures.passwords_do_not_match()
+        if not user_service.check_password_complexity(password):
+            return Failures.password_complexity()
+
+        reset_token = ResetToken.query.filter_by(token=token).first()
+        if reset_token is None:
+            # Unkown token
+            return {'success': False, 'code': 510}
+        if reset_token.id_user != user.id:
+            # Token is not for this user
+            return {'success': False, 'code': 510}
+
+        salt, password_hash = user_service.get_password_hash(password)
+        user.password = password_hash
+        user.salt = salt
+
+        db.session.delete(reset_token)
+        db.session.commit()
+
+        return {'success': True}
+
+    def get(self, email):
+        # Get values
+        server = request.headers.get('server')
+
+        # Validate required fields
+        validation = Validation()
+        validation.add_required_field('email', email)
+        validation.add_required_field('server', server)
+        validation.check_email('email', email)
+        if not validation.is_valid():
+            return validation.get_validation_response()
+
+        # Validate user exits
+        user = user_service.get_user_by_email(email)
+        if user is None:
+            return Failures.unknown_user_email(email)
+
+        success, code, message = user_service.send_password_reset(user.id, server)
+
+        db.session.commit()
+
+        if success:
+            return {'success': True}
+        else:
+            if code == 10:
+                return Failures.rate_exceeded()
             return {
                 'success': False,
                 'message': message,
@@ -85,3 +166,4 @@ class RequestConfirm(Resource):
 
 api.add_resource(DoConfirm, '/confirm')
 api.add_resource(RequestConfirm, '/confirm/<string:email>')
+api.add_resource(PasswordReset, '/reset/<string:email>')

@@ -8,8 +8,13 @@ from app import db, app
 from app.Email import services as email_services
 from app.RateLimiting import services as rate_limiting_services
 
-from models import User, ConfirmToken
+from models import User, ConfirmToken, ResetToken
 
+
+def get_password_hash(password):
+    salt = str(uuid.uuid1())
+    password_hash = hashlib.sha256("%s:%s" % (password, salt)).hexdigest()
+    return salt, password_hash
 
 def get_user(id_user):
     return User.query.get(id_user)
@@ -28,8 +33,7 @@ def check_password_complexity(password):
 
 
 def create_local_user(server, email, password, locale, screen_name):
-    salt = str(uuid.uuid1())
-    password_hash = hashlib.sha256("%s:%s" % (password, salt)).hexdigest()
+    salt, password_hash = get_password_hash(password)
 
     # Save user
     user = User()
@@ -58,7 +62,7 @@ def send_email_confirm(id_user, server):
 
     # check rate limiting
     if not rate_limiting_services.consume_tokens(id_user, 'email-confirm', 1):
-        return False, 4, 'Rate limiter exceeded'
+        return False, 10, 'Rate limiter exceeded'
 
     # Delete token if any exists
     existing_token = ConfirmToken.query.filter_by(id_user=id_user).first()
@@ -76,5 +80,36 @@ def send_email_confirm(id_user, server):
     db.session.add(confirm_token)
 
     email_services.send_email_template_for_user(id_user, 'confirm', server, token=token)
+
+    return True, 0, 'Success'
+
+
+def send_password_reset(id_user, server):
+    user = get_user(id_user)
+    if user is None:
+        return False, 1, 'User id not known'
+    if user.blocked:
+        return False, 3, 'Account Blocked'
+
+    # check rate limiting
+    if not rate_limiting_services.consume_tokens(id_user, 'password-reset', 1):
+        return False, 10, 'Rate limiter exceeded'
+
+    # Delete token if any exists
+    existing_token = ResetToken.query.filter_by(id_user=id_user).first()
+    if existing_token is not None:
+        db.session.delete(existing_token)
+        db.session.flush()
+
+    token = str(uuid.uuid1()).translate(None, '-')
+    token_validity_time = int(app.config['CLOUD_SESSION_PROPERTIES']['reset-token-validity-hours'])
+
+    reset_token = ResetToken()
+    reset_token.id_user = id_user
+    reset_token.token = token
+    reset_token.validity = datetime.datetime.now() + datetime.timedelta(hours=token_validity_time)
+    db.session.add(reset_token)
+
+    email_services.send_email_template_for_user(id_user, 'reset', server, token=token)
 
     return True, 0, 'Success'
