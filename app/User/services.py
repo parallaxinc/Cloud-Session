@@ -51,9 +51,17 @@ def send_email_confirm(id_user, server):
     if user is None:
         return False, 1, 'User id not known'
     if user.confirmed:
-        return False, 2, 'USer already confirmed'
+        return False, 2, 'Account already verified'
     if user.blocked:
-        return False, 3, 'User Blocked'
+        return False, 3, 'Account Blocked'
+
+    # TODO check rate limiting
+
+    # Delete token if any exists
+    existing_token = ConfirmToken.query.filter_by(id_user=id_user).first()
+    if existing_token is not None:
+        db.session.delete(existing_token)
+        db.session.flush()
 
     token = str(uuid.uuid1()).translate(None, '-')
     token_validity_time = int(app.config['CLOUD_SESSION_PROPERTIES']['confirm-token-validity-hours'])

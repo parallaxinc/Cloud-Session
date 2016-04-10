@@ -89,10 +89,12 @@ mail = Mail(app)
 # -------------------------------------------- Services --------------------------------------------------------
 from app.AuthToken.controllers import auth_token_app
 from app.User.controllers import user_app
+from app.LocalUser.controllers import  local_user_app
 from app.RateLimiting.controllers import rate_limiting_app
 
 app.register_blueprint(auth_token_app)
 app.register_blueprint(user_app)
+app.register_blueprint(local_user_app)
 app.register_blueprint(rate_limiting_app)
 
 

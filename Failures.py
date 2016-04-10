@@ -7,6 +7,15 @@ def unknown_user_id(id_user):
            }, 500
 
 
+def unknown_user_email(email):
+    return {
+               'success': False,
+               'message': 'Unknown user',
+               'code': 400,
+               'data': email
+           }, 500
+
+
 def email_already_in_use(email):
     return {
                'success': False,
@@ -64,3 +73,5 @@ def screen_name_already_in_use(screen_name):
                'message': "Screenname already in use",
                'code': 500
            }, 500
+
+
