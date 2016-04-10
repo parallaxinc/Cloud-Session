@@ -98,7 +98,7 @@ class PasswordReset(Resource):
         validation.add_required_field('email', email)
         validation.add_required_field('token', token)
         validation.add_required_field('password', password)
-        validation.add_required_field('password_confirm', password_confirm)
+        validation.add_required_field('password-confirm', password_confirm)
         validation.check_email('email', email)
         if not validation.is_valid():
             return validation.get_validation_response()
@@ -164,6 +164,48 @@ class PasswordReset(Resource):
             }
 
 
+class PasswordChange(Resource):
+
+    def post(self, id_user):
+        # Get values
+        old_password = request.form.get('old-password')
+        password = request.form.get('password')
+        password_confirm = request.form.get('password-confirm')
+
+        # Validate required fields
+        validation = Validation()
+        validation.add_required_field('id_user', id_user)
+        validation.add_required_field('old-password', old_password)
+        validation.add_required_field('password', password)
+        validation.add_required_field('password_confirm', password_confirm)
+        if not validation.is_valid():
+            return validation.get_validation_response()
+
+        # Validate user exits
+        user = user_service.get_user(id_user)
+        if user is None:
+            return Failures.unknown_user_id(id_user)
+
+        # Validate password strength and confirm
+        if password != password_confirm:
+            return Failures.passwords_do_not_match()
+        if not user_service.check_password_complexity(password):
+            return Failures.password_complexity()
+
+        if not user_service.check_password(id_user, old_password):
+            # Token is not for this user
+            return {'success': False, 'code': 530}
+
+        salt, password_hash = user_service.get_password_hash(password)
+        user.password = password_hash
+        user.salt = salt
+
+        db.session.commit()
+
+        return {'success': True}
+
+
 api.add_resource(DoConfirm, '/confirm')
 api.add_resource(RequestConfirm, '/confirm/<string:email>')
 api.add_resource(PasswordReset, '/reset/<string:email>')
+api.add_resource(PasswordChange, '/password/<int:id_user>')

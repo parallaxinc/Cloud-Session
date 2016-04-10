@@ -16,6 +16,13 @@ def get_password_hash(password):
     password_hash = hashlib.sha256("%s:%s" % (password, salt)).hexdigest()
     return salt, password_hash
 
+
+def check_password(id_user, password):
+    user = get_user(id_user)
+    password_hash = hashlib.sha256("%s:%s" % (password, user.salt)).hexdigest()
+    return user.password == password_hash
+
+
 def get_user(id_user):
     return User.query.get(id_user)
 
