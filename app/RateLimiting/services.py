@@ -30,7 +30,7 @@ def consume_tokens(id_user, bucket_type, token_count):
 
         elapsed_milliseconds = (datetime.datetime.now() - bucket.timestamp).total_seconds() * 1000
         input_count = elapsed_milliseconds / bucket_stream_frequency
-        bucket_content = min(bucket_size, (input_count * bucket_stream_input) + bucket.content)
+        bucket.content = int(min(bucket_size, (input_count * bucket_stream_input) + bucket.content))
 
     if bucket.content < token_count:
         milliseconds_till_enough = (token_count - old_bucket_content) * bucket_stream_frequency
