@@ -6,6 +6,7 @@ import datetime
 from app import db, app
 
 from app.Email import services as email_services
+from app.RateLimiting import services as rate_limiting_services
 
 from models import User, ConfirmToken
 
@@ -55,7 +56,9 @@ def send_email_confirm(id_user, server):
     if user.blocked:
         return False, 3, 'Account Blocked'
 
-    # TODO check rate limiting
+    # check rate limiting
+    if not rate_limiting_services.consume_tokens(id_user, 'email-confirm', 1):
+        return False, 4, 'Rate limiter exceeded'
 
     # Delete token if any exists
     existing_token = ConfirmToken.query.filter_by(id_user=id_user).first()
