@@ -24,16 +24,16 @@ class AuthenticateLocalUser(Resource):
         server = request.headers.get('server')
         email = request.form.get('email')
         password = request.form.get('password')
-        browser = request.form.get('browser')
-        ip_address = request.form.get('ipAddress')
+        #browser = request.form.get('browser')
+        #ip_address = request.form.get('ipAddress')
 
         # Validate required fields
         validation = Validation()
         validation.add_required_field('server', server)
         validation.add_required_field('email', email)
         validation.add_required_field('password', password)
-        validation.add_required_field('browser', browser)
-        validation.add_required_field('ipAddress', ip_address)
+        #validation.add_required_field('browser', browser)
+        #validation.add_required_field('ipAddress', ip_address)
         if not validation.is_valid():
             return validation.get_validation_response()
 
