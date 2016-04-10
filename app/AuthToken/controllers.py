@@ -1,4 +1,5 @@
 # Import the database object from the main app module
+import json
 import uuid
 import datetime
 
@@ -66,4 +67,42 @@ class AuthTokensRequest(Resource):
 
         return {'success': True, 'token': token}
 
+
+class GetAuthTokens(Resource):
+
+    def post(self, id_user):
+        # Get values
+        server = request.headers.get('server')
+        browser = request.form.get('browser')
+        ip_address = request.form.get('ipAddress')
+
+        # Validate required fields
+        validation = Validation()
+        validation.add_required_field('server', server)
+        validation.add_required_field('idUser', id_user)
+        validation.add_required_field('browser', browser)
+        validation.add_required_field('ipAddress', ip_address)
+        if not validation.is_valid():
+            return validation.get_validation_response()
+
+        # Parse numbers
+        try:
+            id_user = int(id_user)
+        except:
+            return Failures.not_a_number('idUser', id_user)
+
+        authentication_token_models = AuthenticationToken.query.filter_by(
+            id_user=id_user,
+            browser=browser,
+            server=server,
+            ip_address=ip_address
+        ).all()
+
+        authentication_tokens = []
+        for authentication_token_model in authentication_token_models:
+            authentication_tokens.append(authentication_token_model.token)
+
+        return authentication_tokens
+
 api.add_resource(AuthTokensRequest, '/request')
+api.add_resource(GetAuthTokens, '/tokens/<int:id_user>')

@@ -62,4 +62,27 @@ class Register(Resource):
         return {'success': True, 'user': id_user}
 
 
+class GetUser(Resource):
+
+    def get(self, id_user):
+        # Parse numbers
+        try:
+            id_user = int(id_user)
+        except:
+            return Failures.not_a_number('idUser', id_user)
+
+        # Validate user exists, is validated and is not blocked
+        user = user_service.get_user(id_user)
+        if user is None:
+            return Failures.unknown_user_id(id_user)
+
+        return {'success': True, 'user': {
+            'id': user.id,
+            'email': user.email,
+            'locale': user.locale,
+            'screenname': user.screen_name
+        }}
+
+
 api.add_resource(Register, '/register')
+api.add_resource(GetUser, '/id/<int:id_user>')
