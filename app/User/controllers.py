@@ -84,5 +84,44 @@ class GetUser(Resource):
         }}
 
 
+class DoInfoChange(Resource):
+
+    def post(self, id_user):
+        screen_name = request.form.get('screenname')
+        # Validate required fields
+        validation = Validation()
+        validation.add_required_field('id-user', id_user)
+        validation.add_required_field('screenname', screen_name)
+        if not validation.is_valid():
+            return validation.get_validation_response()
+
+        # Parse numbers
+        try:
+            id_user = int(id_user)
+        except:
+            return Failures.not_a_number('idUser', id_user)
+
+        # Validate user exists, is validated and is not blocked
+        user = user_service.get_user(id_user)
+        if user is None:
+            return Failures.unknown_user_id(id_user)
+
+        user_by_email = user_service.get_user_by_screen_name(screen_name)
+        if user_by_email is not None:
+            if user.id != user_by_email.id:
+                return Failures.screen_name_already_in_use(screen_name)
+
+        user.screen_name = screen_name
+        db.session.commit()
+
+        return {'success': True, 'user': {
+            'id': user.id,
+            'email': user.email,
+            'locale': user.locale,
+            'screenname': user.screen_name
+        }}
+
+
 api.add_resource(Register, '/register')
 api.add_resource(GetUser, '/id/<int:id_user>')
+api.add_resource(DoInfoChange, '/info/<int:id_user>')
