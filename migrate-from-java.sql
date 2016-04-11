@@ -115,3 +115,4 @@ CREATE TABLE `user` (
 insert into user (id, email, password, salt, auth_source, locale, blocked, confirmed, screen_name)
     SELECT id, email, password, salt, auth_source, locale, blocked, confirmed, screen_name from user_java;
 
+drop TABLE user;
