@@ -95,7 +95,7 @@ def wrong_password():
 def unknown_bucket_type(bucket_type):
     return {
                'success': False,
-               'message': 'Unkown bucket type',
+               'message': 'Unknown bucket type',
                'code': 180,
                'data': bucket_type
            }, 500
