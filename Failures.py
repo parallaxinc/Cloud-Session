@@ -71,6 +71,7 @@ def screen_name_already_in_use(screen_name):
     return {
                'success': False,
                'message': "Screenname already in use",
+               'data': screen_name,
                'code': 500
            }, 500
 
