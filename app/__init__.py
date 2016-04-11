@@ -36,6 +36,8 @@ defaults = {
             'confirm-token-validity-hours': '12',
             'reset-token-validity-hours': '12',
 
+            'bucket.types': '',
+
             'bucket.failed-password.size': '3',
             'bucket.failed-password.input': '1',
             'bucket.failed-password.freq': '120000',

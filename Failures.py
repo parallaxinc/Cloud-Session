@@ -30,7 +30,7 @@ def email_not_confirmed():
                'success': False,
                'message': 'Email not confirmed',
                'code': 430
-           }, 500
+           }, 401
 
 
 def user_blocked():
@@ -38,7 +38,7 @@ def user_blocked():
                'success': False,
                'message': 'User is blocked',
                'code': 420
-           }, 500
+           }, 401
 
 
 def not_a_number(field, value):
@@ -89,3 +89,12 @@ def wrong_password():
                'message': 'Wrong password',
                'code': 410
            }, 401
+
+
+def unknown_bucket_type(bucket_type):
+    return {
+               'success': False,
+               'message': 'Unkown bucket type',
+               'code': 180,
+               'data': bucket_type
+           }, 500
