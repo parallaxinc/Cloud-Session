@@ -122,6 +122,40 @@ class DoInfoChange(Resource):
         }}
 
 
+class DoLocaleChange(Resource):
+
+    def post(self, id_user):
+        locale = request.form.get('locale')
+        # Validate required fields
+        validation = Validation()
+        validation.add_required_field('id-user', id_user)
+        validation.add_required_field('locale', locale)
+        if not validation.is_valid():
+            return validation.get_validation_response()
+
+        # Parse numbers
+        try:
+            id_user = int(id_user)
+        except:
+            return Failures.not_a_number('idUser', id_user)
+
+        # Validate user exists, is validated and is not blocked
+        user = user_service.get_user(id_user)
+        if user is None:
+            return Failures.unknown_user_id(id_user)
+
+        user.locale = locale
+        db.session.commit()
+
+        return {'success': True, 'user': {
+            'id': user.id,
+            'email': user.email,
+            'locale': user.locale,
+            'screenname': user.screen_name
+        }}
+
+
 api.add_resource(Register, '/register')
 api.add_resource(GetUser, '/id/<int:id_user>')
 api.add_resource(DoInfoChange, '/info/<int:id_user>')
+api.add_resource(DoLocaleChange, '/locale/<int:id_user>')
