@@ -87,6 +87,8 @@ app.config['MAIL_USERNAME'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.user'
 app.config['MAIL_PASSWORD'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.password']
 app.config['DEFAULT_MAIL_SENDER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.from']
 
+#app.debug = True
+
 mail = Mail(app)
 
 # -------------------------------------------- Services --------------------------------------------------------

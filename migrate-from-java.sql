@@ -113,6 +113,6 @@ CREATE TABLE `user` (
 
 
 insert into user (id, email, password, salt, auth_source, locale, blocked, confirmed, screen_name)
-    SELECT id, email, password, salt, auth_source, locale, blocked, confirmed, screen_name from user_java;
+    SELECT id, email, password, salt, authsource, locale, blocked, confirmed, screenname from user_java;
 
 drop TABLE user;

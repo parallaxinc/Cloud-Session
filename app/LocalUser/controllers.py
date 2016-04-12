@@ -37,9 +37,8 @@ class DoConfirm(Resource):
             return Failures.unknown_user_email(email)
 
         # Delete expired tokens
-        ConfirmToken.query.filter_by(ConfirmToken.validity < datetime.datetime.now()).delete()
+        ConfirmToken.query.filter(ConfirmToken.validity < datetime.datetime.now()).delete()
         db.session.flush()
-        db.session.refresh()
 
         confirm_token = ConfirmToken.query.filter_by(token=token).first()
         if confirm_token is None:
@@ -122,9 +121,8 @@ class PasswordReset(Resource):
             return Failures.password_complexity()
 
         # Delete expired tokens
-        ResetToken.query.filter_by(ResetToken.validity < datetime.datetime.now()).delete()
+        ResetToken.query.filter(ResetToken.validity < datetime.datetime.now()).delete()
         db.session.flush()
-        db.session.refresh()
 
         reset_token = ResetToken.query.filter_by(token=token).first()
         if reset_token is None:
