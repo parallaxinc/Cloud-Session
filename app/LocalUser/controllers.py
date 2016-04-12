@@ -1,3 +1,5 @@
+import datetime
+
 import Failures
 from app import db, app
 
@@ -33,6 +35,11 @@ class DoConfirm(Resource):
         user = user_service.get_user_by_email(email)
         if user is None:
             return Failures.unknown_user_email(email)
+
+        # Delete expired tokens
+        ConfirmToken.query.filter_by(ConfirmToken.validity < datetime.datetime.now()).delete()
+        db.session.flush()
+        db.session.refresh()
 
         confirm_token = ConfirmToken.query.filter_by(token=token).first()
         if confirm_token is None:
@@ -113,6 +120,11 @@ class PasswordReset(Resource):
             return Failures.passwords_do_not_match()
         if not user_service.check_password_complexity(password):
             return Failures.password_complexity()
+
+        # Delete expired tokens
+        ResetToken.query.filter_by(ResetToken.validity < datetime.datetime.now()).delete()
+        db.session.flush()
+        db.session.refresh()
 
         reset_token = ResetToken.query.filter_by(token=token).first()
         if reset_token is None:

@@ -51,6 +51,11 @@ class AuthTokensRequest(Resource):
         if user.blocked:
             return Failures.user_blocked()
 
+        # Delete expired tokens
+        AuthenticationToken.query.filter_by(AuthenticationToken.validity < datetime.datetime.now()).delete()
+        db.session.flush()
+        db.session.refresh()
+
         # Generate token
         token = str(uuid.uuid1())
 
