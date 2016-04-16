@@ -1,7 +1,10 @@
 # Import flask and template operators
 
 # Import properties files utils
+import logging
 from ConfigParser import ConfigParser
+
+import os
 from FakeSecHead import FakeSecHead
 from os.path import expanduser, isfile
 
@@ -15,6 +18,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.mail import Mail
 
 # Define the WSGI application object
+from raven.contrib.flask import Sentry
+
 app = Flask(__name__)
 
 # Load basic configurations
@@ -24,9 +29,11 @@ app.config.from_object('config')
 defaults = {
             'database.url': 'mysql+mysqldb://cloudsession:cloudsession@localhost:3306/cloudsession',
 
+            'sentry-dsn': None,
+
             'mail.host': 'localhost',
             'mail.port': None,
-            'mail.from': 'noreply@blockly',
+            'mail.from': 'noreply@example.com',
             'mail.user': None,
             'mail.password': None,
             'mail.tls': False,
@@ -66,6 +73,14 @@ else:
 
 
 # -------------------------------------- Module initialization -------------------------------------------------
+if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
+    sentry = Sentry(app,
+                    dsn=app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'],
+                    logging=True,
+                    level=logging.ERROR
+                    )
+
+
 app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
 
 # Define the database object which is imported
