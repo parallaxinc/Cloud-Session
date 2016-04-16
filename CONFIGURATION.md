@@ -10,7 +10,7 @@ To configure the database connection use the following configuration property:
 
 - Connection url: **database.url**. Defaults to: *mysql+mysqldb://cloudsession:cloudsession@localhost:3306/cloudsession*
 
-To use anything but mysql, the python connector library will need to be installed and you will have to look up to correct connection url on [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/latest/core/engines.html.
+To use anything but mysql, the python connector library will need to be installed and you will have to look up to correct connection url on [SQLAlchemy documentation](http://docs.sqlalchemy.org/en/latest/core/engines.html).
 
 ## Mail server
 By default mails will be sent from *noreply@example.com* using a smtp server on localhost with a non encrypted connection on port 25. For any changes use the following configurations.
