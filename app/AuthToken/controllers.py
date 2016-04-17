@@ -1,5 +1,6 @@
 # Import the database object from the main app module
 import json
+import logging
 import uuid
 import datetime
 
@@ -69,6 +70,8 @@ class AuthTokensRequest(Resource):
         db.session.add(authentication_token)
         db.session.commit()
 
+        logging.info('AuthToken-controller: Request auth token: success: %s -> %s*****', user.id, token[0:6])
+
         return {'success': True, 'token': token}
 
 
@@ -105,6 +108,9 @@ class GetAuthTokens(Resource):
         authentication_tokens = []
         for authentication_token_model in authentication_token_models:
             authentication_tokens.append(authentication_token_model.token)
+
+        logging.info('AuthToken-controller: Get auth tokens: success: %s -> %s tokens', id_user,
+                     len(authentication_tokens))
 
         return authentication_tokens
 

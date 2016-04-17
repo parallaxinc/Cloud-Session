@@ -5,10 +5,13 @@ from os.path import expanduser, isfile
 from flask.ext.mail import Message
 
 import pystache
+import logging
 
 
 def send_email_template_for_user(id_user, template, server, **kwargs):
     from app.User.services import get_user
+
+    logging.info("Sending email to user: %s (%s)", id_user, template)
 
     params = {}
     for key, value in kwargs.items():
@@ -57,13 +60,14 @@ def _read_templates(template, server, locale, params):
 
 def _read_template(template, server, locale, part, params, none_if_missing=False):
     template_file = expanduser("~/templates/%s/%s/%s/%s.mustache" % (locale, template, server, part))
-    print('Looking for template file: %s' % template_file)
     if isfile(template_file):
+        logging.debug('Looking for template file: %s', template_file)
         renderer = pystache.Renderer()
         rendered = renderer.render_path(template_file, params)
         #print(rendered)
         return rendered
     else:
+        logging.error('Looking for template file: %s, but the file is missing', template_file)
         if none_if_missing:
             return None
         else:

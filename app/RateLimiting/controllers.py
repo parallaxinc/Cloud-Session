@@ -1,3 +1,5 @@
+import logging
+
 import Failures
 from app import db, app
 
@@ -51,6 +53,8 @@ class ConsumeSingle(Resource):
 
         db.session.commit()
 
+        logging.info('RateLimiting-controller: ConsumeSingle: success: %s (%s)', id_user, bucket_type)
+
         return {'success': True}
 
 
@@ -94,6 +98,8 @@ class ConsumeMultiple(Resource):
             return Failures.rate_exceeded()
 
         db.session.commit()
+
+        logging.info('RateLimiting-controller: ConsumeMultiple: success: %s (%s - %s)', id_user, bucket_type, count)
 
         return {'success': True}
 

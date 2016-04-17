@@ -1,4 +1,5 @@
 # Import the database object from the main app module
+import logging
 import uuid
 import datetime
 
@@ -55,6 +56,8 @@ class AuthenticateLocalUser(Resource):
             return Failures.wrong_password()
 
         db.session.commit()
+
+        logging.info('Authenticate-controller: Authenticate: success: %s', user.id)
 
         return {'success': True, 'user': {
             'id': user.id,

@@ -1,5 +1,7 @@
+import logging
+
 import Failures
-from app import db, mail, app
+from app import db, app
 
 
 from flask_restful import Resource, Api
@@ -58,6 +60,8 @@ class Register(Resource):
 
         db.session.commit()
 
+        logging.info('User-controller: register success: %s', id_user)
+
         # Create user
         return {'success': True, 'user': id_user}
 
@@ -76,6 +80,8 @@ class GetUserById(Resource):
         if user is None:
             return Failures.unknown_user_id(id_user)
 
+        logging.info('User-controller: getUserById: success: %s (%s)', id_user, user.screen_name)
+
         return {'success': True, 'user': {
             'id': user.id,
             'email': user.email,
@@ -91,6 +97,8 @@ class GetUserByEmail(Resource):
         user = user_service.get_user_by_email(email)
         if user is None:
             return Failures.unknown_user_email(email)
+
+        logging.info('User-controller: getUserByEmail: success: %s (%s)', email, user.screen_name)
 
         return {'success': True, 'user': {
             'id': user.id,
@@ -130,6 +138,8 @@ class DoInfoChange(Resource):
         user.screen_name = screen_name
         db.session.commit()
 
+        logging.info('User-controller: doInfoChange: success: %s (%s)', id_user, user.screen_name)
+
         return {'success': True, 'user': {
             'id': user.id,
             'email': user.email,
@@ -162,6 +172,8 @@ class DoLocaleChange(Resource):
 
         user.locale = locale
         db.session.commit()
+
+        logging.info('User-controller: doLocaleChange: success: %s (%s)', id_user, user.screen_name)
 
         return {'success': True, 'user': {
             'id': user.id,

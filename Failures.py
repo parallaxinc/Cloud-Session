@@ -1,4 +1,8 @@
+import logging
+
+
 def unknown_user_id(id_user):
+    logging.debug('Failures: Unknown user id: %s', id_user)
     return {
                'success': False,
                'message': 'Unknown user',
@@ -8,6 +12,7 @@ def unknown_user_id(id_user):
 
 
 def unknown_user_email(email):
+    logging.debug('Failures: Unknown user: %s', email)
     return {
                'success': False,
                'message': 'Unknown user',
@@ -17,6 +22,7 @@ def unknown_user_email(email):
 
 
 def email_already_in_use(email):
+    logging.debug('Failures: Email already in use: %s', email)
     return {
                'success': False,
                'message': 'Email already in use',
@@ -26,6 +32,7 @@ def email_already_in_use(email):
 
 
 def email_not_confirmed():
+    logging.debug('Failures: Email not confirmed')
     return {
                'success': False,
                'message': 'Email not confirmed',
@@ -34,6 +41,7 @@ def email_not_confirmed():
 
 
 def user_blocked():
+    logging.debug('Failures: User blocked')
     return {
                'success': False,
                'message': 'User is blocked',
@@ -42,6 +50,7 @@ def user_blocked():
 
 
 def not_a_number(field, value):
+    logging.error('Failures: Not a valid number: %s -> %s', field, value)
     return {
                'success': False,
                'message': 'Not a valid number',
@@ -52,6 +61,7 @@ def not_a_number(field, value):
 
 
 def passwords_do_not_match():
+    logging.debug('Failures: Passwords do not match')
     return {
                'success': False,
                'message': "Password confirm doesn't match",
@@ -60,6 +70,7 @@ def passwords_do_not_match():
 
 
 def password_complexity():
+    logging.debug('Failures: Password is not complex enough')
     return {
                'success': False,
                'message': "Password is not complex enough",
@@ -68,6 +79,7 @@ def password_complexity():
 
 
 def screen_name_already_in_use(screen_name):
+    logging.debug('Failures: Screen name already in use: %s', screen_name)
     return {
                'success': False,
                'message': "Screenname already in use",
@@ -77,6 +89,7 @@ def screen_name_already_in_use(screen_name):
 
 
 def rate_exceeded():
+    logging.debug('Failures: Rate exceeded')
     return {
                'success': False,
                'message': 'Insufficient bucket tokens',
@@ -85,6 +98,7 @@ def rate_exceeded():
 
 
 def wrong_password():
+    logging.debug('Failures: Wrong password')
     return {
                'success': False,
                'message': 'Wrong password',
@@ -93,6 +107,7 @@ def wrong_password():
 
 
 def unknown_bucket_type(bucket_type):
+    logging.debug('Failures: Unknown bucket type: %s', bucket_type)
     return {
                'success': False,
                'message': 'Unknown bucket type',

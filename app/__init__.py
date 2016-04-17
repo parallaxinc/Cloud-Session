@@ -73,18 +73,24 @@ else:
 
 
 # -------------------------------------- Module initialization -------------------------------------------------
+logging.basicConfig(level=logging.DEBUG)
+
 if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
+    logging.info("Initializing Sentry")
     sentry = Sentry(app,
                     dsn=app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'],
                     logging=True,
                     level=logging.ERROR
                     )
+else:
+    logging.info("No Sentry configuration")
 
 
 app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
 
 # Define the database object which is imported
 # by modules and controllers
+logging.info("Initializing database connection")
 db = SQLAlchemy(app)
 
 app.config['MAIL_SERVER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.host']
@@ -103,10 +109,11 @@ app.config['MAIL_PASSWORD'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.passw
 app.config['DEFAULT_MAIL_SENDER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.from']
 
 #app.debug = True
-
+logging.info("Initializing mail")
 mail = Mail(app)
 
 # -------------------------------------------- Services --------------------------------------------------------
+logging.info("Initializing services")
 from app.AuthToken.controllers import auth_token_app
 from app.Authenticate.controllers import authenticate_app
 from app.User.controllers import user_app
@@ -123,4 +130,5 @@ app.register_blueprint(rate_limiting_app)
 # ------------------------------------------- Create DB --------------------------------------------------------
 # Build the database:
 # This will create the database file using SQLAlchemy
+logging.info("Creating database tables if required")
 db.create_all()

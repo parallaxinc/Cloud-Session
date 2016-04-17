@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import Failures
 from app import db, app
@@ -53,6 +54,8 @@ class DoConfirm(Resource):
         db.session.delete(confirm_token)
         db.session.commit()
 
+        logging.info('LocalUser-controller: DoConfirm: success: %s', user.id)
+
         return {'success': True}
 
 
@@ -80,6 +83,8 @@ class RequestConfirm(Resource):
         db.session.commit()
 
         if success:
+            logging.info('LocalUser-controller: RequestConfirm: success: %s', user.id)
+
             return {'success': True}
         else:
             if code == 10:
@@ -139,6 +144,8 @@ class PasswordReset(Resource):
         db.session.delete(reset_token)
         db.session.commit()
 
+        logging.info('LocalUser-controller: DoPasswordReset: success: %s', user.id)
+
         return {'success': True}
 
     def get(self, email):
@@ -163,6 +170,7 @@ class PasswordReset(Resource):
         db.session.commit()
 
         if success:
+            logging.info('LocalUser-controller: RequestPasswordReset: success: %s', user.id)
             return {'success': True}
         else:
             if code == 10:
@@ -211,6 +219,8 @@ class PasswordChange(Resource):
         user.salt = salt
 
         db.session.commit()
+
+        logging.info('LocalUser-controller: PasswordChange: success: %s', user.id)
 
         return {'success': True}
 
