@@ -1,6 +1,0 @@
-tomcat.url = http://localhost:8080/manager/text
-tomcat.username = admin
-tomcat.password = admin
-
-mysql.username = root
-mysql.password = admin
