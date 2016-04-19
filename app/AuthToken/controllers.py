@@ -100,9 +100,9 @@ class GetAuthTokens(Resource):
 
         authentication_token_models = AuthenticationToken.query.filter_by(
             id_user=id_user,
-            browser=browser,
-            server=server,
-            ip_address=ip_address
+   #         browser=browser,
+   #         server=server,
+   #         ip_address=ip_address
         ).all()
 
         authentication_tokens = []
