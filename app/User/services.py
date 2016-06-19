@@ -58,6 +58,23 @@ def create_local_user(server, email, password, locale, screen_name):
     return user.id
 
 
+def create_oauth_user(server, email, source, locale, screen_name):
+    # Save user
+    user = User()
+    user.email = email
+    user.locale = locale
+    user.screen_name = screen_name
+    user.auth_source = source
+    user.confirmed = True
+    user.blocked = False
+
+    db.session.add(user)
+    db.session.flush()
+    db.session.refresh(user)
+
+    return user.id
+
+
 def send_email_confirm(id_user, server):
     user = get_user(id_user)
     if user is None:

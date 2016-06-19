@@ -114,3 +114,13 @@ def unknown_bucket_type(bucket_type):
                'code': 180,
                'data': bucket_type
            }, 500
+
+
+def wrong_auth_source(auth_source):
+    logging.debug('Failures: Wrong auth source: %s', auth_source)
+    return {
+               'success': False,
+               'message': 'Wrong auth source',
+               'code': 480,
+               'data': auth_source
+           }, 500
