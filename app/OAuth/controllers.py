@@ -45,7 +45,12 @@ class ValidateUser(Resource):
 
         logging.info('OAuth-controller: Validate: success: %s', user.id)
 
-        return {'success': True}
+        return {'success': True, 'user': {
+            'id': user.id,
+            'email': user.email,
+            'locale': user.locale,
+            'screenname': user.screen_name
+        }}
 
 
 class CreateUser(Resource):
@@ -90,3 +95,4 @@ class CreateUser(Resource):
 
 
 api.add_resource(ValidateUser, '/validate')
+api.add_resource(CreateUser, '/create')
