@@ -37,6 +37,9 @@ class DoConfirm(Resource):
         if user is None:
             return Failures.unknown_user_email(email)
 
+        if user.auth_source != 'local':
+            return Failures.wrong_auth_source(user.auth_source)
+
         # Delete expired tokens
         ConfirmToken.query.filter(ConfirmToken.validity < datetime.datetime.now()).delete()
         db.session.flush()
@@ -78,6 +81,9 @@ class RequestConfirm(Resource):
         if user is None:
             return Failures.unknown_user_email(email)
 
+        if user.auth_source != 'local':
+            return Failures.wrong_auth_source(user.auth_source)
+
         success, code, message = user_service.send_email_confirm(user.id, server)
 
         db.session.commit()
@@ -118,6 +124,9 @@ class PasswordReset(Resource):
         user = user_service.get_user_by_email(email)
         if user is None:
             return Failures.unknown_user_email(email)
+
+        if user.auth_source != 'local':
+            return Failures.wrong_auth_source(user.auth_source)
 
         # Validate password strength and confirm
         if password != password_confirm:
@@ -165,6 +174,9 @@ class PasswordReset(Resource):
         if user is None:
             return Failures.unknown_user_email(email)
 
+        if user.auth_source != 'local':
+            return Failures.wrong_auth_source(user.auth_source)
+
         success, code, message = user_service.send_password_reset(user.id, server)
 
         db.session.commit()
@@ -203,6 +215,9 @@ class PasswordChange(Resource):
         user = user_service.get_user(id_user)
         if user is None:
             return Failures.unknown_user_id(id_user)
+
+        if user.auth_source != 'local':
+            return Failures.wrong_auth_source(user.auth_source)
 
         # Validate password strength and confirm
         if password != password_confirm:
