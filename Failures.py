@@ -21,6 +21,16 @@ def unknown_user_email(email):
            }, 500
 
 
+def unknown_user_screen_name(screen_name):
+    logging.debug('Failures: Unknown user by screen name: %s', screen_name)
+    return {
+               'success': False,
+               'message': 'Unknown user screen name',
+               'code': 400,
+               'data': screen_name
+           }, 500
+
+
 def email_already_in_use(email):
     logging.debug('Failures: Email already in use: %s', email)
     return {

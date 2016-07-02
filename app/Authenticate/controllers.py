@@ -65,7 +65,8 @@ class AuthenticateLocalUser(Resource):
             'id': user.id,
             'email': user.email,
             'locale': user.locale,
-            'screenname': user.screen_name
+            'screenname': user.screen_name,
+            'authentication-source': user.auth_source
         }}
 
 api.add_resource(AuthenticateLocalUser, '/local')

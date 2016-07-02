@@ -86,7 +86,8 @@ class GetUserById(Resource):
             'id': user.id,
             'email': user.email,
             'locale': user.locale,
-            'screenname': user.screen_name
+            'screenname': user.screen_name,
+            'authentication-source': user.auth_source
         }}
 
 
@@ -104,7 +105,27 @@ class GetUserByEmail(Resource):
             'id': user.id,
             'email': user.email,
             'locale': user.locale,
-            'screenname': user.screen_name
+            'screenname': user.screen_name,
+            'authentication-source': user.auth_source
+        }}
+
+
+class GetUserByScreenname(Resource):
+
+    def get(self, screen_name):
+        # Validate user exists, is validated and is not blocked
+        user = user_service.get_user_by_screen_name(screen_name)
+        if user is None:
+            return Failures.unknown_user_screen_name(screen_name)
+
+        logging.info('User-controller: getUserByScreenname: success: %s (%s)', screen_name, user.screen_name)
+
+        return {'success': True, 'user': {
+            'id': user.id,
+            'email': user.email,
+            'locale': user.locale,
+            'screenname': user.screen_name,
+            'authentication-source': user.auth_source
         }}
 
 
@@ -144,7 +165,8 @@ class DoInfoChange(Resource):
             'id': user.id,
             'email': user.email,
             'locale': user.locale,
-            'screenname': user.screen_name
+            'screenname': user.screen_name,
+            'authentication-source': user.auth_source
         }}
 
 
@@ -179,12 +201,14 @@ class DoLocaleChange(Resource):
             'id': user.id,
             'email': user.email,
             'locale': user.locale,
-            'screenname': user.screen_name
+            'screenname': user.screen_name,
+            'authentication-source': user.auth_source
         }}
 
 
 api.add_resource(Register, '/register')
 api.add_resource(GetUserById, '/id/<int:id_user>')
 api.add_resource(GetUserByEmail, '/email/<string:email>')
+api.add_resource(GetUserByScreenname, '/screenname/<string:screen_name>')
 api.add_resource(DoInfoChange, '/info/<int:id_user>')
 api.add_resource(DoLocaleChange, '/locale/<int:id_user>')
