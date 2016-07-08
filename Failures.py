@@ -21,6 +21,16 @@ def unknown_user_email(email):
            }, 500
 
 
+def unknown_user_screen_name(screen_name):
+    logging.debug('Failures: Unknown user by screen name: %s', screen_name)
+    return {
+               'success': False,
+               'message': 'Unknown user screen name',
+               'code': 400,
+               'data': screen_name
+           }, 500
+
+
 def email_already_in_use(email):
     logging.debug('Failures: Email already in use: %s', email)
     return {
@@ -113,4 +123,14 @@ def unknown_bucket_type(bucket_type):
                'message': 'Unknown bucket type',
                'code': 180,
                'data': bucket_type
+           }, 500
+
+
+def wrong_auth_source(auth_source):
+    logging.debug('Failures: Wrong auth source: %s', auth_source)
+    return {
+               'success': False,
+               'message': 'Wrong auth source',
+               'code': 480,
+               'data': auth_source
            }, 500

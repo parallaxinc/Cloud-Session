@@ -46,6 +46,8 @@ class AuthenticateLocalUser(Resource):
             return Failures.email_not_confirmed()
         if user.blocked:
             return Failures.user_blocked()
+        if user.auth_source != 'local':
+            return Failures.wrong_auth_source(user.auth_source)
 
         if not rate_limiting_services.has_sufficient_tokens(user.id, 'failed-password', 1):
             return Failures.rate_exceeded()
@@ -63,7 +65,8 @@ class AuthenticateLocalUser(Resource):
             'id': user.id,
             'email': user.email,
             'locale': user.locale,
-            'screenname': user.screen_name
+            'screenname': user.screen_name,
+            'authentication-source': user.auth_source
         }}
 
 api.add_resource(AuthenticateLocalUser, '/local')

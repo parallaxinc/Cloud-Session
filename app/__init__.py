@@ -119,12 +119,14 @@ from app.Authenticate.controllers import authenticate_app
 from app.User.controllers import user_app
 from app.LocalUser.controllers import  local_user_app
 from app.RateLimiting.controllers import rate_limiting_app
+from app.OAuth.controllers import oauth_app
 
 app.register_blueprint(auth_token_app)
 app.register_blueprint(authenticate_app)
 app.register_blueprint(user_app)
 app.register_blueprint(local_user_app)
 app.register_blueprint(rate_limiting_app)
+app.register_blueprint(oauth_app)
 
 
 # ------------------------------------------- Create DB --------------------------------------------------------
