@@ -59,15 +59,27 @@ def _read_templates(template, server, locale, params):
 
 
 def _read_template(template, server, locale, part, params, none_if_missing=False):
+    """
+    Render a mustache template.
+
+    :param template: Base template name
+    :param server: Host server
+    :param locale: Language designator
+    :param part: Generic message type descriptor
+    :param params: Text string to replace tags embedded within the template
+    :param none_if_missing: Return 'none' if the requested template is not found
+
+    :return: Upon success, return a Renderer object. Return none or a general
+             error message if the none_is_missing flag is false
+    """
     template_file = expanduser("~/templates/%s/%s/%s/%s.mustache" % (locale, template, server, part))
     if isfile(template_file):
         logging.debug('Looking for template file: %s', template_file)
         renderer = pystache.Renderer()
         rendered = renderer.render_path(template_file, params)
-        #print(rendered)
         return rendered
     else:
-        logging.error('Looking for template file: %s, but the file is missing', template_file)
+        logging.warn('Looking for template file: %s, but the file is missing', template_file)
         if none_if_missing:
             return None
         else:
