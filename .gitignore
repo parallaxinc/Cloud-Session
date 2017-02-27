@@ -2,6 +2,8 @@
 *.sqlite
 *.log
 venv/
+build.sh
+CloudSession-Pkg.tar.gz
 
 #################
 ## NetBeans
