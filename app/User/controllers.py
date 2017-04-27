@@ -12,6 +12,7 @@ from Validation import Validation
 from app.User import services as user_service
 from models import User
 
+# Define the endpoint prefix for user services
 user_app = Blueprint('user', __name__, url_prefix='/user')
 api = Api(user_app)
 
@@ -72,7 +73,7 @@ class GetUserById(Resource):
         # Parse numbers
         try:
             id_user = int(id_user)
-        except:
+        except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         # Validate user exists, is validated and is not blocked
@@ -133,6 +134,7 @@ class DoInfoChange(Resource):
 
     def post(self, id_user):
         screen_name = request.form.get('screenname')
+
         # Validate required fields
         validation = Validation()
         validation.add_required_field('id-user', id_user)
@@ -143,7 +145,7 @@ class DoInfoChange(Resource):
         # Parse numbers
         try:
             id_user = int(id_user)
-        except:
+        except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         # Validate user exists, is validated and is not blocked
@@ -174,6 +176,7 @@ class DoLocaleChange(Resource):
 
     def post(self, id_user):
         locale = request.form.get('locale')
+
         # Validate required fields
         validation = Validation()
         validation.add_required_field('id-user', id_user)
@@ -184,7 +187,7 @@ class DoLocaleChange(Resource):
         # Parse numbers
         try:
             id_user = int(id_user)
-        except:
+        except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         # Validate user exists, is validated and is not blocked
@@ -206,9 +209,17 @@ class DoLocaleChange(Resource):
         }}
 
 
+# Supported endpoints
+# Register a new user account
 api.add_resource(Register, '/register')
+
+# Retrieve details about an existing user account
 api.add_resource(GetUserById, '/id/<int:id_user>')
 api.add_resource(GetUserByEmail, '/email/<string:email>')
 api.add_resource(GetUserByScreenname, '/screenname/<string:screen_name>')
+
+# Update a user screen name
 api.add_resource(DoInfoChange, '/info/<int:id_user>')
+
+# Update the local defined in the user account
 api.add_resource(DoLocaleChange, '/locale/<int:id_user>')

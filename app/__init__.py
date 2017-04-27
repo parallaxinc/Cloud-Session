@@ -1,17 +1,19 @@
-# Import flask and template operators
+"""
+Cloud Session server application initialization
+
+"""
 
 # Import properties files utils
 import logging
 from ConfigParser import ConfigParser
-
-import os
 from FakeSecHead import FakeSecHead
 from os.path import expanduser, isfile
 
 # Import Flask
-from flask import Flask, render_template
+# from flask import Flask, render_template
+from flask import Flask
 
-# Import SQLAlchemy
+# Import SQLAlchemy database mapper
 from flask.ext.sqlalchemy import SQLAlchemy
 
 # Import Mail
@@ -19,6 +21,13 @@ from flask.ext.mail import Mail
 
 # Define the WSGI application object
 from raven.contrib.flask import Sentry
+
+from app.AuthToken.controllers import auth_token_app
+from app.Authenticate.controllers import authenticate_app
+from app.User.controllers import user_app
+from app.LocalUser.controllers import  local_user_app
+from app.RateLimiting.controllers import rate_limiting_app
+from app.OAuth.controllers import oauth_app
 
 app = Flask(__name__)
 
@@ -86,11 +95,10 @@ else:
     logging.info("No Sentry configuration")
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
-
 # Define the database object which is imported
 # by modules and controllers
 logging.info("Initializing database connection")
+app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
 db = SQLAlchemy(app)
 
 app.config['MAIL_SERVER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.host']
@@ -101,6 +109,7 @@ if app.config['CLOUD_SESSION_PROPERTIES']['mail.port'] is None:
         app.config['MAIL_PORT'] = 25
 else:
     app.config['MAIL_PORT'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.port']
+
 app.config['MAIL_USE_TLS'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.tls']
 app.config['MAIL_USE_SSL'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.ssl']
 app.config['MAIL_DEBUG'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.debug']
@@ -108,18 +117,11 @@ app.config['MAIL_USERNAME'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.user'
 app.config['MAIL_PASSWORD'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.password']
 app.config['DEFAULT_MAIL_SENDER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.from']
 
-#app.debug = True
 logging.info("Initializing mail")
 mail = Mail(app)
 
 # -------------------------------------------- Services --------------------------------------------------------
 logging.info("Initializing services")
-from app.AuthToken.controllers import auth_token_app
-from app.Authenticate.controllers import authenticate_app
-from app.User.controllers import user_app
-from app.LocalUser.controllers import  local_user_app
-from app.RateLimiting.controllers import rate_limiting_app
-from app.OAuth.controllers import oauth_app
 
 app.register_blueprint(auth_token_app)
 app.register_blueprint(authenticate_app)
