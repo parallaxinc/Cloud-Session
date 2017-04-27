@@ -12,6 +12,11 @@ class User(db.Model):
     confirmed = db.Column(db.Boolean)
     screen_name = db.Column(db.String(250))
 
+    # COPPA support
+    birth_month = db.Column(db.INTEGER, nullable=False)
+    birth_year = db.Column(db.INTEGER, nullable=False)
+    parent_email = db.Column(db.String(250))
+
     def __init__(self):
         self.blocked = False
         self.confirmed = False

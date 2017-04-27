@@ -28,6 +28,11 @@ class Register(Resource):
         locale = request.form.get('locale')
         screen_name = request.form.get('screenname')
 
+        # COPPA support
+        birth_month = request.form.get('bdmonth')
+        birth_year = request.form.get('bdyear')
+        parent_email = request.form.get('parent-email')
+
         # Validate required fields
         validation = Validation()
         validation.add_required_field('server', server)
@@ -36,6 +41,16 @@ class Register(Resource):
         validation.add_required_field('password-confirm', password_confirm)
         validation.add_required_field('locale', locale)
         validation.add_required_field('screenname', screen_name)
+
+        # COPPA support
+        validation.add_required_field('bdmonth', birth_month)
+        validation.add_required_field('bdyear', birth_year)
+        if parent_email:
+            validation.check_email('parent-email', parent_email)
+            if not validation.is_valid():
+                return validation.get_validation_response()
+
+        # Verify user email address
         validation.check_email('email', email)
         if not validation.is_valid():
             return validation.get_validation_response()
@@ -56,7 +71,8 @@ class Register(Resource):
         if not user_service.check_password_complexity(password):
             return Failures.password_complexity()
 
-        id_user = user_service.create_local_user(server, email, password, locale, screen_name)
+        id_user = user_service.create_local_user(
+            server, email, password, locale, screen_name, birth_month, birth_year, parent_email)
         user_service.send_email_confirm(id_user, server)
 
         db.session.commit()
@@ -88,7 +104,10 @@ class GetUserById(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email
         }}
 
 
@@ -107,7 +126,10 @@ class GetUserByEmail(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email
         }}
 
 
@@ -126,7 +148,10 @@ class GetUserByScreenname(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email
         }}
 
 
@@ -168,7 +193,10 @@ class DoInfoChange(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email
         }}
 
 
@@ -205,7 +233,10 @@ class DoLocaleChange(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email
         }}
 
 

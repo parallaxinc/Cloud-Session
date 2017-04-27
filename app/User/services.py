@@ -39,7 +39,7 @@ def check_password_complexity(password):
     return 8 <= len(password) < 200
 
 
-def create_local_user(server, email, password, locale, screen_name):
+def create_local_user(server, email, password, locale, screen_name, birth_month, birth_year, parent_email):
     salt, password_hash = get_password_hash(password)
 
     # Save user
@@ -51,6 +51,11 @@ def create_local_user(server, email, password, locale, screen_name):
     user.password = password_hash
     user.salt = salt
 
+    #COPPA support
+    user.birth_month = birth_month
+    user.birth_year = birth_year
+    user.parent_email = parent_email
+
     db.session.add(user)
     db.session.flush()
     db.session.refresh(user)
@@ -58,7 +63,7 @@ def create_local_user(server, email, password, locale, screen_name):
     return user.id
 
 
-def create_oauth_user(server, email, source, locale, screen_name):
+def create_oauth_user(server, email, source, locale, screen_name, birth_month, birth_year, parent_email):
     # Save user
     user = User()
     user.email = email
@@ -68,6 +73,12 @@ def create_oauth_user(server, email, source, locale, screen_name):
     user.confirmed = True
     user.blocked = False
 
+    # COPPA support
+    user.birth_month = birth_month
+    user.birth_year = birth_year
+    user.parent_email = parent_email
+
+    # Add the user record
     db.session.add(user)
     db.session.flush()
     db.session.refresh(user)

@@ -67,8 +67,11 @@ defaults = {
             'bucket.email-confirm.freq': '1800000'
 }
 
+logging.basicConfig(level=logging.DEBUG)
+
 configfile = expanduser("~/cloudsession.properties")
-print('Looking for config file: %s' % configfile)
+logging.info('Looking for config file: %s', configfile)
+
 if isfile(configfile):
     configs = ConfigParser(defaults)
     configs.readfp(FakeSecHead(open(configfile)))
@@ -82,8 +85,6 @@ else:
 
 
 # -------------------------------------- Module initialization -------------------------------------------------
-logging.basicConfig(level=logging.DEBUG)
-
 if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
     logging.info("Initializing Sentry")
     sentry = Sentry(app,
@@ -101,6 +102,7 @@ logging.info("Initializing database connection")
 app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
 db = SQLAlchemy(app)
 
+logging.info("Configuring SMTP properties")
 app.config['MAIL_SERVER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.host']
 if app.config['CLOUD_SESSION_PROPERTIES']['mail.port'] is None:
     if app.config['CLOUD_SESSION_PROPERTIES']['mail.tls']:
@@ -109,6 +111,8 @@ if app.config['CLOUD_SESSION_PROPERTIES']['mail.port'] is None:
         app.config['MAIL_PORT'] = 25
 else:
     app.config['MAIL_PORT'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.port']
+
+logging.info("SMTP port: %s", app.config['MAIL_PORT'] )
 
 app.config['MAIL_USE_TLS'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.tls']
 app.config['MAIL_USE_SSL'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.ssl']
