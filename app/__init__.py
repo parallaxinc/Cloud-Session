@@ -22,14 +22,16 @@ from flask.ext.mail import Mail
 # Define the WSGI application object
 from raven.contrib.flask import Sentry
 
-from app.AuthToken.controllers import auth_token_app
 from app.Authenticate.controllers import authenticate_app
+from app.AuthToken.controllers import auth_token_app
 from app.User.controllers import user_app
 from app.LocalUser.controllers import  local_user_app
 from app.RateLimiting.controllers import rate_limiting_app
 from app.OAuth.controllers import oauth_app
 
 app = Flask(__name__)
+version = "1.0.1"
+db = None
 
 # Load basic configurations
 app.config.from_object('config')
@@ -79,7 +81,9 @@ if isfile(configfile):
     app_configs = {}
     for (key, value) in configs.items('section'):
         app_configs[key] = value
+
     app.config['CLOUD_SESSION_PROPERTIES'] = app_configs
+
 else:
     app.config['CLOUD_SESSION_PROPERTIES'] = defaults
 
@@ -95,14 +99,14 @@ if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
 else:
     logging.info("No Sentry configuration")
 
-
 # Define the database object which is imported
 # by modules and controllers
-logging.info("Initializing database connection")
+# logging.info("Initializing database connection")
 app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
 db = SQLAlchemy(app)
 
-logging.info("Configuring SMTP properties")
+
+# logging.info("Configuring SMTP properties")
 app.config['MAIL_SERVER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.host']
 if app.config['CLOUD_SESSION_PROPERTIES']['mail.port'] is None:
     if app.config['CLOUD_SESSION_PROPERTIES']['mail.tls']:
