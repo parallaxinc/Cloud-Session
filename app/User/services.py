@@ -166,8 +166,8 @@ def is_coppa_covered(month,year):
     user_age = (year * 12) + month
 
     # Current year and month
-    current_month = datetime.now().month
-    current_year = datetime.now().year
+    current_month = datetime.date.today().month
+    current_year = datetime.date.today().year
 
     # This represents the number of months since the inception of AD
     # Unless you want to count that first year as part of BC.
@@ -175,5 +175,5 @@ def is_coppa_covered(month,year):
 
     if current_cap - user_age > cap:
         return False
-    else
+    else:
         return True
