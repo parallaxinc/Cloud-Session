@@ -9,7 +9,7 @@ import logging
 
 
 def send_email_template_for_user(id_user, template, server, **kwargs):
-    from app.User.services import get_user
+    from app.User.services import get_user, is_coppa_covered
 
     logging.info("Sending email to user: %s (%s)", id_user, template)
 
@@ -23,7 +23,13 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
 
     params['screenname'] = user.screen_name
 
-    send_email_template_to_address(user.email, template, server, user.locale, params)
+    # Send email to parent if user is under 13 years old
+    if is_coppa_covered(user.birth_month, user.birth_year):
+        user_email = user.parent_email
+    else:
+        user_email = user.email
+
+    send_email_template_to_address(user_email, template, server, user.locale, params)
 
 
 def send_email_template_to_address(recipient, template, server, locale, params=None, **kwargs):

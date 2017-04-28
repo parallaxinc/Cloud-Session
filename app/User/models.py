@@ -16,6 +16,7 @@ class User(db.Model):
     birth_month = db.Column(db.INTEGER, nullable=False)
     birth_year = db.Column(db.INTEGER, nullable=False)
     parent_email = db.Column(db.String(250))
+    parent_email_source = db.Column(db.INTEGER)
 
     def __init__(self):
         self.blocked = False

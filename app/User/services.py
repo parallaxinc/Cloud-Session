@@ -39,7 +39,10 @@ def check_password_complexity(password):
     return 8 <= len(password) < 200
 
 
-def create_local_user(server, email, password, locale, screen_name, birth_month, birth_year, parent_email):
+def create_local_user(
+        server, email, password, locale, screen_name,
+        birth_month, birth_year, parent_email, parent_email_source):
+
     salt, password_hash = get_password_hash(password)
 
     # Save user
@@ -55,6 +58,7 @@ def create_local_user(server, email, password, locale, screen_name, birth_month,
     user.birth_month = birth_month
     user.birth_year = birth_year
     user.parent_email = parent_email
+    user.parent_email_source = parent_email_source
 
     db.session.add(user)
     db.session.flush()
@@ -63,7 +67,10 @@ def create_local_user(server, email, password, locale, screen_name, birth_month,
     return user.id
 
 
-def create_oauth_user(server, email, source, locale, screen_name, birth_month, birth_year, parent_email):
+def create_oauth_user(
+        server, email, source, locale, screen_name,
+        birth_month, birth_year, parent_email, parent_email_source):
+
     # Save user
     user = User()
     user.email = email
@@ -77,6 +84,7 @@ def create_oauth_user(server, email, source, locale, screen_name, birth_month, b
     user.birth_month = birth_month
     user.birth_year = birth_year
     user.parent_email = parent_email
+    user.parent_email_source = parent_email_source
 
     # Add the user record
     db.session.add(user)
@@ -148,3 +156,24 @@ def send_password_reset(id_user, server):
     email_services.send_email_template_for_user(id_user, 'reset', server, token=token)
 
     return True, 0, 'Success'
+
+# Return true if the date is less than 13 years
+def is_coppa_covered(month,year):
+    # This is the number of months a typical thirteen years old has been on planet Earth.
+    cap = 156
+
+    # This is the actual number of months a typical user has been on the same planet.
+    user_age = (year * 12) + month
+
+    # Current year and month
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+
+    # This represents the number of months since the inception of AD
+    # Unless you want to count that first year as part of BC.
+    current_cap = (current_year * 12) + current_month
+
+    if current_cap - user_age > cap:
+        return False
+    else
+        return True

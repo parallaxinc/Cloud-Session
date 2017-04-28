@@ -32,6 +32,7 @@ class Register(Resource):
         birth_month = request.form.get('bdmonth')
         birth_year = request.form.get('bdyear')
         parent_email = request.form.get('parent-email')
+        parent_email_source = request.form.get('parent-email-source')
 
         # Validate required fields
         validation = Validation()
@@ -71,10 +72,15 @@ class Register(Resource):
         if not user_service.check_password_complexity(password):
             return Failures.password_complexity()
 
+        # Write user details to the database
         id_user = user_service.create_local_user(
-            server, email, password, locale, screen_name, birth_month, birth_year, parent_email)
+            server, email, password, locale, screen_name,
+            birth_month, birth_year, parent_email, parent_email_source)
+
+        # Send a confirmation request email to user or parent
         user_service.send_email_confirm(id_user, server)
 
+        # Commit the database record
         db.session.commit()
 
         logging.info('User-controller: register success: %s', id_user)
@@ -107,7 +113,8 @@ class GetUserById(Resource):
             'authentication-source': user.auth_source,
             'bdmonth': user.birth_month,
             'bdyear': user.birth_year,
-            'parent-email': user.parent_email
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
@@ -129,7 +136,8 @@ class GetUserByEmail(Resource):
             'authentication-source': user.auth_source,
             'bdmonth': user.birth_month,
             'bdyear': user.birth_year,
-            'parent-email': user.parent_email
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
@@ -151,7 +159,8 @@ class GetUserByScreenname(Resource):
             'authentication-source': user.auth_source,
             'bdmonth': user.birth_month,
             'bdyear': user.birth_year,
-            'parent-email': user.parent_email
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
@@ -196,7 +205,8 @@ class DoInfoChange(Resource):
             'authentication-source': user.auth_source,
             'bdmonth': user.birth_month,
             'bdyear': user.birth_year,
-            'parent-email': user.parent_email
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
@@ -236,7 +246,8 @@ class DoLocaleChange(Resource):
             'authentication-source': user.auth_source,
             'bdmonth': user.birth_month,
             'bdyear': user.birth_year,
-            'parent-email': user.parent_email
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
