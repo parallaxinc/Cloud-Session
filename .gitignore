@@ -18,5 +18,5 @@ nbactions.xml
 #################
 
 .idea
-/deploy-test.sh
-deploy-test.sh
+build
+deploy-test

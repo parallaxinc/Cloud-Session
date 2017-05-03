@@ -122,7 +122,10 @@ def send_email_confirm(id_user, server):
     confirm_token.validity = datetime.datetime.now() + datetime.timedelta(hours=token_validity_time)
     db.session.add(confirm_token)
 
-    email_services.send_email_template_for_user(id_user, 'confirm', server, token=token)
+    try:
+        email_services.send_email_template_for_user(id_user, 'confirm', server, token=token)
+    except  Exception as ex:
+        return False, 99, 'Unable to contact SMTP server'
 
     return True, 0, 'Success'
 

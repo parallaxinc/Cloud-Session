@@ -95,11 +95,18 @@ class RequestConfirm(Resource):
         else:
             if code == 10:
                 return Failures.rate_exceeded()
-            return {
-                'success': False,
-                'message': message,
-                'code': 520
-            }
+            elif code == 99:
+                return {
+                    'success': False,
+                    'message': message,
+                    'code': 540
+                }
+            else:
+                return {
+                    'success': False,
+                    'message': message,
+                    'code': 520
+                }
 
 
 class PasswordReset(Resource):
