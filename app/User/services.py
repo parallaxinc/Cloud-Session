@@ -1,6 +1,6 @@
 import hashlib
 import uuid
-
+import logging
 import datetime
 
 from app import db, app
@@ -124,7 +124,9 @@ def send_email_confirm(id_user, server):
 
     try:
         email_services.send_email_template_for_user(id_user, 'confirm', server, token=token)
-    except  Exception as ex:
+    except Exception as ex:
+        print("Exception {0}", ex.args)
+        logging.error("Unable to send email. Message is: %s", ex.message)
         return False, 99, 'Unable to contact SMTP server'
 
     return True, 0, 'Success'

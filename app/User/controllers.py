@@ -17,6 +17,7 @@ user_app = Blueprint('user', __name__, url_prefix='/user')
 api = Api(user_app)
 
 
+# Register a new user
 class Register(Resource):
 
     def post(self):
@@ -78,15 +79,17 @@ class Register(Resource):
             birth_month, birth_year, parent_email, parent_email_source)
 
         # Send a confirmation request email to user or parent
-        user_service.send_email_confirm(id_user, server)
+        (result, errno, mesg) = user_service.send_email_confirm(id_user, server)
+        if result:
+            # Commit the database record
+            db.session.commit()
+            logging.info('User-controller: register success: %s', id_user)
 
-        # Commit the database record
-        db.session.commit()
-
-        logging.info('User-controller: register success: %s', id_user)
-
-        # Create user
-        return {'success': True, 'user': id_user}
+            # Create user
+            return {'success': True, 'user': id_user}
+        else:
+            logging.error("Unable to register user. Error %s: %s", errno, mesg)
+            return {'success': False, 'user': 0}
 
 
 class GetUserById(Resource):
@@ -252,6 +255,9 @@ class DoLocaleChange(Resource):
 
 
 # Supported endpoints
+# Note: The url_prefix is '/user'. All user endpoints are in the form
+# of host:port/user/_service_
+#
 # Register a new user account
 api.add_resource(Register, '/register')
 
