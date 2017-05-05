@@ -18,3 +18,5 @@ nbactions.xml
 #################
 
 .idea
+/build
+/deploy-test
