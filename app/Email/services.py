@@ -1,10 +1,19 @@
 from app import mail, app
 from os.path import expanduser, isfile
 from flask.ext.mail import Message
-from app.User.services import SponsorType
 
 import pystache
 import logging
+
+"""
+"""
+
+
+class SponsorType:
+    INDIVIDUAL=0
+    PARENT=1
+    GUARDIAN=2
+    TEACHER=3
 
 
 def send_email_template_for_user(id_user, template, server, **kwargs):
@@ -26,13 +35,14 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     if template == 'confirm':
         if is_coppa_covered(user.birth_month, user.birth_year):
             user_email = user.parent_email
+            logging.info("COPPA account has a sponsor type of %s", user.parent_email_source)
 
             if user.parent_email_source == SponsorType.TEACHER:
                 # Teacher handles the account confirmation
-                send_email_template_to_address(user_email, 'confim_teacher', server, user.locale, params)
+                send_email_template_to_address(user_email, 'confim-teacher', server, user.locale, params)
             elif user.parent_email_source == SponsorType.PARENT or user.parent_email_source == SponsorType.GUARDIAN:
                 # Parent handles the account confirmation
-                send_email_template_to_address(user_email, 'confirm_parent', server, user.locale, params)
+                send_email_template_to_address(user_email, 'confirm-parent', server, user.locale, params)
             else:
                 logging.info("COPPA account %s has invalid sponsor type [%s]", id_user, user.parent_email_source)
     else:

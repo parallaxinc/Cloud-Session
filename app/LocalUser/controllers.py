@@ -65,8 +65,10 @@ class DoConfirm(Resource):
 class RequestConfirm(Resource):
 
     def get(self, email):
-        # Get values
+        # Get server URL
         server = request.headers.get('server')
+
+        logging.info("Requesting email confirmation for %s from server %s", email, server)
 
         # Validate required fields
         validation = Validation()

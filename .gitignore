@@ -20,3 +20,4 @@ nbactions.xml
 .idea
 build
 deploy-test
+/CloudSession-Templates.tar.gz

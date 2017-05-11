@@ -11,14 +11,6 @@ from app.RateLimiting import services as rate_limiting_services
 from models import User, ConfirmToken, ResetToken
 
 
-# Implementing an enum-like structure for the user sponsor email type
-class SponsorType:
-    INDIVIDUAL = 0
-    PARENT = 1
-    GUARDIAN = 2
-    TEACHER = 3
-
-
 def get_password_hash(password):
     salt = str(uuid.uuid1())
     password_hash = hashlib.sha256("%s:%s" % (password, salt)).hexdigest()
@@ -131,6 +123,7 @@ def send_email_confirm(id_user, server):
     db.session.add(confirm_token)
 
     try:
+        # Send an email to the user or user's responsible party to confirm the account request
         email_services.send_email_template_for_user(id_user, 'confirm', server, token=token)
     except Exception as ex:
         print("Exception {0}", ex.args)
