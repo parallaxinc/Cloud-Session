@@ -11,6 +11,14 @@ from app.RateLimiting import services as rate_limiting_services
 from models import User, ConfirmToken, ResetToken
 
 
+# Implementing an enum-like structure for the user sponsor email type
+class SponsorType:
+    INDIVIDUAL = 0
+    PARENT = 1
+    GUARDIAN = 2
+    TEACHER = 3
+
+
 def get_password_hash(password):
     salt = str(uuid.uuid1())
     password_hash = hashlib.sha256("%s:%s" % (password, salt)).hexdigest()
