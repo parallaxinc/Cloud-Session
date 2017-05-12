@@ -19,12 +19,14 @@ class SponsorType:
 def send_email_template_for_user(id_user, template, server, **kwargs):
     from app.User.services import get_user, is_coppa_covered
 
-    logging.info("Sending email to user: %s (%s)", id_user, template)
+    logging.info("Sending email to user: %s using template (%s)", id_user, template)
 
     params = {}
     for key, value in kwargs.items():
+        logging.debug("Logging parameter %s = %s", key, value)
         params[key] = value
 
+    # Get a copy of the user record
     user = get_user(id_user)
     if user is None:
         return False
@@ -33,12 +35,14 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     # available to the email templates.
     params['screenname'] = user.screen_name
     params['email'] = user.email
+    params['registrant-email'] = user.email
     params['sponsoremail'] = user.parent_email
 
     user_email = user.email
 
     # Send email to parent if user is under 13 years old
     if template == 'confirm' and is_coppa_covered(user.birth_month, user.birth_year):
+        # Send email only to the sponsor address
         user_email = user.parent_email
         logging.info("COPPA account has a sponsor type of %s", user.parent_email_source)
 
@@ -51,23 +55,32 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
         else:
             logging.info("COPPA account %s has invalid sponsor type [%s]", id_user, user.parent_email_source)
 
-    send_email_template_to_address(user_email, template, server, user.locale, params)
+        return
+    else:
+        # Registration not subject to COPPA regulations
+        send_email_template_to_address(user_email, template, server, user.locale, params)
 
+    return
 
 def send_email_template_to_address(recipient, template, server, locale, params=None, **kwargs):
-    # Read templates
     params = params or {}
+
+    # Add any supplied arguments to the parameter dictionary
     for key, value in kwargs.items():
         params[key] = value
+
     params['email'] = recipient
     params['locale'] = locale
 
+    # Read templates
     (subject, plain, rich) = _read_templates(template, server, locale, params)
 
+    logging.info("Sending email to %s", recipient)
     send_email(recipient, subject, plain, rich)
 
 
 def send_email(recipient, subject, email_text, rich_email_text=None):
+
     msg = Message(
         recipients=[recipient],
         subject=subject.rstrip(),

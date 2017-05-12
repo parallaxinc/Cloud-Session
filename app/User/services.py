@@ -130,11 +130,12 @@ def send_email_confirm(id_user, server):
     db.session.add(confirm_token)
 
     try:
+        logging.info("Sending account confirmation email to user: %s ", id_user)
         # Send an email to the user or user's responsible party to confirm the account request
         email_services.send_email_template_for_user(id_user, 'confirm', server, token=token)
+        logging.info("Completed email send process.")
     except Exception as ex:
-        print("Exception {0}", ex.args)
-        logging.error("Unable to send email. Message is: %s", ex.message)
+        logging.error("Error while sending email: %s", ex.message)
         return False, 99, 'Unable to contact SMTP server'
 
     return True, 0, 'Success'
