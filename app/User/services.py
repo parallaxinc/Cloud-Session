@@ -95,16 +95,23 @@ def create_oauth_user(
 
 
 def send_email_confirm(id_user, server):
+    logging.info("Preparing new account confirmation email for user %s", id_user)
+
     user = get_user(id_user)
+
     if user is None:
+        logging.debug("Unknown user id: %s", id_user)
         return False, 1, 'User id not known'
     if user.confirmed:
+        logging.debug("User account %s has already been verified", id_user)
         return False, 2, 'Account already verified'
     if user.blocked:
+        logging.debug("User account %s has been blocked", id_user)
         return False, 3, 'Account Blocked'
 
     # check rate limiting
     if not rate_limiting_services.consume_tokens(id_user, 'email-confirm', 1):
+        logging.debug("Too many attempts to confirm account for user %s", id_user)
         return False, 10, 'Rate limiter exceeded'
 
     # Delete token if any exists

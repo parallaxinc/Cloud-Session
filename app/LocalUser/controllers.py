@@ -46,7 +46,7 @@ class DoConfirm(Resource):
 
         confirm_token = ConfirmToken.query.filter_by(token=token).first()
         if confirm_token is None:
-            # Unkown token
+            # Unknown token
             return {'success': False, 'code': 510}
         if confirm_token.id_user != user.id:
             # Token is not for this user
