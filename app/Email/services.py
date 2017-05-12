@@ -29,24 +29,27 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     if user is None:
         return False
 
+    # The elements in the params array represent the data elements that are
+    # available to the email templates.
     params['screenname'] = user.screen_name
+    params['email'] = user.email
+    params['sponsoremail'] = user.parent_email
+
+    user_email = user.email
 
     # Send email to parent if user is under 13 years old
-    if template == 'confirm':
-        if is_coppa_covered(user.birth_month, user.birth_year):
-            user_email = user.parent_email
-            logging.info("COPPA account has a sponsor type of %s", user.parent_email_source)
+    if template == 'confirm' and is_coppa_covered(user.birth_month, user.birth_year):
+        user_email = user.parent_email
+        logging.info("COPPA account has a sponsor type of %s", user.parent_email_source)
 
-            if user.parent_email_source == SponsorType.TEACHER:
-                # Teacher handles the account confirmation
-                send_email_template_to_address(user_email, 'confim-teacher', server, user.locale, params)
-            elif user.parent_email_source == SponsorType.PARENT or user.parent_email_source == SponsorType.GUARDIAN:
-                # Parent handles the account confirmation
-                send_email_template_to_address(user_email, 'confirm-parent', server, user.locale, params)
-            else:
-                logging.info("COPPA account %s has invalid sponsor type [%s]", id_user, user.parent_email_source)
-    else:
-        user_email = user.email
+        if user.parent_email_source == SponsorType.TEACHER:
+            # Teacher handles the account confirmation
+            send_email_template_to_address(user_email, 'confirm-teacher', server, user.locale, params)
+        elif user.parent_email_source == SponsorType.PARENT or user.parent_email_source == SponsorType.GUARDIAN:
+            # Parent handles the account confirmation
+            send_email_template_to_address(user_email, 'confirm-parent', server, user.locale, params)
+        else:
+            logging.info("COPPA account %s has invalid sponsor type [%s]", id_user, user.parent_email_source)
 
     send_email_template_to_address(user_email, template, server, user.locale, params)
 
