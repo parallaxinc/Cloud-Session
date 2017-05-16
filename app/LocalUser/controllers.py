@@ -46,7 +46,7 @@ class DoConfirm(Resource):
 
         confirm_token = ConfirmToken.query.filter_by(token=token).first()
         if confirm_token is None:
-            # Unkown token
+            # Unknown token
             return {'success': False, 'code': 510}
         if confirm_token.id_user != user.id:
             # Token is not for this user
@@ -65,8 +65,10 @@ class DoConfirm(Resource):
 class RequestConfirm(Resource):
 
     def get(self, email):
-        # Get values
+        # Get server URL
         server = request.headers.get('server')
+
+        logging.info("Requesting email confirmation for %s from server %s", email, server)
 
         # Validate required fields
         validation = Validation()
@@ -95,11 +97,18 @@ class RequestConfirm(Resource):
         else:
             if code == 10:
                 return Failures.rate_exceeded()
-            return {
-                'success': False,
-                'message': message,
-                'code': 520
-            }
+            elif code == 99:
+                return {
+                    'success': False,
+                    'message': message,
+                    'code': 540
+                }
+            else:
+                return {
+                    'success': False,
+                    'message': message,
+                    'code': 520
+                }
 
 
 class PasswordReset(Resource):

@@ -1,0 +1,38 @@
+#
+# Sample Cloud Session configuration file
+#
+
+# Database connection
+database.url = jdbc:mysql://database.example.com:3306/cloudsession
+database.username = database_user
+database.password = database_user_password
+
+# SMTP server configuration
+mail.host = smtp.example.com
+mail.from = no_reply@example.com
+mail.authenticated = true
+mail.user = authenticated_username
+mail.password = authenticated_user_password
+mail.tls = true
+
+# The email notification system relies on a number of templates
+# to produce the email messages sent to users. 
+email.template.path = /usr/share/tomcat7/templates
+
+# Rate limiting
+# Starting number of compiles
+bucket.compile.size = 100
+
+# Number of tokens added per interval
+bucket.compile.input = 50
+
+# Token add interval (ms)
+bucket.compile.freq = 500000
+
+# Enable detailed statistics on applicaiton operation
+metrics.console.enable = false
+
+# Bucket types are objects that can be applied to the rate-limiting service built
+# into the server.  Bucket types are arbitrary units. There can be more than one
+# bucket type defined.
+bucket.types = compile
