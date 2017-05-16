@@ -11,6 +11,10 @@ from app.RateLimiting import services as rate_limiting_services
 from models import User, ConfirmToken, ResetToken
 
 
+def get_user(id_user):
+    return User.query.get(id_user)
+
+
 def get_password_hash(password):
     salt = str(uuid.uuid1())
     password_hash = hashlib.sha256("%s:%s" % (password, salt)).hexdigest()
@@ -21,10 +25,6 @@ def check_password(id_user, password):
     user = get_user(id_user)
     password_hash = hashlib.sha256("%s:%s" % (password, user.salt)).hexdigest()
     return user.password == password_hash
-
-
-def get_user(id_user):
-    return User.query.get(id_user)
 
 
 def get_user_by_email(email):
@@ -96,6 +96,7 @@ def create_oauth_user(
 
 def send_email_confirm(id_user, server):
     logging.info("Preparing new account confirmation email for user %s", id_user)
+    logging.info("Account request received from server: %s", server)
 
     user = get_user(id_user)
 
@@ -171,23 +172,3 @@ def send_password_reset(id_user, server):
 
     return True, 0, 'Success'
 
-# Return true if the date is less than 13 years
-def is_coppa_covered(month,year):
-    # This is the number of months a typical thirteen years old has been on planet Earth.
-    cap = 156
-
-    # This is the actual number of months a typical user has been on the same planet.
-    user_age = (year * 12) + month
-
-    # Current year and month
-    current_month = datetime.date.today().month
-    current_year = datetime.date.today().year
-
-    # This represents the number of months since the inception of AD
-    # Unless you want to count that first year as part of BC.
-    current_cap = (current_year * 12) + current_month
-
-    if current_cap - user_age > cap:
-        return False
-    else:
-        return True

@@ -33,6 +33,8 @@ app.config.from_object('config')
 defaults = {
             'database.url': 'mysql+mysqldb://cloudsession:cloudsession@localhost:3306/cloudsession',
 
+            'request.host': 'http://localhost:8080/blockly',
+
             'sentry-dsn': None,
 
             'mail.host': 'localhost',

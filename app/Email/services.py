@@ -1,35 +1,37 @@
 from app import mail, app
 from os.path import expanduser, isfile
 from flask.ext.mail import Message
+from app.User.coppa import Coppa, SponsorType
 
 import pystache
 import logging
 
-"""
-"""
 
-
-class SponsorType:
-    INDIVIDUAL=0
-    PARENT=1
-    GUARDIAN=2
-    TEACHER=3
+"""
+TODO: System documentation goes here
+"""
 
 
 def send_email_template_for_user(id_user, template, server, **kwargs):
-    from app.User.services import get_user, is_coppa_covered
+    from app.User.services import get_user
 
-    logging.info("Sending email to user: %s using template (%s)", id_user, template)
+    # Get a copy of the user record
+    logging.info("Checking for a valid user record for user ID: %s", id_user)
+    user = get_user(id_user)
+
+    if user is None:
+        logging.error("Cannot send email: Invalid user record")
+        return False
+    else:
+        logging.info("Email template received user: %s", user.id)
+
+    logging.info("Sending email to user: %s using template (%s)", user.id, template)
 
     params = {}
     for key, value in kwargs.items():
         logging.debug("Logging parameter %s = %s", key, value)
         params[key] = value
 
-    # Get a copy of the user record
-    user = get_user(id_user)
-    if user is None:
-        return False
 
     # The elements in the params array represent the data elements that are
     # available to the email templates.
@@ -38,10 +40,12 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     params['registrant-email'] = user.email
     params['sponsoremail'] = user.parent_email
 
+    #Default the recipient email address
     user_email = user.email
+    coppa = Coppa()
 
     # Send email to parent if user is under 13 years old
-    if template == 'confirm' and is_coppa_covered(user.birth_month, user.birth_year):
+    if template == 'confirm' and coppa.is_coppa_covered(user.birth_month, user.birth_year):
         # Send email only to the sponsor address
         user_email = user.parent_email
         logging.info("COPPA account has a sponsor type of %s", user.parent_email_source)
@@ -49,11 +53,12 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
         if user.parent_email_source == SponsorType.TEACHER:
             # Teacher handles the account confirmation
             send_email_template_to_address(user_email, 'confirm-teacher', server, user.locale, params)
-        elif user.parent_email_source == SponsorType.PARENT or user.parent_email_source == SponsorType.GUARDIAN:
+        elif user.parent_email_source == SponsorType.PARENT or\
+                        user.parent_email_source == SponsorType.GUARDIAN:
             # Parent handles the account confirmation
             send_email_template_to_address(user_email, 'confirm-parent', server, user.locale, params)
         else:
-            logging.info("COPPA account %s has invalid sponsor type [%s]", id_user, user.parent_email_source)
+            logging.info("COPPA account %s has invalid sponsor type [%s]", user.id, user.parent_email_source)
 
         return
     else:
@@ -61,6 +66,7 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
         send_email_template_to_address(user_email, template, server, user.locale, params)
 
     return
+
 
 def send_email_template_to_address(recipient, template, server, locale, params=None, **kwargs):
     params = params or {}
