@@ -34,6 +34,7 @@ defaults = {
             'database.url': 'mysql+mysqldb://cloudsession:cloudsession@localhost:3306/cloudsession',
 
             'request.host': 'http://localhost:8080/blockly',
+            'response.host': 'localhost',
 
             'sentry-dsn': None,
 
@@ -57,7 +58,7 @@ defaults = {
 
             'bucket.password-reset.size': '2',
             'bucket.password-reset.input': '1',
-            'bucket.password-reset.freq': '1800000',
+            'bucket.password-reset.freq': '600000',
 
             'bucket.email-confirm.size': '2',
             'bucket.email-confirm.input': '1',
@@ -76,6 +77,7 @@ if isfile(configfile):
     app_configs = {}
     for (key, value) in configs.items('section'):
         app_configs[key] = value
+        logging.info("Key:%s, Value:%s", key, value)
 
     app.config['CLOUD_SESSION_PROPERTIES'] = app_configs
 
