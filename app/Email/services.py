@@ -61,6 +61,14 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
             logging.info("COPPA account %s has invalid sponsor type [%s]", user.id, user.parent_email_source)
 
         return
+    elif template == 'reset' and coppa.is_coppa_covered(user.birth_month, user.birth_year):
+        # Send email only to the sponsor address
+        logging.info("COPPA account has a sponsor type of %s", user.parent_email_source)
+
+        # Send password reset to student and parent
+        send_email_template_to_address(user.email, 'reset-coppa', server, user.locale, params)
+        send_email_template_to_address(user.parent_email, 'reset-coppa', server, user.locale, params)
+        return
     else:
         # Registration not subject to COPPA regulations
         send_email_template_to_address(user_email, template, server, user.locale, params)
