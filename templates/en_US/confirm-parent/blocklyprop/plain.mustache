@@ -1,26 +1,31 @@
 {{!
     This is the text body of the email new account notification to
     a parent or guardian
-}}
 
+    Tags used in this template:
+        blocklyprop-host
+        locale
+        registrant-email
+        screenname
+        token
+}}
 Hello,
 
-A person under age 13 has requested a new account on the Parallax BlocklyProp web site http://{{blocklyprop-host}}) under the screen name {{screenname}}. In the request, your email address was provided as the parent or guardian of the requester.
+A person under age 13 has requested a new account on the Parallax BlocklyProp web site http://{{blocklyprop-host}} under the screen name {{screenname}}. In the request, your email address was provided as the parent or guardian of the requester.
 
 BlocklyProp is a free, online programming tool designed for education. See Getting Started with BlocklyProp for more information.
 
 Why are we sending this? In the US, the federal Children's Online Privacy Protection Act (COPPA) requires that we communicate with a parent or guardian of any person under age 13 that requests a BlocklyProp account. A full copy of our Child Privacy Policy is available online at: http://{{blocklyprop-host}}/blockly/privacy-policy
 
-To complete your child’s account registration, copy and paste this link into your browser to confirm your email address:
+To complete your child's account registration, please copy and past this link into your browser to confirm your email address:
 
 http://{{blocklyprop-host}}/blockly/confirm?locale={{locale}}&email={{registrant-email}}&token={{token}} to confirm your email address.
 
-If the above link is unable to complete the registration, please go to
-http://{{blocklyprop-host}}/blockly/confirm and enter your email address and the token: {{token}}
+If the above link is unable to complete the registration, please go to http://{{blocklyprop-host}}/blockly/confirm and enter your email address and the token: {{token}}
 
-If you do NOT want to complete your child’s account registration, you need do nothing more; this confirmation request will automatically expire in 7 days and the account will not be created.
+If you do NOT want to complete your child's account registration, you need do nothing more; this confirmation request will automatically expire in 7 days and the account will not be created.
 
-If you do complete your child’s account registration, you may close the account in the future. Email a request for closure and your child’s screen name to blocklyadmin@parallax.com. We will then close the account and remove any projects that are associated with the account.
+If you do complete your child's account registration, you may close the account in the future. Email a request for closure and your child's screen name to blocklyadmin@parallax.com. We will confirm your request and then close the account and remove any projects that are associated with the account.
 
 Regards,
 

@@ -23,9 +23,9 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
         logging.error("Cannot send email: Invalid user record")
         return False
     else:
-        logging.info("Email template received user: %s", user.id)
+        logging.info("Valid record found for user: %s", user.id)
 
-    logging.info("Sending email to user: %s using template (%s)", user.id, template)
+    logging.info("Sending email to user: %s using template: '%s'.", user.id, template)
 
     params = {}
     for key, value in kwargs.items():
@@ -77,6 +77,7 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
 
 
 def send_email_template_to_address(recipient, template, server, locale, params=None, **kwargs):
+    logging.info("Preparing email template: %s", template)
     params = params or {}
 
     # Add any supplied arguments to the parameter dictionary
@@ -88,6 +89,7 @@ def send_email_template_to_address(recipient, template, server, locale, params=N
 
     # Read templates
     (subject, plain, rich) = _read_templates(template, server, locale, params)
+    # Add error checking here to detect any issues with parsing the template.
 
     logging.info("Sending email to %s", recipient)
     send_email(recipient, subject, plain, rich)
@@ -106,8 +108,13 @@ def send_email(recipient, subject, email_text, rich_email_text=None):
 
 
 def _read_templates(template, server, locale, params):
+    logging.info("Loading header text for template: %s", template)
     header = _read_template(template, server, locale, 'header', params)
+
+    logging.info("Loading plain message text for template: %s", template)
     plain = _read_template(template, server, locale, 'plain', params)
+
+    logging.info("Loading rich message text for template: %s", template)
     rich = _read_template(template, server, locale, 'rich', params, True)
 
     return header, plain, rich
@@ -128,10 +135,21 @@ def _read_template(template, server, locale, part, params, none_if_missing=False
              error message if the none_is_missing flag is false
     """
     template_file = expanduser("~/templates/%s/%s/%s/%s.mustache" % (locale, template, server, part))
+
     if isfile(template_file):
         logging.debug('Looking for template file: %s', template_file)
+
         renderer = pystache.Renderer()
-        rendered = renderer.render_path(template_file, params)
+
+        logging.debug('Rendering the template file')
+        try:
+            rendered = renderer.render_path(template_file, params)
+        except Exception as ex:
+            logging.error('Unable to render template file %s', template_file)
+            logging.error('Error message: %s', ex.message)
+            return 'Template format error.'
+
+        logging.debug('Returning rendered template file.')
         return rendered
     else:
         logging.warn('Looking for template file: %s, but the file is missing', template_file)
