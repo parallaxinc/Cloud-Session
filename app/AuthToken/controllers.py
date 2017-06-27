@@ -1,10 +1,9 @@
 # Import the database object from the main app module
-import json
 import logging
 import uuid
 import datetime
-
 import Failures
+
 from app import db
 from app.User import services as user_service
 

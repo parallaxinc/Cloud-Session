@@ -2,7 +2,6 @@
 # We will define this inside /app/__init__.py in the next sections.
 from app import db
 
-
 class AuthenticationToken(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     id_user = db.Column(db.BigInteger, db.ForeignKey('user.id'))

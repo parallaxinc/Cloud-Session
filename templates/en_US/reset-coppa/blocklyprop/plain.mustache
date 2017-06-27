@@ -1,0 +1,15 @@
+{{!
+    This is the text body of the email that is sent to an account holder
+    to reset the password associated with the account.
+}}
+Hello,
+
+The BlocklyProp web site has received a request to reset the password for user '{{screenname}}'.
+
+If this request was made by you, please go to http://{{blocklyprop-host}}/blockly/reset?locale={{locale}}&email={{registrant-email}}&token={{token}} to reset your password now.
+
+If the url does not work, please go to http://{{blocklyprop-host}}/blockly/reset and use the token: {{token}}
+
+If you did not make this request, you may safely ignore this message.
+
+The Parallax team

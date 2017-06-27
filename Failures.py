@@ -98,11 +98,12 @@ def screen_name_already_in_use(screen_name):
            }, 500
 
 
-def rate_exceeded():
+def rate_exceeded(time):
     logging.debug('Failures: Rate exceeded')
     return {
                'success': False,
                'message': 'Insufficient bucket tokens',
+               'data': time,
                'code': 470
            }, 500
 

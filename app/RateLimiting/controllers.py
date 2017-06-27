@@ -47,9 +47,10 @@ class ConsumeSingle(Resource):
         if bucket_type not in bucket_types:
             return Failures.unknown_bucket_type(bucket_type)
 
-        if not rate_limiting_services.consume_tokens(user.id, bucket_type, 1):
+        result, time = rate_limiting_services.consume_tokens(user.id, bucket_type, 1)
+        if not result:
             db.session.commit()
-            return Failures.rate_exceeded()
+            return Failures.rate_exceeded(time)
 
         db.session.commit()
 
