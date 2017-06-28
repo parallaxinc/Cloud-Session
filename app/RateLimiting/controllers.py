@@ -44,12 +44,16 @@ class ConsumeSingle(Resource):
             return Failures.email_not_confirmed()
 
         bucket_types = app.config['CLOUD_SESSION_PROPERTIES']['bucket.types'].split(',')
+
         if bucket_type not in bucket_types:
             return Failures.unknown_bucket_type(bucket_type)
 
-        if not rate_limiting_services.consume_tokens(user.id, bucket_type, 1):
+        # Decrement a token count
+        result, next_time = rate_limiting_services.consume_tokens(user.id, bucket_type, 1)
+
+        if not result:
             db.session.commit()
-            return Failures.rate_exceeded()
+            return Failures.rate_exceeded(next_time.strftime("%Y-%m-%d %H:%M:%S"))
 
         db.session.commit()
 
@@ -82,6 +86,7 @@ class ConsumeMultiple(Resource):
 
         # Validate user exists, is validated and is not blocked
         user = user_services.get_user(id_user)
+
         if user is None:
             return Failures.unknown_user_id(id_user)
         if user.blocked:
@@ -90,12 +95,15 @@ class ConsumeMultiple(Resource):
             return Failures.email_not_confirmed()
 
         bucket_types = app.config['CLOUD_SESSION_PROPERTIES']['bucket.types'].split(',')
+
         if bucket_type not in bucket_types:
             return Failures.unknown_bucket_type(bucket_type)
 
-        if not rate_limiting_services.consume_tokens(user.id, bucket_type, 1):
+        result, next_time = rate_limiting_services.consume_tokens(user.id, bucket_type, 1)
+
+        if not result:
             db.session.commit()
-            return Failures.rate_exceeded()
+            return Failures.rate_exceeded(next_time.strftime("%Y-%m-%d %H:%M:%S"))
 
         db.session.commit()
 
