@@ -23,7 +23,9 @@ from flask.ext.mail import Mail
 from raven.contrib.flask import Sentry
 
 app = Flask(__name__)
-version = "1.1.1"
+
+# Application version (major,minor,patch-level)
+version = "1.1.2"
 db = None
 
 # Load basic configurations

@@ -1,5 +1,4 @@
 import logging
-import time
 
 import Failures
 from app import db, app
@@ -54,7 +53,7 @@ class ConsumeSingle(Resource):
 
         if not result:
             db.session.commit()
-            return Failures.rate_exceeded(time.strptime(next_time, '%c'))
+            return Failures.rate_exceeded(next_time.strftime("%Y-%m-%d %H:%M:%S"))
 
         db.session.commit()
 
@@ -104,7 +103,7 @@ class ConsumeMultiple(Resource):
 
         if not result:
             db.session.commit()
-            return Failures.rate_exceeded(time.strptime(next_time, '%c'))
+            return Failures.rate_exceeded(next_time.strftime("%Y-%m-%d %H:%M:%S"))
 
         db.session.commit()
 
