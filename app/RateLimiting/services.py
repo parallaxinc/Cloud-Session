@@ -40,7 +40,7 @@ def consume_tokens(id_user, bucket_type, token_count):
 
     bucket.content = bucket.content - token_count
     bucket.timestamp = datetime.datetime.now()
-    return True, bucket.timestamp
+    return True,  bucket.timestamp
 
 
 def has_sufficient_tokens(id_user, bucket_type, token_count):
@@ -70,6 +70,6 @@ def has_sufficient_tokens(id_user, bucket_type, token_count):
         milliseconds_till_enough = (token_count - old_bucket_content) * bucket_stream_frequency
         date_when_enough = bucket.timestamp + datetime.timedelta(milliseconds=milliseconds_till_enough)
         # Log and return or throw error
-        return False
+        return False, date_when_enough
 
     return True
