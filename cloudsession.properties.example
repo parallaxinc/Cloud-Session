@@ -9,17 +9,56 @@ database.password = database_user_password
 
 # SMTP server configuration
 mail.host = smtp.example.com
+mail.port = 25
 mail.from = no_reply@example.com
 mail.authenticated = true
 mail.user = authenticated_username
 mail.password = authenticated_user_password
+mail.ssl = false
 mail.tls = true
 
 # The email notification system relies on a number of templates
 # to produce the email messages sent to users. 
 email.template.path = /usr/share/tomcat7/templates
 
+# When a new account confirmation email is created, a security
+# token is created and attached to the confirmation request.
+# The token has a default lifespan of 12 hours. The default
+# can be adjusted here.
+# ----------------------------------------------------------
+confirm-token-validity-hours = 48
+
+
+# When a password reset request has been received, a security
+# token is created and attached to an email sent to the user.
+# The token has a default lifespan of 12 hours. The default
+# value can be adjusted with this setting.
+# -----------------------------------------------------------
+reset-token-validity-hours = 4
+
+# Bucket types are objects that can be applied to the rate-limiting service built
+# into the server.  Bucket types are arbitrary units. There can be more than one
+# bucket type defined.
+# ---------------------------------------------------------------------------------
+bucket.types = compile
+
 # Rate limiting
+# Various buckets can be defined to limit the use of specific
+# system resources and access to specific system features.
+# Each bucket has three characteristics; size, input and
+# frequency. These are defined as:
+#
+# size =  Sets the number of time the access or feature can
+#         be used before the system stops listening to that
+#         user's requests for access or service.
+#
+# input = Sets the number of additional tokens are available
+#         at each interval as defined in 'freq'.
+#
+# freq =  Set the interval, in milliseconds, that system will
+#         wait until adding tokens as set in 'input'.
+# ---------------------------------------------------------------
+
 # Starting number of compiles
 bucket.compile.size = 100
 
@@ -32,7 +71,3 @@ bucket.compile.freq = 500000
 # Enable detailed statistics on applicaiton operation
 metrics.console.enable = false
 
-# Bucket types are objects that can be applied to the rate-limiting service built
-# into the server.  Bucket types are arbitrary units. There can be more than one
-# bucket type defined.
-bucket.types = compile

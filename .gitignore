@@ -18,3 +18,8 @@ nbactions.xml
 #################
 
 .idea
+build
+copy-test
+deploy-test
+deploy2coppa
+/CloudSession-Templates.tar.gz

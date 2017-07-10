@@ -10,12 +10,14 @@ from flask import request, Blueprint
 from Validation import Validation
 
 from app.User import services as user_service
-from models import User
+# from models import User
 
+# Define the endpoint prefix for user services
 user_app = Blueprint('user', __name__, url_prefix='/user')
 api = Api(user_app)
 
 
+# Register a new user
 class Register(Resource):
 
     def post(self):
@@ -27,6 +29,12 @@ class Register(Resource):
         locale = request.form.get('locale')
         screen_name = request.form.get('screenname')
 
+        # COPPA support
+        birth_month = request.form.get('bdmonth')
+        birth_year = request.form.get('bdyear')
+        parent_email = request.form.get('parent-email')
+        parent_email_source = request.form.get('parent-email-source')
+
         # Validate required fields
         validation = Validation()
         validation.add_required_field('server', server)
@@ -35,6 +43,16 @@ class Register(Resource):
         validation.add_required_field('password-confirm', password_confirm)
         validation.add_required_field('locale', locale)
         validation.add_required_field('screenname', screen_name)
+
+        # COPPA support
+        validation.add_required_field('bdmonth', birth_month)
+        validation.add_required_field('bdyear', birth_year)
+        if parent_email:
+            validation.check_email('parent-email', parent_email)
+            if not validation.is_valid():
+                return validation.get_validation_response()
+
+        # Verify user email address
         validation.check_email('email', email)
         if not validation.is_valid():
             return validation.get_validation_response()
@@ -55,15 +73,23 @@ class Register(Resource):
         if not user_service.check_password_complexity(password):
             return Failures.password_complexity()
 
-        id_user = user_service.create_local_user(server, email, password, locale, screen_name)
-        user_service.send_email_confirm(id_user, server)
+        # Write user details to the database
+        id_user = user_service.create_local_user(
+            server, email, password, locale, screen_name,
+            birth_month, birth_year, parent_email, parent_email_source)
 
-        db.session.commit()
+        # Send a confirmation request email to user or parent
+        (result, errno, mesg) = user_service.send_email_confirm(id_user, server)
+        if result:
+            # Commit the database record
+            db.session.commit()
+            logging.info('User-controller: register success: %s', id_user)
 
-        logging.info('User-controller: register success: %s', id_user)
-
-        # Create user
-        return {'success': True, 'user': id_user}
+            # Create user
+            return {'success': True, 'user': id_user}
+        else:
+            logging.error("Unable to register user. Error %s: %s", errno, mesg)
+            return {'success': False, 'user': 0}
 
 
 class GetUserById(Resource):
@@ -72,7 +98,7 @@ class GetUserById(Resource):
         # Parse numbers
         try:
             id_user = int(id_user)
-        except:
+        except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         # Validate user exists, is validated and is not blocked
@@ -87,7 +113,11 @@ class GetUserById(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
@@ -106,7 +136,11 @@ class GetUserByEmail(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
@@ -125,7 +159,11 @@ class GetUserByScreenname(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
@@ -133,6 +171,7 @@ class DoInfoChange(Resource):
 
     def post(self, id_user):
         screen_name = request.form.get('screenname')
+
         # Validate required fields
         validation = Validation()
         validation.add_required_field('id-user', id_user)
@@ -143,7 +182,7 @@ class DoInfoChange(Resource):
         # Parse numbers
         try:
             id_user = int(id_user)
-        except:
+        except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         # Validate user exists, is validated and is not blocked
@@ -166,7 +205,11 @@ class DoInfoChange(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
@@ -174,6 +217,7 @@ class DoLocaleChange(Resource):
 
     def post(self, id_user):
         locale = request.form.get('locale')
+
         # Validate required fields
         validation = Validation()
         validation.add_required_field('id-user', id_user)
@@ -184,7 +228,7 @@ class DoLocaleChange(Resource):
         # Parse numbers
         try:
             id_user = int(id_user)
-        except:
+        except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         # Validate user exists, is validated and is not blocked
@@ -202,13 +246,28 @@ class DoLocaleChange(Resource):
             'email': user.email,
             'locale': user.locale,
             'screenname': user.screen_name,
-            'authentication-source': user.auth_source
+            'authentication-source': user.auth_source,
+            'bdmonth': user.birth_month,
+            'bdyear': user.birth_year,
+            'parent-email': user.parent_email,
+            'parent-email-source': user.parent_email_source
         }}
 
 
+# Supported endpoints
+# Note: The url_prefix is '/user'. All user endpoints are in the form
+# of host:port/user/_service_
+#
+# Register a new user account
 api.add_resource(Register, '/register')
+
+# Retrieve details about an existing user account
 api.add_resource(GetUserById, '/id/<int:id_user>')
 api.add_resource(GetUserByEmail, '/email/<string:email>')
 api.add_resource(GetUserByScreenname, '/screenname/<string:screen_name>')
+
+# Update a user screen name
 api.add_resource(DoInfoChange, '/info/<int:id_user>')
+
+# Update the local defined in the user account
 api.add_resource(DoLocaleChange, '/locale/<int:id_user>')
