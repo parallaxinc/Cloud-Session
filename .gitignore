@@ -22,4 +22,5 @@ build
 copy-test
 deploy-test
 deploy2coppa
+dbupdate.sh
 /CloudSession-Templates.tar.gz
