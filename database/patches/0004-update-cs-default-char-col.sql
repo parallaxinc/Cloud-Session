@@ -12,11 +12,15 @@ affected columns within each of these tables.
  */
 
 # Select the target database
-USE cloudsession
+USE cloudsession;
 
 # Set the database defaults
 # This also sets the collation for individual table columns
+;ALTER DATABASE blocklyprop CHARACTER SET utf8 COLLATE utf8_general_ci;
 ALTER DATABASE cloudsession CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+# latin1_general_ci
+# ALTER DATABASE cloudsession CHARACTER SET latin1 COLLATE latin1_general_ci;
 
 # Update the authentication_token table
 SET foreign_key_checks = 0;
