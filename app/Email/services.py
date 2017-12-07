@@ -40,7 +40,7 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     params['sponsoremail'] = user.parent_email
     params['blocklyprop-host'] = app.config['CLOUD_SESSION_PROPERTIES']['response.host']
 
-    #Default the recipient email address
+    # Default the recipient email address
     user_email = user.email
     coppa = Coppa()
 
@@ -70,7 +70,13 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
         send_email_template_to_address(user.parent_email, 'reset-coppa', server, user.locale, params)
         return
     else:
-        # Registration not subject to COPPA regulations
+        # Registration not subject to COPPA regulations.
+        #
+        # Evaluate user wanting to use an alternate email address to register
+        # the account.
+        if user.parent_email_source == SponsorType.INDIVIDUAL or user.parent_email:
+            user_email = user.parent_email
+
         send_email_template_to_address(user_email, template, server, user.locale, params)
 
     return
