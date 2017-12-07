@@ -32,7 +32,6 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
         logging.debug("Logging parameter %s = %s", key, value)
         params[key] = value
 
-
     # The elements in the params array represent the data elements that are
     # available to the email templates.
     params['screenname'] = user.screen_name
@@ -40,7 +39,7 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     params['registrant-email'] = user.email
     params['sponsoremail'] = user.parent_email
 
-    #Default the recipient email address
+    # Default the recipient email address
     user_email = user.email
     coppa = Coppa()
 
