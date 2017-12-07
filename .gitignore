@@ -21,3 +21,5 @@ nbactions.xml
 build
 deploy-test
 /CloudSession-Templates.tar.gz
+/copy-test
+/deploy2coppa

@@ -62,7 +62,13 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
 
         return
     else:
-        # Registration not subject to COPPA regulations
+        # Registration not subject to COPPA regulations.
+        #
+        # Evaluate user wanting to use an alternate email address to register
+        # the account.
+        if user.parent_email_source == SponsorType.INDIVIDUAL or user.parent_email:
+            user_email = user.parent_email
+
         send_email_template_to_address(user_email, template, server, user.locale, params)
 
     return
