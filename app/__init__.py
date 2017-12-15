@@ -25,7 +25,15 @@ from raven.contrib.flask import Sentry
 app = Flask(__name__)
 
 # Application version (major,minor,patch-level)
-version = "1.1.2"
+version = "1.1.3"
+
+"""
+Change Log
+
+1.1.3       Added documentation around the user account registration process.
+
+"""
+
 db = None
 
 # Load basic configurations
