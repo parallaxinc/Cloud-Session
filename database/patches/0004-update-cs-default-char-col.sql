@@ -16,7 +16,6 @@ USE cloudsession;
 
 # Set the database defaults
 # This also sets the collation for individual table columns
-;ALTER DATABASE blocklyprop CHARACTER SET utf8 COLLATE utf8_general_ci;
 ALTER DATABASE cloudsession CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 # latin1_general_ci
