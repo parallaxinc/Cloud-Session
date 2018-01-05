@@ -40,7 +40,7 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     params['sponsoremail'] = user.parent_email
     params['blocklyprop-host'] = app.config['CLOUD_SESSION_PROPERTIES']['response.host']
 
-    #Default the recipient email address
+    # Default the recipient email address
     user_email = user.email
     coppa = Coppa()
 
@@ -70,7 +70,13 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
         send_email_template_to_address(user.parent_email, 'reset-coppa', server, user.locale, params)
         return
     else:
-        # Registration not subject to COPPA regulations
+        # Registration not subject to COPPA regulations.
+        #
+        # Evaluate user wanting to use an alternate email address to register
+        # the account.
+        if user.parent_email_source == SponsorType.INDIVIDUAL or user.parent_email:
+            user_email = user.parent_email
+
         send_email_template_to_address(user_email, template, server, user.locale, params)
 
     return
@@ -96,7 +102,7 @@ def send_email_template_to_address(recipient, template, server, locale, params=N
 
 
 def send_email(recipient, subject, email_text, rich_email_text=None):
-
+    logging.info('Creating email message package')
     msg = Message(
         recipients=[recipient],
         subject=subject.rstrip(),
@@ -104,7 +110,18 @@ def send_email(recipient, subject, email_text, rich_email_text=None):
         html=rich_email_text,
         sender=app.config['DEFAULT_MAIL_SENDER']
     )
-    mail.send(msg)
+
+    # Attempt to send the email
+    try:
+        logging.info('Sending email message to server')
+        mail.send(msg)
+    except Exception as ex:
+        logging.error('Unable to send email')
+        logging.error('Error message: %s', ex.message)
+        return 1
+
+    logging.info('Email message was delivered to server')
+    return 0
 
 
 def _read_templates(template, server, locale, params):
