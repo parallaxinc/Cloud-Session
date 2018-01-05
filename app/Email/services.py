@@ -102,7 +102,7 @@ def send_email_template_to_address(recipient, template, server, locale, params=N
 
 
 def send_email(recipient, subject, email_text, rich_email_text=None):
-
+    logging.info('Creating email message package')
     msg = Message(
         recipients=[recipient],
         subject=subject.rstrip(),
@@ -110,7 +110,18 @@ def send_email(recipient, subject, email_text, rich_email_text=None):
         html=rich_email_text,
         sender=app.config['DEFAULT_MAIL_SENDER']
     )
-    mail.send(msg)
+
+    # Attempt to send the email
+    try:
+        logging.info('Sending email message to server')
+        mail.send(msg)
+    except Exception as ex:
+        logging.error('Unable to send email')
+        logging.error('Error message: %s', ex.message)
+        return 1
+
+    logging.info('Email message was delivered to server')
+    return 0
 
 
 def _read_templates(template, server, locale, params):
