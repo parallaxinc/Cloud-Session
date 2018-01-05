@@ -25,7 +25,7 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     else:
         logging.info("Valid record found for user: %s", user.id)
 
-    logging.info("Sending email to user: %s using template: '%s'.", user.id, template)
+    logging.info("Sending email to user: %s using template: '%s'.", user.email, template)
 
     params = {}
     for key, value in kwargs.items():
@@ -74,8 +74,14 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
         #
         # Evaluate user wanting to use an alternate email address to register
         # the account.
-        if user.parent_email_source == SponsorType.INDIVIDUAL or user.parent_email:
+        logging.info('Non-COPPA registration')
+        if user.parent_email_source == SponsorType.INDIVIDUAL and user.parent_email:
             user_email = user.parent_email
+            logging.info('Individual sponsor email %s being used', user_email)
+
+        if user.parent_email:
+            user_email = user.parent_email
+            logging.info('Sponsor email %s being used', user_email)
 
         send_email_template_to_address(user_email, template, server, user.locale, params)
 
@@ -83,7 +89,7 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
 
 
 def send_email_template_to_address(recipient, template, server, locale, params=None, **kwargs):
-    logging.info("Preparing email template: %s", template)
+    logging.info("Preparing email template: %s for %s", template, recipient)
     params = params or {}
 
     # Add any supplied arguments to the parameter dictionary
@@ -97,7 +103,7 @@ def send_email_template_to_address(recipient, template, server, locale, params=N
     (subject, plain, rich) = _read_templates(template, server, locale, params)
     # Add error checking here to detect any issues with parsing the template.
 
-    logging.info("Sending email to %s", recipient)
+    logging.info("Sending email to %s", params['email'])
     send_email(recipient, subject, plain, rich)
 
 
