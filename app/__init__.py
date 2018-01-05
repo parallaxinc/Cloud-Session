@@ -10,14 +10,13 @@ from FakeSecHead import FakeSecHead
 from os.path import expanduser, isfile
 
 # Import Flask
-# from flask import Flask, render_template
 from flask import Flask
 
 # Import SQLAlchemy database mapper
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 # Import Mail
-from flask.ext.mail import Mail
+from flask_mail import Mail
 
 # Define the WSGI application object
 from raven.contrib.flask import Sentry
@@ -76,6 +75,8 @@ defaults = {
 }
 
 logging.basicConfig(level=logging.DEBUG)
+logging.info('Log level set to %s', 'DEBUG')
+logging.info('Starting Cloud Session Service v%s', version)
 
 configfile = expanduser("~/cloudsession.properties")
 logging.info('Looking for config file: %s', configfile)
@@ -85,17 +86,18 @@ if isfile(configfile):
     configs.readfp(FakeSecHead(open(configfile)))
 
     app_configs = {}
+    logging.debug('Configuration Key Settings')
     for (key, value) in configs.items('section'):
         app_configs[key] = value
-        logging.info("Key:%s, Value:%s", key, value)
+        logging.debug("Key:%s, Value:%s", key, value)
 
     app.config['CLOUD_SESSION_PROPERTIES'] = app_configs
 
 else:
     app.config['CLOUD_SESSION_PROPERTIES'] = defaults
+    logging.warn('WARNING: Using application defaults.')
 
-
-# -------------------------------------- Module initialization -------------------------------------------------
+# ----------  Init Sentry Module ----------
 if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
     logging.info("Initializing Sentry")
     sentry = Sentry(app,
@@ -106,20 +108,27 @@ if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
 else:
     logging.info("No Sentry configuration")
 
+# ----------  Init database package ----------
 # Define the database object which is imported
 # by modules and controllers
-# logging.info("Initializing database connection")
+# --------------------------------------------
 app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
+logging.debug("Initializing database connection: %s", app.config['SQLALCHEMY_DATABASE_URI'])
+
 db = SQLAlchemy(app)
 
 
-# logging.info("Configuring SMTP properties")
 app.config['MAIL_SERVER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.host']
+logging.debug("Configuring SMTP properties for %s", app.config['MAIL_SERVER'])
+
+# Set the correct server port for encrypted vs unencrypted communications
 if app.config['CLOUD_SESSION_PROPERTIES']['mail.port'] is None:
     if app.config['CLOUD_SESSION_PROPERTIES']['mail.tls']:
         app.config['MAIL_PORT'] = 587
     else:
         app.config['MAIL_PORT'] = 25
+
+    logging.info("Email server default port set to port %s", app.config['MAIL_PORT'])
 else:
     app.config['MAIL_PORT'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.port']
 
@@ -139,7 +148,7 @@ logging.info("Sender: %s",app.config['DEFAULT_MAIL_SENDER'])
 
 mail = Mail(app)
 
-# -------------------------------------------- Services --------------------------------------------------------
+# ---------- Services ----------
 logging.info("Initializing services")
 
 # All of these imports need the database

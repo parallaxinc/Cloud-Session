@@ -1,6 +1,6 @@
 from app import mail, app
 from os.path import expanduser, isfile
-from flask.ext.mail import Message
+from flask_mail import Message
 from app.User.coppa import Coppa, SponsorType
 
 import pystache
