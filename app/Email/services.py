@@ -99,6 +99,25 @@ def send_email_template_to_address(recipient, template, server, locale, params=N
     params['email'] = recipient
     params['locale'] = locale
 
+    # Create a URI-friendly version of the email addresses
+    params['email-uri'] = _convert_email_uri(params['email'])
+    logging.info("Email address %s converted to %s",
+                 params['email'],
+                 params['email-uri']
+                 )
+
+    params['registrant-email-uri'] = _convert_email_uri(params['registrant-email'])
+    logging.info("Registrant email address %s converted to %s",
+                 params['registrant-email'],
+                 params['registrant-email-uri']
+                 )
+
+    params['sponsor-email-uri'] = _convert_email_uri(params['sponsoremail'])
+    logging.info("Sponsor email address %s converted to %s",
+                 params['sponsoremail'],
+                 params['sponsor-email-uri']
+                 )
+
     # Read templates
     (subject, plain, rich) = _read_templates(template, server, locale, params)
     # Add error checking here to detect any issues with parsing the template.
@@ -180,3 +199,19 @@ def _read_template(template, server, locale, part, params, none_if_missing=False
             return None
         else:
             return 'Template missing'
+
+
+def _convert_email_uri(email):
+    """
+    Evaluate email address and replace any plus signs that may appear in the
+    portion of the address prior to the '@' with the literal '%2B'.
+
+    Standard web servers will convert any plus ('+') symbol to a space (' ')
+    anywhere where they may appear in the URL. This will allow functions upstream
+    to create a URI that contains an email address that, when submitted to a
+    server, will not be replaced with a space character.
+    """
+    if "+" in email:
+        return email.replace("+", "%2B")
+    else:
+        return email

@@ -24,11 +24,15 @@ from raven.contrib.flask import Sentry
 app = Flask(__name__)
 
 # Application version (major,minor,patch-level)
-version = "1.1.3"
+version = "1.1.4"
 
 """
 Change Log
 
+1.1.4       Add code to convert plus signs located the the username portion
+            of an email address to a '%2B'when the email address is embedded
+            in a URL.
+            
 1.1.3       Added documentation around the user account registration process.
 
 """
