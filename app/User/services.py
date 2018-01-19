@@ -1,6 +1,6 @@
 import hashlib
 import uuid
-
+import logging
 import datetime
 
 from app import db, app
@@ -9,6 +9,10 @@ from app.Email import services as email_services
 from app.RateLimiting import services as rate_limiting_services
 
 from models import User, ConfirmToken, ResetToken
+
+
+def get_user(id_user):
+    return User.query.get(id_user)
 
 
 def get_password_hash(password):
@@ -23,10 +27,6 @@ def check_password(id_user, password):
     return user.password == password_hash
 
 
-def get_user(id_user):
-    return User.query.get(id_user)
-
-
 def get_user_by_email(email):
     return User.query.filter_by(email=email).first()
 
@@ -39,7 +39,10 @@ def check_password_complexity(password):
     return 8 <= len(password) < 200
 
 
-def create_local_user(server, email, password, locale, screen_name):
+def create_local_user(
+        server, email, password, locale, screen_name,
+        birth_month, birth_year, parent_email, parent_email_source):
+
     salt, password_hash = get_password_hash(password)
 
     # Save user
@@ -51,6 +54,12 @@ def create_local_user(server, email, password, locale, screen_name):
     user.password = password_hash
     user.salt = salt
 
+    #COPPA support
+    user.birth_month = birth_month
+    user.birth_year = birth_year
+    user.parent_email = parent_email
+    user.parent_email_source = parent_email_source
+
     db.session.add(user)
     db.session.flush()
     db.session.refresh(user)
@@ -58,7 +67,10 @@ def create_local_user(server, email, password, locale, screen_name):
     return user.id
 
 
-def create_oauth_user(server, email, source, locale, screen_name):
+def create_oauth_user(
+        server, email, source, locale, screen_name,
+        birth_month, birth_year, parent_email, parent_email_source):
+
     # Save user
     user = User()
     user.email = email
@@ -68,6 +80,13 @@ def create_oauth_user(server, email, source, locale, screen_name):
     user.confirmed = True
     user.blocked = False
 
+    # COPPA support
+    user.birth_month = birth_month
+    user.birth_year = birth_year
+    user.parent_email = parent_email
+    user.parent_email_source = parent_email_source
+
+    # Add the user record
     db.session.add(user)
     db.session.flush()
     db.session.refresh(user)
@@ -76,16 +95,24 @@ def create_oauth_user(server, email, source, locale, screen_name):
 
 
 def send_email_confirm(id_user, server):
+    logging.info("Preparing new account confirmation email for user %s", id_user)
+    logging.info("Account request received from server: %s", server)
+
     user = get_user(id_user)
+
     if user is None:
+        logging.debug("Unknown user id: %s", id_user)
         return False, 1, 'User id not known'
     if user.confirmed:
+        logging.debug("User account %s has already been verified", id_user)
         return False, 2, 'Account already verified'
     if user.blocked:
+        logging.debug("User account %s has been blocked", id_user)
         return False, 3, 'Account Blocked'
 
     # check rate limiting
     if not rate_limiting_services.consume_tokens(id_user, 'email-confirm', 1):
+        logging.debug("Too many attempts to confirm account for user %s", id_user)
         return False, 10, 'Rate limiter exceeded'
 
     # Delete token if any exists
@@ -103,7 +130,14 @@ def send_email_confirm(id_user, server):
     confirm_token.validity = datetime.datetime.now() + datetime.timedelta(hours=token_validity_time)
     db.session.add(confirm_token)
 
-    email_services.send_email_template_for_user(id_user, 'confirm', server, token=token)
+    try:
+        logging.info("Sending account confirmation email to user: %s ", id_user)
+        # Send an email to the user or user's responsible party to confirm the account request
+        email_services.send_email_template_for_user(id_user, 'confirm', server, token=token)
+        logging.info("Completed email send process.")
+    except Exception as ex:
+        logging.error("Error while sending email: %s", ex.message)
+        return False, 99, 'Unable to contact SMTP server'
 
     return True, 0, 'Success'
 
@@ -137,3 +171,4 @@ def send_password_reset(id_user, server):
     email_services.send_email_template_for_user(id_user, 'reset', server, token=token)
 
     return True, 0, 'Success'
+

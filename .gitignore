@@ -2,6 +2,8 @@
 *.sqlite
 *.log
 venv/
+build.sh
+CloudSession-Pkg.tar.gz
 
 #################
 ## NetBeans
@@ -16,3 +18,11 @@ nbactions.xml
 #################
 
 .idea
+build
+copy-test
+deploy-test
+deploy2coppa
+dbupdate.sh
+/CloudSession-Templates.tar.gz
+/copy-test
+/deploy2coppa

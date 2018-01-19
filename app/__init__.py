@@ -1,26 +1,43 @@
-# Import flask and template operators
+"""
+Cloud Session server application initialization
+
+"""
 
 # Import properties files utils
 import logging
 from ConfigParser import ConfigParser
-
-import os
 from FakeSecHead import FakeSecHead
 from os.path import expanduser, isfile
 
 # Import Flask
-from flask import Flask, render_template
+from flask import Flask
 
-# Import SQLAlchemy
-from flask.ext.sqlalchemy import SQLAlchemy
+# Import SQLAlchemy database mapper
+from flask_sqlalchemy import SQLAlchemy
 
 # Import Mail
-from flask.ext.mail import Mail
+from flask_mail import Mail
 
 # Define the WSGI application object
 from raven.contrib.flask import Sentry
 
 app = Flask(__name__)
+
+# Application version (major,minor,patch-level)
+version = "1.1.4"
+
+"""
+Change Log
+
+1.1.4       Add code to convert plus signs located the the username portion
+            of an email address to a '%2B'when the email address is embedded
+            in a URL.
+            
+1.1.3       Added documentation around the user account registration process.
+
+"""
+
+db = None
 
 # Load basic configurations
 app.config.from_object('config')
@@ -28,6 +45,9 @@ app.config.from_object('config')
 # --------------------------------------------- Application configurations --------------------------------------
 defaults = {
             'database.url': 'mysql+mysqldb://cloudsession:cloudsession@localhost:3306/cloudsession',
+
+            'request.host': 'http://localhost:8080/blockly',
+            'response.host': 'localhost',
 
             'sentry-dsn': None,
 
@@ -51,30 +71,37 @@ defaults = {
 
             'bucket.password-reset.size': '2',
             'bucket.password-reset.input': '1',
-            'bucket.password-reset.freq': '1800000',
+            'bucket.password-reset.freq': '600000',
 
             'bucket.email-confirm.size': '2',
             'bucket.email-confirm.input': '1',
             'bucket.email-confirm.freq': '1800000'
 }
 
+logging.basicConfig(level=logging.DEBUG)
+logging.info('Log level set to %s', 'DEBUG')
+logging.info('Starting Cloud Session Service v%s', version)
+
 configfile = expanduser("~/cloudsession.properties")
-print('Looking for config file: %s' % configfile)
+logging.info('Looking for config file: %s', configfile)
+
 if isfile(configfile):
     configs = ConfigParser(defaults)
     configs.readfp(FakeSecHead(open(configfile)))
 
     app_configs = {}
+    logging.debug('Configuration Key Settings')
     for (key, value) in configs.items('section'):
         app_configs[key] = value
+        logging.debug("Key:%s, Value:%s", key, value)
+
     app.config['CLOUD_SESSION_PROPERTIES'] = app_configs
+
 else:
     app.config['CLOUD_SESSION_PROPERTIES'] = defaults
+    logging.warn('WARNING: Using application defaults.')
 
-
-# -------------------------------------- Module initialization -------------------------------------------------
-logging.basicConfig(level=logging.DEBUG)
-
+# ----------  Init Sentry Module ----------
 if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
     logging.info("Initializing Sentry")
     sentry = Sentry(app,
@@ -85,22 +112,30 @@ if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
 else:
     logging.info("No Sentry configuration")
 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
-
+# ----------  Init database package ----------
 # Define the database object which is imported
 # by modules and controllers
-logging.info("Initializing database connection")
+# --------------------------------------------
+app.config['SQLALCHEMY_DATABASE_URI'] = app.config['CLOUD_SESSION_PROPERTIES']['database.url']
+logging.debug("Initializing database connection: %s", app.config['SQLALCHEMY_DATABASE_URI'])
+
 db = SQLAlchemy(app)
 
+
 app.config['MAIL_SERVER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.host']
+logging.debug("Configuring SMTP properties for %s", app.config['MAIL_SERVER'])
+
+# Set the correct server port for encrypted vs unencrypted communications
 if app.config['CLOUD_SESSION_PROPERTIES']['mail.port'] is None:
     if app.config['CLOUD_SESSION_PROPERTIES']['mail.tls']:
         app.config['MAIL_PORT'] = 587
     else:
         app.config['MAIL_PORT'] = 25
+
+    logging.info("Email server default port set to port %s", app.config['MAIL_PORT'])
 else:
     app.config['MAIL_PORT'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.port']
+
 app.config['MAIL_USE_TLS'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.tls']
 app.config['MAIL_USE_SSL'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.ssl']
 app.config['MAIL_DEBUG'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.debug']
@@ -108,18 +143,27 @@ app.config['MAIL_USERNAME'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.user'
 app.config['MAIL_PASSWORD'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.password']
 app.config['DEFAULT_MAIL_SENDER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail.from']
 
-#app.debug = True
+
 logging.info("Initializing mail")
+logging.info("SMTP port: %s", app.config['MAIL_PORT'])
+logging.info("TLS: %s",app.config['MAIL_USE_TLS'])
+logging.info("SSL: %s",app.config['MAIL_USE_SSL'])
+logging.info("Sender: %s",app.config['DEFAULT_MAIL_SENDER'])
+
 mail = Mail(app)
 
-# -------------------------------------------- Services --------------------------------------------------------
+# ---------- Services ----------
 logging.info("Initializing services")
-from app.AuthToken.controllers import auth_token_app
-from app.Authenticate.controllers import authenticate_app
-from app.User.controllers import user_app
-from app.LocalUser.controllers import  local_user_app
-from app.RateLimiting.controllers import rate_limiting_app
-from app.OAuth.controllers import oauth_app
+
+# All of these imports need the database
+if db is not None:
+    from app.Authenticate.controllers import authenticate_app
+    from app.AuthToken.controllers import auth_token_app
+    from app.User.controllers import user_app
+    from app.LocalUser.controllers import  local_user_app
+    from app.RateLimiting.controllers import rate_limiting_app
+    from app.OAuth.controllers import oauth_app
+
 
 app.register_blueprint(auth_token_app)
 app.register_blueprint(authenticate_app)

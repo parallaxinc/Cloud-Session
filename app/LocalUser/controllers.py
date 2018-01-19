@@ -18,11 +18,26 @@ api = Api(local_user_app)
 
 
 class DoConfirm(Resource):
+    """
+    Confirm and activate a user account.
+
+    Args:
+        None
+
+    Returns:
+        A JSON document with the key 'success' set to True if the operation
+        is successful. Otherwise the key 'success' is set to False and the
+        field 'code' is set to the HTTP error code that represents a specific
+        reason when the account confirmation was rejected.
+
+    Raises:
+        None
+    """
 
     def post(self):
         # Get values
-        email = request.form.get('email')
-        token = request.form.get('token')
+        email = request.form.get('email')   # User account email address
+        token = request.form.get('token')   # Token assigned to account during account registration
 
         # Validate required fields
         validation = Validation()
@@ -46,15 +61,19 @@ class DoConfirm(Resource):
 
         confirm_token = ConfirmToken.query.filter_by(token=token).first()
         if confirm_token is None:
-            # Unkown token
+            # Unknown token
             return {'success': False, 'code': 510}
         if confirm_token.id_user != user.id:
             # Token is not for this user
             return {'success': False, 'code': 510}
 
+        # Set user account status to 'Confirmed'
         user.confirmed = True
 
+        # Delete the account confirmation token; it is no longer required
         db.session.delete(confirm_token)
+
+        # Commit the user account changes
         db.session.commit()
 
         logging.info('LocalUser-controller: DoConfirm: success: %s', user.id)
@@ -63,10 +82,21 @@ class DoConfirm(Resource):
 
 
 class RequestConfirm(Resource):
+    """
+    Send account confirmation request email to user
+
+    Args:
+        param1: User account email address
+
+    Returns:
+        JSON document detailing the success or failure of the request.
+    """
 
     def get(self, email):
-        # Get values
+        # Get server URL
         server = request.headers.get('server')
+
+        logging.info("Requesting email confirmation for %s from server %s", email, server)
 
         # Validate required fields
         validation = Validation()
@@ -95,11 +125,18 @@ class RequestConfirm(Resource):
         else:
             if code == 10:
                 return Failures.rate_exceeded()
-            return {
-                'success': False,
-                'message': message,
-                'code': 520
-            }
+            elif code == 99:
+                return {
+                    'success': False,
+                    'message': message,
+                    'code': 540
+                }
+            else:
+                return {
+                    'success': False,
+                    'message': message,
+                    'code': 520
+                }
 
 
 class PasswordReset(Resource):

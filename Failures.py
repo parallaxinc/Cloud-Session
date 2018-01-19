@@ -98,11 +98,17 @@ def screen_name_already_in_use(screen_name):
            }, 500
 
 
-def rate_exceeded():
+def rate_exceeded(time):
+    """
+      Service requested to frequently.
+
+      time - string representing the date and time the service will be available again
+    """
     logging.debug('Failures: Rate exceeded')
     return {
                'success': False,
                'message': 'Insufficient bucket tokens',
+               'data': time,
                'code': 470
            }, 500
 
