@@ -24,10 +24,13 @@ from raven.contrib.flask import Sentry
 app = Flask(__name__)
 
 # Application version (major,minor,patch-level)
-version = "1.1.4"
+version = "1.1.5"
 
 """
 Change Log
+
+1.1.5       Refactor _convert_email_uri(email) to properly handle a null
+            email address.
 
 1.1.4       Add code to convert plus signs located the the username portion
             of an email address to a '%2B'when the email address is embedded
