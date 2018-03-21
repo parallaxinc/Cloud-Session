@@ -24,10 +24,13 @@ from raven.contrib.flask import Sentry
 app = Flask(__name__)
 
 # Application version (major,minor,patch-level)
-version = "1.1.6"
+version = "1.1.7"
 
 """
 Change Log
+
+1.1.7       Update application logging to separate application events from
+            those logged by the uwsgi servivce
 
 1.1.6       Add email address detail for various authentication failures
 
@@ -83,7 +86,15 @@ defaults = {
             'bucket.email-confirm.freq': '1800000'
 }
 
-logging.basicConfig(level=logging.DEBUG)
+
+# Set up Cloud Session application log details. The user account that
+# this application runs under must have create and write permissions to
+# the /var/log/supervisor/ folder.
+# ----------------------------------------------------------------------
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='/var/log/supervisor/cloud-session-app.log',
+                    filemode='w')
 logging.info('Log level set to %s', 'DEBUG')
 logging.info('Starting Cloud Session Service v%s', version)
 
