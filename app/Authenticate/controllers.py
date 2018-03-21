@@ -41,9 +41,9 @@ class AuthenticateLocalUser(Resource):
         if user is None:
             return Failures.unknown_user_email(email)
         if not user.confirmed:
-            return Failures.email_not_confirmed()
+            return Failures.email_not_confirmed(email)
         if user.blocked:
-            return Failures.user_blocked()
+            return Failures.user_blocked(email)
         if user.auth_source != 'local':
             return Failures.wrong_auth_source(user.auth_source)
 
@@ -53,11 +53,11 @@ class AuthenticateLocalUser(Resource):
         if not user_services.check_password(user.id, password):
             rate_limiting_services.consume_tokens(user.id, 'failed-password', 1)
             db.session.commit()
-            return Failures.wrong_password()
+            return Failures.wrong_password(email)
 
         db.session.commit()
 
-        logging.info('Authenticate-controller: Authenticate: success: %s', user.id)
+        logging.info('Authenticate-controller: Authenticate: success: %s', email)
 
         return {'success': True, 'user': {
             'id': user.id,

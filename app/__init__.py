@@ -24,10 +24,12 @@ from raven.contrib.flask import Sentry
 app = Flask(__name__)
 
 # Application version (major,minor,patch-level)
-version = "1.1.5"
+version = "1.1.6"
 
 """
 Change Log
+
+1.1.6       Add email address detail for various authentication failures
 
 1.1.5       Refactor _convert_email_uri(email) to properly handle a null
             email address.
