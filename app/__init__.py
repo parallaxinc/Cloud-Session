@@ -24,10 +24,13 @@ from raven.contrib.flask import Sentry
 app = Flask(__name__)
 
 # Application version (major,minor,patch-level)
-version = "1.1.7"
+version = "1.1.8"
 
 """
 Change Log
+
+1.1.8       Fail any attempt to reset an account password is the account
+            email address has not yet been confirmed.
 
 1.1.7       Update application logging to separate application events from
             those logged by the uwsgi servivce

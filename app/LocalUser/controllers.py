@@ -63,6 +63,7 @@ class DoConfirm(Resource):
         if confirm_token is None:
             # Unknown token
             return {'success': False, 'code': 510}
+
         if confirm_token.id_user != user.id:
             # Token is not for this user
             return {'success': False, 'code': 510}
@@ -213,6 +214,9 @@ class PasswordReset(Resource):
 
         if user.auth_source != 'local':
             return Failures.wrong_auth_source(user.auth_source)
+
+        if not user.confirmed:
+            return Failures.email_not_confirmed(user.email)
 
         success, code, message = user_service.send_password_reset(user.id, server)
 
