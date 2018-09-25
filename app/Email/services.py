@@ -211,7 +211,8 @@ def _convert_email_uri(email):
     to create a URI that contains an email address that, when submitted to a
     server, will not be replaced with a space character.
     """
-    if "+" in email:
-        return email.replace("+", "%2B")
-    else:
-        return email
+    if email is not None:
+        if "+" in email:
+            return email.replace("+", "%2B")
+
+    return email

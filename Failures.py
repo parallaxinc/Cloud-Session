@@ -12,7 +12,7 @@ def unknown_user_id(id_user):
 
 
 def unknown_user_email(email):
-    logging.debug('Failures: Unknown user: %s', email)
+    logging.debug('Failures: Unknown user email: %s', email)
     return {
                'success': False,
                'message': 'Unknown user',
@@ -41,8 +41,8 @@ def email_already_in_use(email):
            }, 500
 
 
-def email_not_confirmed():
-    logging.debug('Failures: Email not confirmed')
+def email_not_confirmed(email):
+    logging.debug('Failures: Email %s not confirmed', email)
     return {
                'success': False,
                'message': 'Email not confirmed',
@@ -50,8 +50,8 @@ def email_not_confirmed():
            }, 401
 
 
-def user_blocked():
-    logging.debug('Failures: User blocked')
+def user_blocked(email):
+    logging.debug('Failures: User %s blocked', email)
     return {
                'success': False,
                'message': 'User is blocked',
@@ -113,8 +113,8 @@ def rate_exceeded(time):
            }, 500
 
 
-def wrong_password():
-    logging.debug('Failures: Wrong password')
+def wrong_password(email):
+    logging.debug('Failures: Wrong password for %s', email)
     return {
                'success': False,
                'message': 'Wrong password',
