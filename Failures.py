@@ -16,7 +16,16 @@ document includes these elements:
               data element involved in the error.
     data    - optional data element that provides an id or key value
               for the data set being processed when the error occurred.
-              
+   
+The HTTP error code indicates whether the request succeeded or failed. If
+the call is successful, the service will return a code 200 and a message
+of "OK".
+
+If the request is unsuccessful and the error is due to faulty client data,
+return an HTTP error code of 401 if the user is unknown or authentication fails.
+Return an HTTP 500 error if the failure is due to an issue within the server,
+such as unable to access the back-end database.
+             
 '''
 
 
@@ -27,7 +36,7 @@ def unknown_user_id(id_user):
         'message': 'Unknown user',
         'code': 400,
         'data': id_user
-        }, 500
+        }, 400
 
 
 def unknown_user_email(email):
@@ -37,7 +46,7 @@ def unknown_user_email(email):
         'message': 'Unknown user',
         'code': 400,
         'data': email
-        }, 500
+        }, 400
 
 
 def unknown_user_screen_name(screen_name):
@@ -47,7 +56,7 @@ def unknown_user_screen_name(screen_name):
         'message': 'Unknown user screen name',
         'code': 400,
         'data': screen_name
-        }, 500
+        }, 400
 
 
 def email_already_in_use(email):
@@ -57,7 +66,7 @@ def email_already_in_use(email):
         'message': 'Email already in use',
         'code': 450,
         'data': email
-        }, 500
+        }, 400
 
 
 def email_not_confirmed(email):
@@ -77,7 +86,7 @@ def user_blocked(email):
         'message': 'User is blocked',
         'code': 420,
         'data': email
-        }, 401
+        }, 403
 
 
 def not_a_number(field, value):
@@ -97,7 +106,7 @@ def passwords_do_not_match():
         'success': False,
         'message': "Password confirm doesn't match",
         'code': 460
-        }, 500
+        }, 400
 
 
 def password_complexity():
@@ -106,7 +115,7 @@ def password_complexity():
         'success': False,
         'message': "Password is not complex enough",
         'code': 490
-        }, 500
+        }, 400
 
 
 def screen_name_already_in_use(screen_name):
@@ -116,7 +125,7 @@ def screen_name_already_in_use(screen_name):
         'message': "Screenname already in use",
         'code': 500,
         'data': screen_name
-        }, 500
+        }, 400
 
 
 def rate_exceeded(time):
@@ -131,7 +140,7 @@ def rate_exceeded(time):
         'message': 'Insufficient bucket tokens',
         'code': 470,
         'data': time
-        }, 500
+        }, 400
 
 
 def wrong_password(email):
@@ -151,7 +160,7 @@ def unknown_bucket_type(bucket_type):
         'message': 'Unknown bucket type',
         'code': 180,
         'data': bucket_type
-        }, 500
+        }, 400
 
 
 def wrong_auth_source(auth_source):
