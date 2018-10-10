@@ -24,11 +24,13 @@ from raven.contrib.flask import Sentry
 app = Flask(__name__)
 
 # Application version (major,minor,patch-level)
-version = "1.1.8"
+version = "1.1.9"
 
 """
 Change Log
 
+1.1.9       Update failure module to include missing return elements.
+            
 1.1.8       Fail any attempt to reset an account password is the account
             email address has not yet been confirmed.
 
