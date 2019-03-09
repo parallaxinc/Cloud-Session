@@ -5,12 +5,17 @@ Cloud Session server application initialization
 
 # Import properties files utils
 import logging
-from ConfigParser import ConfigParser
-from FakeSecHead import FakeSecHead
 from os.path import expanduser, isfile
+from configparser import ConfigParser
+
+# Not sure what this does
+# from FakeSecHead import FakeSecHead
+# -----------------------------------
 
 # Import Flask
 from flask import Flask
+
+
 
 # Import SQLAlchemy database mapper
 from flask_sqlalchemy import SQLAlchemy
