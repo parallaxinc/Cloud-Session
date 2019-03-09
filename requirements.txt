@@ -1,7 +1,9 @@
 # Starting over with current package versions
 # -------------------------------------------
+blinker==1.4
 Click==7.0
 Flask==1.0.2
+Flask-Mail==0.9.1
 Flask-SQLAlchemy==2.3.2
 itsdangerous==1.1.0
 Jinja2==2.10
