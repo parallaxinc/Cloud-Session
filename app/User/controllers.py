@@ -1,7 +1,7 @@
 import logging
 
 import Failures
-from app import db, app
+from app import db
 
 
 from flask_restful import Resource, Api
@@ -20,7 +20,8 @@ api = Api(user_app)
 # Register a new user
 class Register(Resource):
 
-    def post(self):
+    @staticmethod
+    def post():
         # Get values
         server = request.headers.get('server')
         email = request.form.get('email')
@@ -94,7 +95,8 @@ class Register(Resource):
 
 class GetUserById(Resource):
 
-    def get(self, id_user):
+    @staticmethod
+    def get(id_user):
         # Parse numbers
         try:
             id_user = int(id_user)
@@ -123,7 +125,8 @@ class GetUserById(Resource):
 
 class GetUserByEmail(Resource):
 
-    def get(self, email):
+    @staticmethod
+    def get(email):
         # Validate user exists, is validated and is not blocked
         user = user_service.get_user_by_email(email)
         if user is None:
@@ -146,7 +149,8 @@ class GetUserByEmail(Resource):
 
 class GetUserByScreenname(Resource):
 
-    def get(self, screen_name):
+    @staticmethod
+    def get(screen_name):
         # Validate user exists, is validated and is not blocked
         user = user_service.get_user_by_screen_name(screen_name)
         if user is None:
@@ -169,7 +173,8 @@ class GetUserByScreenname(Resource):
 
 class DoInfoChange(Resource):
 
-    def post(self, id_user):
+    @staticmethod
+    def post(id_user):
         screen_name = request.form.get('screenname')
 
         # Validate required fields
@@ -215,7 +220,8 @@ class DoInfoChange(Resource):
 
 class DoLocaleChange(Resource):
 
-    def post(self, id_user):
+    @staticmethod
+    def post(id_user):
         locale = request.form.get('locale')
 
         # Validate required fields
