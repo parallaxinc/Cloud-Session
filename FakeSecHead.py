@@ -1,3 +1,14 @@
+# ---------------------------------------------------
+# What does this do for loading configuration files?
+# ---------------------------------------------------
+# Fake Section Header
+#
+# fp is a file handle obtained from a call to
+# io.open('config_file_path')
+#
+# ---------------------------------------------------
+
+
 class FakeSecHead(object):
     def __init__(self, fp):
         self.fp = fp
