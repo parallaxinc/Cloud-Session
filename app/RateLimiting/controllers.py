@@ -11,7 +11,7 @@ from Validation import Validation
 from app.User import services as user_services
 from app.RateLimiting import services as rate_limiting_services
 
-from models import *
+# from models import *
 
 rate_limiting_app = Blueprint('rate', __name__, url_prefix='/bucket')
 api = Api(rate_limiting_app)

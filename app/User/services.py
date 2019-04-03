@@ -8,7 +8,8 @@ from app import db, app
 from app.Email import services as email_services
 from app.RateLimiting import services as rate_limiting_services
 
-from models import User, ConfirmToken, ResetToken
+# from models import User, ConfirmToken, ResetToken
+from app.User.models import User, ConfirmToken, ResetToken
 
 
 def get_user(id_user):

@@ -3,19 +3,22 @@ Cloud Session server application initialization
 
 """
 
+# Get the application version
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+from app import __version__
+
 # Import properties files utils
 import logging
 from os.path import expanduser, isfile
 from configparser import ConfigParser
 
-# Not sure what this does
-# from FakeSecHead import FakeSecHead
-# -----------------------------------
+# Fake a configuration file section if it is not
+# provided in the configuration file
+from FakeSecHead import FakeSecHead
 
 # Import Flask
 from flask import Flask
-
-
 
 # Import SQLAlchemy database mapper
 from flask_sqlalchemy import SQLAlchemy
@@ -23,32 +26,17 @@ from flask_sqlalchemy import SQLAlchemy
 # Import Mail
 from flask_mail import Mail
 
-# Define the WSGI application object
-from raven.contrib.flask import Sentry
+import sentry_sdk
 
-app = Flask(__name__)
+
+
+# Define the WSGI application object
+app: Flask = Flask(__name__)
 
 # Application version (major,minor,patch-level)
-version = "1.1.7"
+# version has been moved to the __version__.py.
+# Reference PEP 396 -- Module Version Numbers
 
-"""
-Change Log
-
-1.1.7       Update application logging to separate application events from
-            those logged by the uwsgi servivce
-
-1.1.6       Add email address detail for various authentication failures
-
-1.1.5       Refactor _convert_email_uri(email) to properly handle a null
-            email address.
-
-1.1.4       Add code to convert plus signs located the the username portion
-            of an email address to a '%2B'when the email address is embedded
-            in a URL.
-            
-1.1.3       Added documentation around the user account registration process.
-
-"""
 
 db = None
 
@@ -101,14 +89,20 @@ logging.basicConfig(level=logging.DEBUG,
                     filename='/var/log/supervisor/cloud-session-app.log',
                     filemode='w')
 logging.info('Log level set to %s', 'DEBUG')
-logging.info('Starting Cloud Session Service v%s', version)
+logging.info('Starting Cloud Session Service v%s', __version__)
+
 
 configfile = expanduser("~/cloudsession.properties")
 logging.info('Looking for config file: %s', configfile)
 
+
 if isfile(configfile):
     configs = ConfigParser(defaults)
-    configs.readfp(FakeSecHead(open(configfile)))
+    # -----------------------------------------------
+    # The readfp() method has been deprecated
+    # configs.readfp(FakeSecHead(open(configfile)))
+    # -----------------------------------------------
+    configs.read_file(FakeSecHead(open(configfile)))
 
     app_configs = {}
     logging.debug('Configuration Key Settings')
@@ -120,16 +114,18 @@ if isfile(configfile):
 
 else:
     app.config['CLOUD_SESSION_PROPERTIES'] = defaults
-    logging.warn('WARNING: Using application defaults.')
+    logging.warning('Using application defaults.')
 
 # ----------  Init Sentry Module ----------
 if app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'] is not None:
     logging.info("Initializing Sentry")
-    sentry = Sentry(app,
-                    dsn=app.config['CLOUD_SESSION_PROPERTIES']['sentry-dsn'],
-                    logging=True,
-                    level=logging.ERROR
-                    )
+
+    sentry_sdk.init(
+        dsn="https://" +
+            app.config['CLOUD_SESSION_PROPERTIES']['public_key'] +
+            "@sentry.io/" +
+            app.config['CLOUD_SESSION_PROPERTIES']['project'],
+        integrations=[FlaskIntegration()])
 else:
     logging.info("No Sentry configuration")
 
@@ -167,9 +163,9 @@ app.config['DEFAULT_MAIL_SENDER'] = app.config['CLOUD_SESSION_PROPERTIES']['mail
 
 logging.info("Initializing mail")
 logging.info("SMTP port: %s", app.config['MAIL_PORT'])
-logging.info("TLS: %s",app.config['MAIL_USE_TLS'])
-logging.info("SSL: %s",app.config['MAIL_USE_SSL'])
-logging.info("Sender: %s",app.config['DEFAULT_MAIL_SENDER'])
+logging.info("TLS: %s", app.config['MAIL_USE_TLS'])
+logging.info("SSL: %s", app.config['MAIL_USE_SSL'])
+logging.info("Sender: %s", app.config['DEFAULT_MAIL_SENDER'])
 
 mail = Mail(app)
 
@@ -181,7 +177,7 @@ if db is not None:
     from app.Authenticate.controllers import authenticate_app
     from app.AuthToken.controllers import auth_token_app
     from app.User.controllers import user_app
-    from app.LocalUser.controllers import  local_user_app
+    from app.LocalUser.controllers import local_user_app
     from app.RateLimiting.controllers import rate_limiting_app
     from app.OAuth.controllers import oauth_app
 
@@ -198,4 +194,4 @@ app.register_blueprint(oauth_app)
 # Build the database:
 # This will create the database file using SQLAlchemy
 logging.info("Creating database tables if required")
-db.create_all()
+# db.create_all()

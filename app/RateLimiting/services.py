@@ -2,7 +2,7 @@ import datetime
 
 from app import db, app
 
-from models import Bucket
+from app.RateLimiting.models import Bucket
 
 
 # User needs to be validated to be existing

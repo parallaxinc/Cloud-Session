@@ -12,7 +12,7 @@ from flask import request, Blueprint
 
 from Validation import Validation
 
-from models import AuthenticationToken
+from app.AuthToken.models import AuthenticationToken
 
 auth_token_app = Blueprint('authtoken', __name__, url_prefix='/authtoken')
 api = Api(auth_token_app)
