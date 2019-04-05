@@ -33,7 +33,7 @@ def unknown_user_id(id_user):
                'message': 'Unknown user',
                'code': 400,
                'data': id_user
-           }, 500
+           }, 404
 
 
 def unknown_user_email(email):
@@ -43,7 +43,7 @@ def unknown_user_email(email):
                'message': 'Unknown user',
                'code': 400,
                'data': email
-           }, 500
+           }, 404
 
 
 def unknown_user_screen_name(screen_name):
@@ -53,7 +53,7 @@ def unknown_user_screen_name(screen_name):
                'message': 'Unknown user screen name',
                'code': 400,
                'data': screen_name
-           }, 500
+           }, 404
 
 
 def email_already_in_use(email):
