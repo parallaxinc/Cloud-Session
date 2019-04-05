@@ -76,12 +76,12 @@ class ConsumeMultiple(Resource):
         # Parse numbers
         try:
             id_user = int(id_user)
-        except:
+        except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         try:
             count = int(count)
-        except:
+        except ValueError:
             return Failures.not_a_number('count', count)
 
         # Validate user exists, is validated and is not blocked
