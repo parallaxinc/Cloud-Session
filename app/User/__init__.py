@@ -22,3 +22,50 @@
 #                                                                              -
 #                                                                              -
 # ------------------------------------------------------------------------------
+
+"""
+User REST API
+
+The url_prefix is '/user'. All user endpoints are in the form
+# of host:port/user/_service_
+#
+
+
+# Register a new user account
+/user/register
+
+
+        server = request.headers.get('server')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        password_confirm = request.form.get('password-confirm')
+        locale = request.form.get('locale')
+        screen_name = request.form.get('screenname')
+
+        # COPPA support
+        birth_month = request.form.get('bdmonth')
+        birth_year = request.form.get('bdyear')
+        parent_email = request.form.get('parent-email')
+        parent_email_source = request.form.get('parent-email-source')
+
+
+# Retrieve details about an existing user account
+api.add_resource(GetUserById, '/id/<int:id_user>')
+
+
+
+api.add_resource(GetUserByEmail, '/email/<string:email>')
+
+
+
+api.add_resource(GetUserByScreenname, '/screenname/<string:screen_name>')
+
+
+# Update a user screen name
+api.add_resource(DoInfoChange, '/info/<int:id_user>')
+
+
+# Update the local defined in the user account
+api.add_resource(DoLocaleChange, '/locale/<int:id_user>')
+
+"""
