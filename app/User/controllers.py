@@ -126,11 +126,13 @@ class GetUserById(Resource):
         # Parse numbers
         try:
             id_user = int(id_user)
+
         except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         # Validate user exists, is validated and is not blocked
         user = user_service.get_user(id_user)
+
         if user is None:
             return Failures.unknown_user_id(id_user)
 
@@ -153,8 +155,11 @@ class GetUserByEmail(Resource):
 
     @staticmethod
     def get(email):
+        # TODO: Validate the format of the email address before attempting database IO
+
         # Validate user exists, is validated and is not blocked
         user = user_service.get_user_by_email(email)
+
         if user is None:
             return Failures.unknown_user_email(email)
 
@@ -179,6 +184,7 @@ class GetUserByScreenname(Resource):
     def get(screen_name):
         # Validate user exists, is validated and is not blocked
         user = user_service.get_user_by_screen_name(screen_name)
+
         if user is None:
             return Failures.unknown_user_screen_name(screen_name)
 
@@ -198,6 +204,9 @@ class GetUserByScreenname(Resource):
 
 
 class DoInfoChange(Resource):
+    """
+        Update the screen name in the user profile.
+    """
 
     @staticmethod
     def post(id_user):
@@ -210,22 +219,27 @@ class DoInfoChange(Resource):
         if not validation.is_valid():
             return validation.get_validation_response()
 
-        # Parse numbers
+        # Validate the id parameter as an integer
         try:
             id_user = int(id_user)
+
         except ValueError:
             return Failures.not_a_number('idUser', id_user)
 
         # Validate user exists, is validated and is not blocked
         user = user_service.get_user(id_user)
+
         if user is None:
             return Failures.unknown_user_id(id_user)
 
+        # Attempt to retrieve the proposed screen name to ensure that it is available
         user_by_email = user_service.get_user_by_screen_name(screen_name)
+
         if user_by_email is not None:
             if user.id != user_by_email.id:
                 return Failures.screen_name_already_in_use(screen_name)
 
+        # The screen name is available, Assign it to the user profile
         user.screen_name = screen_name
         db.session.commit()
 
