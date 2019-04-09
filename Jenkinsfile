@@ -1,9 +1,12 @@
 pipeline {
   agent any
   stages {
-    stage('Stage 1') {
+    stage('Deploy to Demo') {
       steps {
-        echo 'Hello world!'
+        echo 'Building application tarballs.'
+        sh 'echo \'Running in a shell script\''
+        sh '''echo "Another shell script?"
+'''
       }
     }
   }
