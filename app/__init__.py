@@ -55,7 +55,7 @@ CONFIG_FILE = 'cloudsession.ini'
 DEFAULT_LOG_PATH =  '/var/log/supervisor/cloud-session-app.log'
 
 # Define the WSGI application object
-app: Flask = Flask(__name__)
+app = Flask(__name__)
 
 # Application version (major,minor,patch-level)
 # version has been moved to the __version__.py.
