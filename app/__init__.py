@@ -153,7 +153,7 @@ if isfile(configFile):
     # Load settings from the configuration file into a dictionary
     # for section in config.sections():
     #    logging.debug(('Section: %s', section))
-    for (key, value) in config.items('database', True):
+    for (key, value) in config.items('application', True):
         app_configs[key] = value
         logging.debug("Key:%s, Value:%s", key, value)
 
