@@ -23,14 +23,27 @@
 #                                                                              -
 # ------------------------------------------------------------------------------
 
-from app import db
 
+"""
+Change Log
 
-class Bucket(db.Model):
-    id = db.Column(db.BigInteger, primary_key=True)
-    id_user = db.Column(db.BigInteger, db.ForeignKey('user.id'))
-    type = db.Column(db.String(200))
-    content = db.Column(db.Integer)
-    timestamp = db.Column(db.DateTime)
+1.3.0       Update all packages to current releases.
+            Refactor to support Python 3.7
 
-    __table_args__ = (db.UniqueConstraint('id_user', 'type', name='user_type_unique'),)
+1.1.7       Update application logging to separate application events from
+            those logged by the uwsgi servivce
+
+1.1.6       Add email address detail for various authentication failures
+
+1.1.5       Refactor _convert_email_uri(email) to properly handle a null
+            email address.
+
+1.1.4       Add code to convert plus signs located the the username portion
+            of an email address to a '%2B'when the email address is embedded
+            in a URL.
+
+1.1.3       Added documentation around the user account registration process.
+
+"""
+
+__version__ = "1.3.0"
