@@ -12,7 +12,46 @@ itsdangerous==1.1.0
 Jinja2==2.10
 MarkupSafe==1.1.1
 more-itertools==6.0.0
+
+# ===================================================================================
+# NOTE:
+# There is a bug in the mysqlclient installation process on MocOS systems.
+#
+# https://pypi.org/project/mysqlclient/
+#
+# Note about bug of MySQL Connector/C on macOS
+#
+# See also: https://bugs.mysql.com/bug.php?id=86971
+#
+# Versions of MySQL Connector/C may have incorrect default configuration
+# options that cause compilation errors when mysqlclient-python is installed.
+# (As of November 2017, this is known to be true for homebrew's mysql-connector-c
+# and official package)
+#
+# Modification of mysql_config resolves these issues as follows.
+#
+# Change
+#
+# on macOS, on or about line 112:
+#
+#   # Create options
+#   libs="-L$pkglibdir"
+#   libs="$libs -l "
+#
+# to
+#
+#   # Create options
+#   libs="-L$pkglibdir"
+#   libs="$libs -lmysqlclient -lssl -lcrypto"
+#
+#
+# An improper ssl configuration may also create issues; see, e.g, brew info openssl
+# for details on macOS.
+# ===================================================================================
+
 mysqlclient==1.4.2.post1
+
+
 pluggy==0.9.0
 py==1.8.0
 pystache==0.5.4
