@@ -27,6 +27,11 @@
 """
 Change Log
 
+1.3.1       Add error handling to password authentication to trap the possibility
+            of an unencoded password submission.
+            Update password hash methods to accommodate a change in default string
+            handling in Python3.
+
 1.3.0       Update all packages to current releases.
             Refactor to support Python 3.7
 
@@ -46,4 +51,4 @@ Change Log
 
 """
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"

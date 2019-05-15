@@ -75,15 +75,18 @@ class AuthenticateLocalUser(Resource):
         if not rate_limiting_services.has_sufficient_tokens(user.id, 'failed-password', 1):
             return Failures.rate_exceeded()
 
-        if not user_services.check_password(user.id, password):
-            rate_limiting_services.consume_tokens(user.id, 'failed-password', 1)
-            db.session.commit()
-            return Failures.wrong_password(email)
+        # The password might not be encoded correctly when submitted. This
+        # could cause the check_password method to fault. We trap that
+        # possibility and address it here.
+        try:
+            if not user_services.check_password(user.id, password):
+                rate_limiting_services.consume_tokens(user.id, 'failed-password', 1)
+                return Failures.wrong_password(email)
+        except TypeError:
+            return Failures.password_unknown_format("Unicode-objects must be encoded before hashing")
 
         db.session.commit()
-
         logging.info('Authenticate-controller: Authenticate: success: %s', email)
-
         return {'success': True, 'user': {
             'id': user.id,
             'email': user.email,

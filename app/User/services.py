@@ -43,13 +43,13 @@ def get_user(id_user):
 
 def get_password_hash(password):
     salt = str(uuid.uuid1())
-    password_hash = hashlib.sha256("%s:%s" % (password, salt)).hexdigest()
+    password_hash = hashlib.sha256((password + ":" + salt).encode()).hexdigest()
     return salt, password_hash
 
 
 def check_password(id_user, password):
     user = get_user(id_user)
-    password_hash = hashlib.sha256("%s:%s" % (password, user.salt)).hexdigest()
+    password_hash = hashlib.sha256((password + ":" + user.salt).encode()).hexdigest()
     return user.password == password_hash
 
 
