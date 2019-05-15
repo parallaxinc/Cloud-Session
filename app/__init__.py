@@ -52,7 +52,7 @@ import sentry_sdk
 
 # ---------- Constants ----------
 CONFIG_FILE = 'cloudsession.ini'
-DEFAULT_LOG_PATH =  '/var/log/supervisor/cloud-session-app.log'
+DEFAULT_LOG_PATH = '/var/log/supervisor/cloud-session-app.log'
 
 # Define the WSGI application object
 app: Flask = Flask(__name__)
@@ -142,22 +142,22 @@ config = ConfigParser()
 config['DEFAULT'] = configDefaults
 
 if isfile(configFile):
+    logging.info('Loading settings from %s.', configFile)
+
     # Load default settings first
     # configs = ConfigParser(configDefaults)
 
     # Load configuration file to override default settings
     config.read_file(open(configFile))
-
     logging.debug('Configuration Key Settings')
 
     # Load settings from the configuration file into a dictionary
     # for section in config.sections():
-    #    logging.debug(('Section: %s', section))
     for (key, value) in config.items('application', True):
-        app_configs[key] = value
         logging.debug("Key:%s, Value:%s", key, value)
+        app_configs[key] = value
 
-    # Set the default configuration
+    logging.info("End of configuration list.")
     app.config['CLOUD_SESSION_PROPERTIES'] = app_configs
 
 else:
