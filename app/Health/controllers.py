@@ -23,36 +23,73 @@
 #                                                                              -
 # ------------------------------------------------------------------------------
 
+import logging
+from flask_restful import Api, Resource
+from flask import request, Blueprint
+from app import __version__
 
-"""
-Change Log
 
-1.3.2       Update supervisor package to accommodate the removal of the cgi
-            library in python 3.8.
-            Add API keys for version and ping.
+# Set the base URL for this module and register it
+health_app = Blueprint('health', __name__, url_prefix='/health')
+api = Api(health_app)
 
-1.3.1       Add error handling to password authentication to trap the possibility
-            of an unencoded password submission.
-            Update password hash methods to accommodate a change in default string
-            handling in Python3.
 
-1.3.0       Update all packages to current releases.
-            Refactor to support Python 3.7
+class Ping(Resource):
+    # noinspection PyUnresolvedReferences
+    """
+        Provide a simple response to verify that the Rest API is functioning.
 
-1.1.7       Update application logging to separate application events from
-            those logged by the uwsgi servivce
+        Args:
+            None
 
-1.1.6       Add email address detail for various authentication failures
+        Returns:
+            A JSON document with the key 'success' set to True, 'message' set to
+            the constant 'pong', and a 200 response code.
 
-1.1.5       Refactor _convert_email_uri(email) to properly handle a null
-            email address.
+        Raises:
+            None
+        """
+    def get(self):
+        # Ping the REST server for signs of life
+        server = request.headers.get('server')
+        logging.info("Requesting ping from server %s", server)
 
-1.1.4       Add code to convert plus signs located the the username portion
-            of an email address to a '%2B'when the email address is embedded
-            in a URL.
+        return {
+            'Success': True,
+            'message': 'pong',
+            'code': 200
+        }
 
-1.1.3       Added documentation around the user account registration process.
 
-"""
+class Version(Resource):
+    # noinspection PyUnresolvedReferences
+    """
+        Provide the application version string.
 
-__version__ = "1.3.2"
+        Args:
+            None
+
+        Returns:
+            A JSON document with the key 'success' set to True, 'message' contains a
+            version element holding a string representation of the application version
+            number, and a 200 response code.
+
+        Raises:
+            None
+        """
+    def get(self):
+        # Ping the REST server for signs of life
+        server = request.headers.get('server')
+        logging.info("Requesting version info from server %s", server)
+
+        return {
+            'Success': True,
+            'message': {
+                'version': __version__.__version__,
+            },
+            'code': 200
+        }
+
+
+api.add_resource(Ping, '/ping')
+api.add_resource(Version, '/version')
