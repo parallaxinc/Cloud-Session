@@ -23,9 +23,13 @@
 #                                                                              -
 # ------------------------------------------------------------------------------
 
+__version__ = "1.3.3"
 
 """
 Change Log
+
+1.3.3       Update packages subject to security warnings.
+            Update sentry package.
 
 1.3.2       Update supervisor package to accommodate the removal of the cgi
             library in python 3.8.
@@ -54,5 +58,3 @@ Change Log
 1.1.3       Added documentation around the user account registration process.
 
 """
-
-__version__ = "1.3.2"
