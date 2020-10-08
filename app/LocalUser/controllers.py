@@ -27,7 +27,7 @@ import datetime
 import logging
 
 import Failures
-from app import db, app
+from app import db
 
 
 from flask_restful import Resource, Api
@@ -43,22 +43,24 @@ api = Api(local_user_app)
 
 
 class DoConfirm(Resource):
+    # noinspection PyUnresolvedReferences
     """
-    Confirm and activate a user account.
+        Confirm and activate a user account.
 
-    Args:
-        None
+        Args:
+            None
 
-    Returns:
-        A JSON document with the key 'success' set to True if the operation
-        is successful. Otherwise the key 'success' is set to False and the
-        field 'code' is set to the HTTP error code that represents a specific
-        reason when the account confirmation was rejected.
+        Returns:
+            A JSON document with the key 'success' set to True if the operation
+            is successful. Otherwise the key 'success' is set to False and the
+            field 'code' is set to the HTTP error code that represents a specific
+            reason when the account confirmation was rejected.
 
-    Raises:
-        None
-    """
+        Raises:
+            None
+        """
 
+    # noinspection PyMethodMayBeStatic
     def post(self):
         # Get values
         email = request.form.get('email')   # User account email address
