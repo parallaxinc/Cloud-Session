@@ -178,6 +178,16 @@ def wrong_password(email):
            }, 401
 
 
+def password_unknown_format(fault_message):
+    logging.debug('Failures: %s', fault_message)
+    return {
+               'success': False,
+               'message': 'Unencoded Unicode password',
+               'code': 475,
+               'data': fault_message
+           }, 500
+
+
 def unknown_bucket_type(bucket_type):
     logging.debug('Failures: Unknown bucket type: %s', bucket_type)
     return {
@@ -196,3 +206,4 @@ def wrong_auth_source(auth_source):
         'code': 480,
         'data': auth_source
         }, 500
+
