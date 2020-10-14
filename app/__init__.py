@@ -52,6 +52,12 @@ from flask_mail import Mail
 CONFIG_FILE = 'cloudsession.ini'
 DEFAULT_LOG_PATH = '/var/log/supervisor/cloud-session-app.log'
 
+import sentry_sdk
+sentry_sdk.init(
+    "https://7bce3a90ce6f4f7096ee177c843d0dab@o461706.ingest.sentry.io/5463858",
+    traces_sample_rate=1.0
+)
+
 # Define the WSGI application object
 app = Flask(__name__)
 
