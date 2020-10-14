@@ -185,7 +185,10 @@ def send_password_reset(id_user, server):
         db.session.delete(existing_token)
         db.session.flush()
 
-    token = str(uuid.uuid1()).translate(None, '-')
+    # The translate method no longer accepts a value that is neither a string
+    # or a number.
+    # token = str(uuid.uuid1()).translate(None, '-')
+    token = str(uuid.uuid1())
     token_validity_time = int(app.config['CLOUD_SESSION_PROPERTIES']['reset-token-validity-hours'])
 
     reset_token = ResetToken()

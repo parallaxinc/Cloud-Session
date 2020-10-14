@@ -31,12 +31,8 @@ from app import db
 
 from flask_restful import Resource, Api
 from flask import request, Blueprint
-
 from Validation import Validation
-
 from app.User import services as user_service
-
-# from models import User
 
 # Define the endpoint prefix for user services
 user_app = Blueprint('user', __name__, url_prefix='/user')

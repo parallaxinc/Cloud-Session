@@ -2,6 +2,7 @@
 *.sqlite
 *.log
 venv/
+venv3/
 build.sh
 CloudSession-Pkg.tar.gz
 
@@ -26,3 +27,6 @@ dbupdate.sh
 /CloudSession-Templates.tar.gz
 /copy-test
 /deploy2coppa
+
+# Appllication configuration should never be comitted to the repo
+cloudsession.ini

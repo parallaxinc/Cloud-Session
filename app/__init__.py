@@ -28,9 +28,10 @@ Cloud Session server application initialization
 
 """
 
-# Get the application version
+import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+# Get the application version
 from app import __version__
 
 # Import properties files utils
@@ -46,9 +47,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 # Import Mail
 from flask_mail import Mail
-
-import sentry_sdk
-
 
 # ---------- Constants ----------
 CONFIG_FILE = 'cloudsession.ini'

@@ -23,13 +23,17 @@
 #                                                                              -
 # ------------------------------------------------------------------------------
 
-from app import mail, app
-from os.path import expanduser, isfile
-from flask_mail import Message
+from app import app
+from os.path import isfile
 from app.User.coppa import Coppa, SponsorType
 
 import pystache
 import logging
+
+import smtplib
+import email.utils
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
 """
@@ -47,8 +51,6 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
     if user is None:
         logging.error("Cannot send email: Invalid user record")
         return False
-    else:
-        logging.info("Valid record found for user: %s", user.id)
 
     logging.info("Sending email to user: %s using template: '%s'.", user.email, template)
 
@@ -79,7 +81,7 @@ def send_email_template_for_user(id_user, template, server, **kwargs):
             # Teacher handles the account confirmation
             send_email_template_to_address(user_email, 'confirm-teacher', server, user.locale, params)
         elif user.parent_email_source == SponsorType.PARENT or\
-                        user.parent_email_source == SponsorType.GUARDIAN:
+                user.parent_email_source == SponsorType.GUARDIAN:
             # Parent handles the account confirmation
             send_email_template_to_address(user_email, 'confirm-parent', server, user.locale, params)
         else:
@@ -152,26 +154,12 @@ def send_email_template_to_address(recipient, template, server, locale, params=N
 
 
 def send_email(recipient, subject, email_text, rich_email_text=None):
-    logging.info('Creating email message package')
-    msg = Message(
-        recipients=[recipient],
-        subject=subject.rstrip(),
-        body=email_text,
-        html=rich_email_text,
-        sender=app.config['DEFAULT_MAIL_SENDER']
-    )
-
-    # Attempt to send the email
     try:
-        logging.info('Sending email message to server')
-        mail.send(msg)
+        _aws_send_mail(recipient, subject.rstrip(), email_text, rich_email_text)
+        logging.info('Email message was delivered to server')
     except Exception as ex:
         logging.error('Unable to send email')
-        logging.error('Error message: %s', ex.message)
-        return 1
-
-    logging.info('Email message was delivered to server')
-    return 0
+        logging.error('Error message: %s', ex.args)
 
 
 def _read_templates(template, server, locale, params):
@@ -201,19 +189,21 @@ def _read_template(template, server, locale, part, params, none_if_missing=False
     :return: Upon success, return a Renderer object. Return none or a general
              error message if the none_is_missing flag is false
     """
-    template_file = expanduser("~/templates/%s/%s/%s/%s.mustache" % (locale, template, server, part))
+    template_file = str.format("{0}/{1}/{2}/{3}/{4}.mustache",
+                               app.config['CLOUD_SESSION_PROPERTIES']['email.template.path'],
+                               locale, template, server, part)
+    logging.info("Template filename: %s", template_file)
 
     if isfile(template_file):
         logging.debug('Looking for template file: %s', template_file)
-
         renderer = pystache.Renderer()
 
-        logging.debug('Rendering the template file')
         try:
+            logging.debug('Rendering the template file')
             rendered = renderer.render_path(template_file, params)
         except Exception as ex:
             logging.error('Unable to render template file %s', template_file)
-            logging.error('Error message: %s', ex.message)
+            logging.error('Error message: %s', ex.args)
             return 'Template format error.'
 
         logging.debug('Returning rendered template file.')
@@ -241,3 +231,48 @@ def _convert_email_uri(email):
             return email.replace("+", "%2B")
 
     return email
+
+
+def _aws_send_mail(recipient, subject='', text_msg='', html_msg=''):
+    # The sender address must be verified by SES.
+    sender = app.config['CLOUD_SESSION_PROPERTIES']['mail.from']
+    sender_name = "BlockyProp Administrator"
+    username_smtp = app.config['CLOUD_SESSION_PROPERTIES']['mail.user']
+    password_smtp = app.config['CLOUD_SESSION_PROPERTIES']['mail.password']
+    host = app.config['CLOUD_SESSION_PROPERTIES']['mail.host']
+    port = app.config['CLOUD_SESSION_PROPERTIES']['mail.port']
+
+    # Create message container - the correct MIME type is multipart/alternative.
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = email.utils.formataddr((sender_name, sender))
+    msg['To'] = recipient
+
+    # Record the MIME types of both parts - text/plain and text/html.
+    # According to RFC 2046, the last part of a multipart message, in this case
+    # the HTML message, is best and preferred.
+    if text_msg != "":
+        logging.info("Adding text to message")
+        part1 = MIMEText(text_msg, 'plain')
+        msg.attach(part1)
+
+    # TODO: This breaks if the html_msg is empty or None
+    # if html_msg != "":
+    #     logging.info("Adding html to message")
+    #     part2 = MIMEText(html_msg, 'html')
+    #     msg.attach(part2)
+
+    # Try to send the message.
+    server = smtplib.SMTP(host, port)
+    server.ehlo()
+    server.starttls()
+    # stmplib docs recommend calling ehlo() before & after starttls()
+    server.ehlo()
+    server.login(username_smtp, password_smtp)
+
+    logging.info("awsSender: %s", sender)
+    logging.info("awsRecipient: %s", recipient)
+    logging.info("awsMessage: %s", msg.as_string())
+    server.sendmail(sender, recipient, msg.as_string())
+
+    server.close()
