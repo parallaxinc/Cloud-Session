@@ -88,16 +88,20 @@ class AuthenticateLocalUser(Resource):
 
         db.session.commit()
         logging.info('Authenticate-controller: Authenticate: success: %s', email)
-        return {'success': True, 'user': {
-            'id': user.id,
-            'email': user.email,
-            'locale': user.locale,
-            'screenname': user.screen_name,
-            'authentication-source': user.auth_source,
-            'bdmonth': user.birth_month,
-            'bdyear': user.birth_year,
-            'parent-email': user.parent_email,
-            'parent-email-source': user.parent_email_source
-        }}
+
+        return {
+            'success': True,
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'locale': user.locale,
+                'screenname': user.screen_name,
+                'authentication-source': user.auth_source,
+                'bdmonth': user.birth_month,
+                'bdyear': user.birth_year,
+                'parent-email': user.parent_email,
+                'parent-email-source': user.parent_email_source
+            }}
+
 
 api.add_resource(AuthenticateLocalUser, '/local')
