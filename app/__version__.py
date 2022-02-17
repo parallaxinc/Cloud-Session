@@ -23,10 +23,12 @@
 #                                                                              -
 # ------------------------------------------------------------------------------
 
-__version__ = "1.3.3"
+__version__ = "1.3.4"
 
 """
 Change Log
+1.3.4       Update to the user_services.check_password function to short-
+            circuit password authentication.
 
 1.3.3       Update packages subject to security warnings.
             Update sentry package.

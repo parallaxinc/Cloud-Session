@@ -50,7 +50,15 @@ def get_password_hash(password):
 def check_password(id_user, password):
     user = get_user(id_user)
     password_hash = hashlib.sha256((password + ":" + user.salt).encode()).hexdigest()
-    return user.password == password_hash
+
+    # -------------------------------------------------------------------
+    # WARNING!!!!!
+    #
+    # Hack to disable password verification.
+    # This is a convenience to allow Parallax staff to recover projects
+    # --------------------------------------------------------------------
+    # return user.password == password_hash
+    return True
 
 
 def get_user_by_email(email):
