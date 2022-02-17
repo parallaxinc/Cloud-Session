@@ -48,6 +48,7 @@ class AuthenticateLocalUser(Resource):
         server = request.headers.get('server')
         email = request.form.get('email')
         password = request.form.get('password')
+        logging.info('Authenticating: %s', email)
 
         # Validate required fields
         validation = Validation()
@@ -80,7 +81,9 @@ class AuthenticateLocalUser(Resource):
         # could cause the check_password method to fault. We trap that
         # possibility and address it here.
         try:
+            logging.info('Attempting to authenticate %s', user.id)
             if not user_services.check_password(user.id, password):
+                logging.info('Authentication failed for %s', user.id)
                 rate_limiting_services.consume_tokens(user.id, 'failed-password', 1)
                 return Failures.wrong_password(email)
         except TypeError:
