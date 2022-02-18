@@ -51,6 +51,7 @@ from flask_mail import Mail
 # ---------- Constants ----------
 CONFIG_FILE = 'cloudsession.ini'
 DEFAULT_LOG_PATH = '/var/log/supervisor/cloud-session-app.log'
+# DEFAULT_LOG_PATH = 'cloud-session-app.log'
 
 import sentry_sdk
 sentry_sdk.init(
@@ -122,7 +123,10 @@ configDefaults = {
 
     'bucket.email-confirm.size': '2',
     'bucket.email-confirm.input': '1',
-    'bucket.email-confirm.freq': '1800000'
+    'bucket.email-confirm.freq': '1800000',
+
+    # Logging
+    'logging.logfile': 'cloud-session-app.log'
 }
 
 
